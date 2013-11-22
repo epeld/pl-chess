@@ -1,5 +1,8 @@
-(defpackage seq-utils
+(defpackage :seq-utils
   (:use :common-lisp :it.bese.FiveAM))
+
+(in-package :seq-utils)
+
 
 (defun take
     (n seq)
@@ -26,4 +29,9 @@
 		   (rec n r (cons g acc))))))
     (nreverse (rec n seq nil))))
 
-(group 2 (coerce "hej jag heter erik" 'list))
+
+(test group
+  "Test the group function"
+  (is (equal '((1 2) (3 4) (5)) (group 2 '(1 2 3 4 5)))))
+
+(explain! (run 'group))
