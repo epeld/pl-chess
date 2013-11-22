@@ -11,9 +11,11 @@
     (s)
   (cons s 0))
 
+
 (defun forward
     (head &key (step 1))
   (incf (cdr head) step))
+
 
 (defun peek
     (head &key (num 1))
@@ -21,9 +23,11 @@
 	(pos (cdr head)))
     (subseq s pos (+ pos num))))
 
+
 (defun parse-grammar-body
     (body)
   (mapcar #'(lambda (x) (alist (cons :action x))) body))
+
 
 (defmacro defgrammar
     (name &rest body)
@@ -67,16 +71,15 @@
 
 
 (defun perform-branch
-  (head action-alists)
+    (head action-alists)
   "Perform a branch, trying each action in turn until one succeeds"
-  (let ((saved-head (copy-list head)))
-    (catch 'branch-success
-      (dolist (action action-alists)
-	(handler-case (throw 'branch-success
-			(perform-action saved-head action))
-	  (parse-error ()
-	    nil))
-	(signal 'parse-error)))))
+  (catch 'branch-success
+    (dolist (action action-alists)
+      (handler-case (throw 'branch-success
+		      (perform-action (copy-list head) action))
+	(parse-error ()
+	  nil))
+      (signal 'parse-error))))
 
 
 (defun perform-sequential-actions
@@ -84,6 +87,10 @@
   (mapcar (partial #'perform-action head)
 	  action-alists))
 
+
+(defmacro maybe
+    (name)
+  `(or ,name nil))
 
 (defgrammar move
     (piece :as :piece)
