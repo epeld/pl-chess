@@ -1,6 +1,6 @@
 (defpackage :fun-utils
   (:use common-lisp)
-  (:export partial))
+  (:export partial compose))
 
 (in-package :fun-utils)
 
@@ -19,6 +19,11 @@
 	(lambda (&rest args)
 	  (let ((g (apply #'compose gs)))
 	    (funcall f (apply g args)))))))
+
+(defun flip-args
+    (f)
+  (lambda (a b)
+    (funcall f b a)))
 
 (let ((f (partial #'+ 3)))
   (funcall f 4))
