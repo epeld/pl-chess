@@ -1,8 +1,9 @@
 (defpackage :seq-utils
-  (:use :common-lisp :it.bese.FiveAM))
+  (:use :common-lisp
+	:it.bese.FiveAM
+	:fun-utils))
 
 (in-package :seq-utils)
-
 
 (defun take
     (n seq)
@@ -28,6 +29,27 @@
 		     (take n seq)
 		   (rec n r (cons g acc))))))
     (nreverse (rec n seq nil))))
+
+
+(defun aadd
+    (pair alist)
+  (acons (car pair)
+	 (cdr pair)
+	 alist))
+
+
+(defun ->cons
+    (two-list)
+  (cons (nth 0 two-list)
+	(nth 1 two-list)))
+
+
+(defun alist
+    (&rest args)
+  (let ((pairs (group 2 args)))
+
+    (pairlis (mapcar (partial #'nth 0) pairs)
+	     (mapcar (partial #'nth 1) pairs))))
 
 
 (test group
