@@ -1,5 +1,11 @@
 (defpackage parse-head
-  (:use :common-lisp :it.bese.FiveAM))
+  (:use
+   :common-lisp
+   :it.bese.FiveAM
+   :seq-utils
+   :fun-utils))
+
+(in-package parse-head)
 
 (defun head
     (s)
@@ -23,32 +29,61 @@
     (name &rest body)
   )
 
-; TODO write functions (alist :key1 1 :key2 2 etc..)
-; using group and pairlis
-; write assoc-value (compose cdr assoc)
-; compose
 
-; TODO: destructure out the action
-; add the result
-; branch has :action '(alternative1 alternative2..)
+(defun single-action-p
+    (action)
+  (not (consp action)))
+
+
+(defun branchp
+    (action)
+  (and (consp action)
+       (eq 'or (car action))))
+
+
+(defun seqp
+    (action)
+  (and (consp action)
+       (eq 'seq (car action))))
+
+
+(defun compute-action-value
+    (head action)
+  (cond
+    ((single-action-p action)
+     (funcall action head))
+    ((seqp action)
+     (perform-sequential-actions head action))
+    ((branchp action)
+     (perform-branch head action))
+    (t (error 'unknown-action))))
+
+
 (defun perform-action
     (head action-alist)
-  (let ((action (cdr (assoc :action action-alist))))
-    (if (consp action)
-	todo
-	(acons :value (funcall #'action head)
-	       action-alist))))
+  (let ((action (assoc-value :action action-alist)))
+    (acons :value (compute-action-value head action)
+	   action-alist)))
 
 
-(defun perform-actions
+(defun perform-branch
+  (head action-alists)
+  "Perform a branch, trying each action in turn until one succeeds"
+  (let ((saved-head (copy-list head)))
+    (catch 'branch-success
+      (dolist (action action-alists)
+	(handler-case (throw 'branch-success
+			(perform-action saved-head action))
+	  (parse-error ()
+	    nil))
+	(signal 'parse-error)))))
+
+
+(defun perform-sequential-actions
     (head action-alists)
-  (labels ((rec (actions acc)
-	     (let* ((action (car actions))
-		    (rest (cdr actions))
-		    (res (perform-action head rest)))
-	       (if (null parts)
-		   res
-		   (cons res (perform-actions head rest))))))))
+  (mapcar (partial #'perform-action head)
+	  action-alists))
+
 
 (defgrammar move
     (piece :as :piece)
