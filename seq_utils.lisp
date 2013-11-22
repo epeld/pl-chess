@@ -1,7 +1,11 @@
 (defpackage :seq-utils
   (:use :common-lisp
 	:it.bese.FiveAM
-	:fun-utils))
+	:fun-utils)
+  (:export alist
+	   take
+	   group
+	   assoc-value))
 
 (in-package :seq-utils)
 
@@ -43,6 +47,10 @@
   (cons (nth 0 two-list)
 	(nth 1 two-list)))
 
+
+(defun assoc-value
+    (&rest args)
+  (apply (compose #'cdr #'assoc) args))
 
 (defun alist
     (&rest args)
