@@ -24,79 +24,89 @@
     (subseq s pos (+ pos num))))
 
 
-(defun parse-grammar-body
-    (body)
-  (mapcar #'(lambda (x) (alist (cons :action x))) body))
+(defun set-pos
+    (head pos)
+  (setf (cdr head) pos))
 
 
-(defmacro defgrammar
-    (name &rest body)
-  )
+(defun get-pos
+    (head)
+  (cdr head))
 
 
-(defun single-action-p
-    (action)
-  (not (consp action)))
+(defun get-parser-function
+    (entity)
+  (let ((name (symbol-name entity)))
+    (intern (concatenate 'string "PARSE-" name))))
 
 
-(defun branchp
-    (action)
-  (and (consp action)
-       (eq 'or (car action))))
+(defun run-parser
+    (head name &rest args)
+  (apply (get-parser-function name) head args))
 
 
-(defun seqp
-    (action)
-  (and (consp action)
-       (eq 'seq (car action))))
+(defmacro with-parsing-environment
+    (var &body body)
+  (let ((real-head (gensym))
+	(res (gensym)))
 
+    `(let* ((,real-head ,var)
+	    (head (copy-list ,real-head))
+	    (,res (progn ,@body)))
 
-(defun compute-action-value
-    (head action)
-  (cond
-    ((single-action-p action)
-     (funcall action head))
-    ((seqp action)
-     (perform-sequential-actions head action))
-    ((branchp action)
-     (perform-branch head action))
-    (t (error 'unknown-action))))
+       (set-pos ,real-head
+		(get-pos head))
+       ,res)))
 
-
-(defun perform-action
-    (head action-alist)
-  (let ((action (assoc-value :action action-alist)))
-    (acons :value (compute-action-value head action)
-	   action-alist)))
-
-
-(defun perform-branch
-    (head action-alists)
+; TODO write ignore-parse-errors or (ignore 'parse-error)
+; TODO prettyprint parsing
+; TODO has a bug. Head must be left in the position of succeeding perform-action
+(defun parse-branch
+    (head &body body)
   "Perform a branch, trying each action in turn until one succeeds"
   (catch 'branch-success
-    (dolist (action action-alists)
+    (dolist (clause body)
       (handler-case (throw 'branch-success
-		      (perform-action (copy-list head) action))
+		      (apply #'run-parser head clause))
 	(parse-error ()
 	  nil))
       (signal 'parse-error))))
 
 
-(defun perform-sequential-actions
-    (head action-alists)
-  (mapcar (partial #'perform-action head)
-	  action-alists))
+(defmacro defparsefunc
+    (name args &body body)
+  (let ((real-head (gensym)))
+
+    `(defun ,name
+	 (,real-head ,@args)
+       (with-parsing-environment ,real-head
+	 ,@body))))
 
 
-(defmacro maybe
-    (name)
-  `(or ,name nil))
+(defmacro defparser
+    (name &body body)
+  (let ((parser-name (get-parser-function name)))
+    `(defparsefunc ,parser-name
+	 ()
+       (mapcar (partial (applied #'run-parser) head)
+	       (quote ,body)))))
+
+
+(defmacro defgrammar
+    (name &body body)
+  (let ((parsers (mapcar #'car body)))
+    `(defparser ,name
+       ,@parsers)))
+
 
 (defgrammar move
     (piece :as :piece)
     ((maybe takes) :as :takes)
     ((maybe square) :as :source)
-    (square :as :destination))
+    (square) :as :destination)
 
-(defgrammar takes
-    (char #\x))
+(macroexpand  (macroexpand-1 (macroexpand-1 (macroexpand-1 '(defgrammar move
+							     (piece)
+							     ((maybe takes))
+							     ((maybe square))
+							     (square))))))
