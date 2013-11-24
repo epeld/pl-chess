@@ -3,11 +3,12 @@
 	:it.bese.FiveAM
 	:seq-utils
 	:fun-utils)
-  (:export head
-	   forward
-	   peek
-	   get-pos
-	   set-pos))
+
+  (:export :head
+	   :forward
+	   :peek
+	   :get-pos
+	   :set-pos))
 
 (in-package parse-head)
 

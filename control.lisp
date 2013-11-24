@@ -1,7 +1,8 @@
 (defpackage control
-  (:use common-lisp)
-  (:export with-return
-	   ignore-conditions))
+  (:use :common-lisp)
+
+  (:export :with-return
+	   :ignore-conditions))
 
 (in-package :control)
 
