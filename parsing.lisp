@@ -33,14 +33,15 @@
   (cond ((consp clause)
 	 (apply #'run-parser head clause))
 
-	((symbolp clause)
-	 (run-parser head clause))
-
 	((null clause)
 	 nil)
 
+	((symbolp clause)
+	 (run-parser head clause))
+
 	(t
 	 (error 'parse-error))))
+
 
 (defmacro with-parsing-environment
     (var &body body)
@@ -72,26 +73,19 @@
     (apply #'alist pairs)))
 
 
+(defun clause->name
+    (clause)
+  (let ((alist (clause->alist clause)))
+    (cdr (assoc :as alist))))
+
+
 (defmacro defparser
     (name &body body)
   (let ((parser-name (get-parser-function name))
 	(clauses (mapcar #'car body))
-	;(alists (mapcar #'clause->alist body))
-	)
+	(names (mapcar #'clause->name body))
+	(run (gensym)))
     `(defparsefunc ,parser-name
 	 ()
-       (mapcar (partial (applied #'run-clause) head)
-	       (quote ,clauses)))))
-
-
-(defparser move
-    (piece :as :piece)
-    ((maybe takes) :as :takes)
-    ((maybe square) :as :source)
-    (square :as :destination))
-
-(macroexpand  (macroexpand-1 (macroexpand-1 (macroexpand-1 '(defparser move
-							     (piece :as :piece)
-							     ((maybe takes) :as :takes)
-							     ((maybe square) :as :source)
-							     (square :as :destination))))))
+       (let ((,run (partial #'run-clause head)))
+	 (pairlis (quote ,names) (mapcar ,run (quote ,clauses)))))))

@@ -8,10 +8,12 @@
 	   :forward
 	   :peek
 	   :get-pos
-	   :set-pos))
+	   :set-pos
+	   :read-next))
 
 (in-package parse-head)
 
+; TODO use abstractions for accessing head, pos
 
 (defun head
     (s)
@@ -21,6 +23,15 @@
 (defun forward
     (head &key (step 1))
   (incf (cdr head) step))
+
+
+(defun read-next
+    (head)
+  (unless (= (cdr head) (length (car head)))
+
+    (let ((c (char (car head) (cdr head))))
+      (forward head)
+      c)))
 
 
 (defun peek

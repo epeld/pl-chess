@@ -2,7 +2,11 @@
   (:use :common-lisp
 	:parsing
 	:control)
-  (:export parse-branch))
+  (:export :parse-branch
+	   :parse-char
+	   :parse-maybe)
+  (:import-from :parse-head
+		:read-next))
 
 (in-package :generic-parsers)
 
@@ -22,3 +26,11 @@
 (defparsefunc parse-maybe
     (name)
   (parse-branch head name nil))
+
+
+(defparsefunc parse-char
+    (char-string)
+  (let ((c (find (read-next head) char-string)))
+    (unless c
+      (signal 'parse-error))
+    c))

@@ -6,6 +6,7 @@
 
 (in-package :control)
 
+
 (defmacro with-return
     (var &body body)
   (let ((tag (gensym))
@@ -13,6 +14,7 @@
     `(labels ((,var (,res) (throw (quote ,tag) ,res)))
        (catch (quote ,tag)
 	 ,@body))))
+
 
 (defmacro ignore-conditions
     (conditions &body body)
