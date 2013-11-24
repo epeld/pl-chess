@@ -1,11 +1,21 @@
 (defpackage parsing
+
   (:use :common-lisp
+	:fun-utils
+	:seq-utils
 	:parse-head)
-  (:export defparser
-	   defparsefunc
-	   run-parser))
+
+  (:export :defparser
+	   :defparsefunc
+	   :run-clause
+	   :with-parsing-environment
+	   :head)
+
+  (:shadow :head))
+
 
 (in-package parsing)
+
 
 (defun get-parser-function
     (entity)
@@ -17,6 +27,20 @@
     (head name &rest args)
   (apply (get-parser-function name) head args))
 
+
+(defun run-clause
+    (head clause)
+  (cond ((consp clause)
+	 (apply #'run-parser head clause))
+
+	((symbolp clause)
+	 (run-parser head clause))
+
+	((null clause)
+	 nil)
+
+	(t
+	 (error 'parse-error))))
 
 (defmacro with-parsing-environment
     (var &body body)
@@ -42,17 +66,32 @@
 	 ,@body))))
 
 
+(defun clause->alist
+    (clause)
+  (let ((pairs (cdr clause)))
+    (apply #'alist pairs)))
+
+
 (defmacro defparser
     (name &body body)
-  (let ((parser-name (get-parser-function name)))
+  (let ((parser-name (get-parser-function name))
+	(clauses (mapcar #'car body))
+	;(alists (mapcar #'clause->alist body))
+	)
     `(defparsefunc ,parser-name
 	 ()
-       (mapcar (partial (applied #'run-parser) head)
-	       (quote ,body)))))
+       (mapcar (partial (applied #'run-clause) head)
+	       (quote ,clauses)))))
 
 
-(defmacro defgrammar
-    (name &body body)
-  (let ((parsers (mapcar #'car body)))
-    `(defparser ,name
-       ,@parsers)))
+(defparser move
+    (piece :as :piece)
+    ((maybe takes) :as :takes)
+    ((maybe square) :as :source)
+    (square :as :destination))
+
+(macroexpand  (macroexpand-1 (macroexpand-1 (macroexpand-1 '(defparser move
+							     (piece :as :piece)
+							     ((maybe takes) :as :takes)
+							     ((maybe square) :as :source)
+							     (square :as :destination))))))
