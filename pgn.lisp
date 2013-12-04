@@ -8,7 +8,8 @@
 
 (defparsefunc parse-takes
     ()
-  (parse-char head "x"))
+  (when (parse-char head "x")
+    :takes))
 
 
 (defparser piece
