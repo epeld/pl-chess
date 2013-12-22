@@ -10,6 +10,15 @@ number_term("7", 7).
 number_term("8", 8).
 number_term("9", 9).
 
+parsed_number([Char | []], Number) :-
+    number_term([Char], Number).
+
+parsed_number([Char | Rest], Number) :-
+    length(Rest, L),
+    number_term([Char], N),
+    parsed_number(Rest, Ns),
+    Number is N * 10 ** L + Ns.
+
 number_term(X) :- number_term(X, _).
 
 

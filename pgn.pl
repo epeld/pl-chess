@@ -12,6 +12,9 @@ pgn_file(5, "f").
 pgn_file(6, "g").
 pgn_file(7, "h").
 
+atom_square(Square, Atom) :-
+    pgn_square(Square, Term),
+    term_to_atom(Atom, Term).
 
 pgn_square([F, R], [FTerm, RTerm]) :-
     pgn_rank(R, [RTerm]),
@@ -78,3 +81,7 @@ pgn_piecemove(Move, Term) :-
 pgn_move(Move, Term) :- pgn_pawnmove(Move, Term).
 pgn_move(Move, Term) :- pgn_piecemove(Move, Term).
 pgn_move(Move, Term) :- pgn_castles(Move, Term).
+
+atom_move(Move, Atom) :-
+    pgn_move(Move, Term),
+    term_to_atom(Term, Atom).

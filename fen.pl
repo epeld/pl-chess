@@ -8,40 +8,67 @@ parsed_board(example_board, FEN) :-
 
 example_board(B) :- parsed_board(B, F), example_fen(F).
 
+fen_string(FEN, Position) :-
+    fen_parts(FEN, [BoardPart, TurnPart, CastlingPart, PassantPart,
+		    FullMovePart, HalfMovePart]),
+    fen_board(BoardPart, Board),
+    fen_turn(TurnPart, Turn),
+    fen_castling(CastlingPart, Castling),
+    fen_passant(Passant, PassantPart),
+    fen_movenumber(FullMove, FullMovePart),
+    fen_movenumber(HalfMove, HalfMovePart),
+    position(Position, [Board, Turn, Castling, Passant, FullMove, HalfMove]).
+
+fen_castling(CastlingPart, Castling) :-
+    is_set(CastlingPart),
+    every(fen_castling_char, CastlingPart, Castling).
+
+fen_castling_char(Term, Out) :- fen_castling_right([Term], Out).
+fen_castling_right("K", [white, kingside]).
+fen_castling_right("Q", [white, queenside]).
+fen_castling_right("k", [black, kingside]).
+fen_castling_right("q", [black, queenside]).
+
+
+fen_board(BoardPart, Board) :-
+    fen_board_rows(BoardPart, ReversedRows),
+    reverse(ReversedRows, Rows),
+    every(fen_single_row, Rows, ParsedRows),
+    board_rows(Board, ParsedRows).
+
+fen_turn("w", white).
+fen_turn("b", black).
+
+fen_passant(nothing, "-").
+fen_passant(Square, Term) :- pgn_square(Square, Term).
+
+fen_movenumber(Number, Term) :- parsed_number(Term, Number).
+
+position(X,X). % abstraction
+position_board(Pos, Board) :- nth0(0, Pos, Board).
+board_rows(X, X).
+
+
 fen_parts(FEN, Parts) :-
     split(Parts, " ", FEN, 6).
 
-fen_board_rows(FEN, Rows) :-
-    fen_parts(FEN, Parts),
-    first(Parts, Board),
-    split(Rows, "/", Board, 8).
+fen_board_rows(BoardPart, Rows) :-
+    split(Rows, "/", BoardPart, 8).
 
-nth_fen_piece([Char | _], 0, Piece) :-
-    fen_piece([Char], Piece).
+fen_single_row([], []).
+fen_single_row([Char | Rest], [Piece | Row]) :-
+    fen_piece([Char], Piece),
+    fen_single_row(Rest, Row).
 
-nth_fen_piece([Char | Rest], N, Piece) :-
-    fen_piece([Char], _),
+fen_single_row([NumberChar | RestChars], Row) :-
+    number_term([NumberChar], N),
     between(1, 8, N),
-    plus(Nless, 1, N),
-    nth_fen_piece(Rest, Nless, Piece).
+    length(Empties, N),
+    every(is_empty, Empties),
+    fen_single_row(RestChars, Rest),
+    append(Empties, Rest, Row).
 
-nth_fen_piece([Char | FENRow], N, Piece) :-
-    number_term([Char], Skip),
-    between(Skip, 8, N),
-    plus(Nnew, Skip, N),
-    nth_fen_piece(FENRow, Nnew, Piece).
-
-nth_fen_piece([Char | _], N, nothing) :-
-    number_term([Char], Skip),
-    plus(Less, 1, Skip),
-    between(0, Less, N).
-
-piece_at([F,R], Board, Piece) :-
-    parsed_board(Board, FEN),
-    fen_board_rows(FEN, FENRows),
-    nth0(R, FENRows, FENRow),
-    nth_fen_piece(FENRow, F, Piece).
-
+is_empty(nothing).
 
 fen_piece(Char, [PieceType, Color]) :-
     fen_color(Char, Color),
@@ -58,6 +85,13 @@ fen_piecetype("N", knight).
 fen_piecetype("Q", queen).
 fen_piecetype("K", king).
 
+
+piece_at([F,R], Position, Piece) :-
+    position_board(Position, Board),
+    board_rows(Board, Rows),
+    nth0(R, Rows, Row),
+    nth0(F, Row, Piece).
+
 :- begin_tests(fen).
 
 test(fen_piece) :-
@@ -69,13 +103,16 @@ test(fen_rows) :-
     length(Parts, 6).
 
 test(piece_at) :-
-    piece_at([1,0], Board, [knight, black]),
-    parsed_board(Board, FEN),
-    example_fen(FEN).
+    example_fen(FEN),
+    fen_string(FEN, Pos),
+    atom_square(S, g8),
+    piece_at(S, Pos, [knight, black]).
+
 
 test(piece_at2) :-
-    piece_at([4,3], Board, nothing),
-    parsed_board(Board, FEN),
-    example_fen(FEN).
+    example_fen(FEN),
+    fen_string(FEN, Pos),
+    atom_square(S, e5),
+    piece_at(S, Pos, nothing).
 
 :- end_tests(fen).

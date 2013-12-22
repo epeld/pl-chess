@@ -35,6 +35,17 @@ join([Part, Part2 | Rest], Sep, L) :-
     append(A, B, L),
     join([Part2 | Rest], Sep, B).
 
+
+every(_, [], []).
+every(Goal, [X | Xs], [Y | Ys]) :-
+    call(Goal, X, Y),
+    every(Goal, Xs, Ys).
+
+every(_, []).
+every(Goal, [X | Xs]) :-
+    call(Goal, X),
+    every(Goal, Xs).
+
 :- begin_tests(list).
 
 test(split2) :-
