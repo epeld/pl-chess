@@ -34,7 +34,10 @@ fen_board(BoardPart, Board) :-
     fen_board_rows(BoardPart, ReversedRows),
     reverse(ReversedRows, Rows),
     every(fen_single_row, Rows, ParsedRows),
+    every(length8, ParsedRows),
     board_rows(Board, ParsedRows).
+
+length8(L) :- length(L, 8).
 
 fen_turn("w", white).
 fen_turn("b", black).
