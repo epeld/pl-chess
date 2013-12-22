@@ -45,18 +45,18 @@ piece_at([F,R], Board, Piece) :-
 
 fen_piece(Char, [PieceType, Color]) :-
     fen_color(Char, Color),
-    fen_piece_type(Upper, PieceType),
+    fen_piecetype(Upper, PieceType),
     term_upper(Char, Upper).
 
 fen_color(Char, white) :- term_upper(Char, Char).
 fen_color(Char, black) :- term_lower(Char, Char).
 
-fen_piece_type("P", pawn).
-fen_piece_type("B", bishop).
-fen_piece_type("R", rook).
-fen_piece_type("N", knight).
-fen_piece_type("Q", queen).
-fen_piece_type("K", king).
+fen_piecetype("P", pawn).
+fen_piecetype("B", bishop).
+fen_piecetype("R", rook).
+fen_piecetype("N", knight).
+fen_piecetype("Q", queen).
+fen_piecetype("K", king).
 
 :- begin_tests(fen).
 

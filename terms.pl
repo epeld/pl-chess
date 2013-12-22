@@ -47,3 +47,7 @@ term_lower([Term | Rest], [LowerTerm | LowerRest]) :-
     plus(Big_A, Diff, A),
     plus(Term, Diff, LowerTerm),
     term_lower(Rest, LowerRest).
+
+term_member(X, T) :-
+    nth0(0,X, Xchar),
+    member(Xchar, T).
