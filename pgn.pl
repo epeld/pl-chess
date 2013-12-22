@@ -84,4 +84,4 @@ pgn_move(Move, Term) :- pgn_castles(Move, Term).
 
 atom_move(Move, Atom) :-
     pgn_move(Move, Term),
-    term_to_atom(Term, Atom).
+    term_to_atom(Atom, Term).
