@@ -1,60 +1,140 @@
 
 (in-package :peldan.pgn)
 
-(defmacro alternatives
-    (&rest forms)
-  (let ((escape (gensym)))
-    (labels ((make-case
-	       (form)
-	     `(handler-case (throw (quote ,escape) ,form) (error nil))))
-      `(catch (quote ,escape)
-	 ,@(mapcar #'make-case forms)
-	 (error 'parse-failure)))))
-
-; TODO write a macro transform-value that works on values
-
-
-(defun run-parsers
-    (seq &rest parsers)
-    (labels ((rec
-		 (seq parsers acc)
-	       (if (null parsers)
-		   (values seq (nreverse acc))
-		   (let ((parser (car parsers))
-			 (rest (cdr parsers)))
-		     (multiple-value-bind (seq-new val) (funcall parser seq)
-		       (rec seq-new rest (cons val acc)))))))
-      (rec seq parsers nil))))
+(defvar files (coerce "abcdefgh" 'list))
+(defvar ranks (coerce "12345678" 'list))
 
 
 (defun parse-file
-    (seq)
-  (parse-char seq "abcdefgh"))
+    (text)
+  (let ((c (car text))
+	(rest (cdr text)))
+    (unless (member c files)
+      (error 'parse-error))
+    (values rest c)))
 
 
 (defun parse-rank
-    (seq)
-  (parse-char seq "12345678"))
+    (text)
+  (let ((c (car text))
+	(rest (cdr text)))
+    (unless (member c ranks)
+      (error 'parse-error))
+    (values rest (char-to-number c))))
+
+
+(defun parse-consecutive
+    (text &rest parsers)
+  (if parsers
+    (multiple-value-bind (next r) (funcall (car parsers) text)
+      (multiple-value-bind (pos rs) (apply #'parse-consecutive next (cdr parsers))
+	  (values pos (cons r rs))))
+    (values text nil)))
 
 
 (defun parse-square
-    (seq)
-  (run-parsers parse-file parse-rank))
+    (text)
+  (parse-consecutive text #'parse-file #'parse-rank))
 
+
+(defun parse-move-type
+    (text)
+  (let ((c (car text))
+	(rest (cdr text)))
+    (if (eql c #\x) (values rest :takes) (values text :moves))))
+
+
+
+(defun parse-square-indicator
+    (text)
+  (multiple-value-bind (pos r) (parse-square text)
+    (values pos (acons :square r nil))))
+
+
+(defun parse-file-indicator
+    (text)
+  (multiple-value-bind (pos r) (parse-file text)
+    (values pos (acons :file r nil))))
+
+
+(defun parse-rank-indicator
+    (text)
+  (multiple-value-bind (pos r) (parse-rank text)
+    (values pos (acons :rank r nil))))
+
+
+
+(defun parse-alternatives
+    (text &rest alternatives)
+  (when alternatives
+    (handler-case (funcall (car alternatives) text)
+      (error (_)
+	(declare (ignore _))
+	(apply #'parse-alternatives text (cdr alternatives))))))
 
 (defun parse-source-indicator
-    (seq)
-  (alternatives (parse-square seq)
-		(parse-rank seq)
-		(parse-file seq)))
+    (text)
+  (parse-alternatives text
+		      #'parse-square-indicator
+		      #'parse-file-indicator
+		      #'parse-rank-indicator))
+
+
+(defun parse-long-pawn-move
+    (text)
+  (multiple-value-bind
+	(pos r) (parse-consecutive text
+				   #'parse-file-indicator
+				   #'parse-move-type
+				   #'parse-square)
+
+    (values pos
+	    (pairlis '(:source :move-type :destination)
+		     r))))
+
+
+(defun parse-short-pawn-move
+    (text)
+  (multiple-value-bind (pos r) (parse-square text)
+    (values pos
+	    (pairlis '(:destination :move-type) (list r :moves)))))
+
 
 
 (defun parse-pawn-move
-    (seq)
-  (multiple-value-bind (sq1 seq) (parse-source-indicator seq)
-    sq1))
+    (text)
+  (multiple-value-bind
+	(pos r) (parse-alternatives text
+				    #'parse-long-pawn-move
+				    #'parse-short-pawn-move)
+    (values pos (acons :piece-type :pawn r))))
 
 
-(defun parse-move
-    (seq)
-  (parse-pawn-move seq))
+
+(def-suite pgn :description "Testing of the pgn package")
+(in-suite pgn)
+
+(test parse-rank
+  (multiple-value-bind (_ r) (parse-rank (list #\3))
+    (declare (ignore _))
+    (is (eql 3 r))))
+
+(test parse-rank-fail
+  nil)
+
+(test parse-source-indicator
+  (multiple-value-bind (_ r) (parse-source-indicator (coerce "d4" 'list))
+    (declare (ignore _))
+    (is (not (null (assoc :square r))))))
+
+
+(test parse-consecutive
+  (multiple-value-bind (pos r) (parse-square (list #\e #\4))
+    (is (not (null r)))
+    (is (eql #\e (car r)))
+    (is (eql 4 (nth 1 r)))
+    (is (eql 2 (length r)))
+    (is (eql 0 (length pos)))))
+
+
+(run! 'pgn)
