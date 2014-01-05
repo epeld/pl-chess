@@ -66,11 +66,12 @@
 
 (defun parse-alternatives
     (text &rest alternatives)
-  (when alternatives
+  (if alternatives
     (handler-case (funcall (car alternatives) text)
       (error (_)
 	(declare (ignore _))
-	(apply #'parse-alternatives text (cdr alternatives))))))
+	(apply #'parse-alternatives text (cdr alternatives))))
+    (error 'parse-error)))
 
 (defun parse-source-indicator
     (text)
@@ -159,17 +160,18 @@
 (defun parse-piece-move
     (text)
   (parse-alternatives text
-		      #'parse-short-piece-move
-		      #'parse-long-piece-move))
+		      #'parse-long-piece-move
+		      #'parse-short-piece-move))
 
 
 (defun parse-string
     (text s)
-  (unless (prefixp text s)
+  (unless (prefixp (coerce text 'list)
+		   (coerce s 'list))
     (error 'parse-error))
   (values (drop (length s) text) s))
 
-(defun parse-castles-kingside
+(defun parse-castles-queenside
     (text)
   (parse-string text "O-O-O")
   (acons :castles :queenside nil))
@@ -184,8 +186,27 @@
   (parse-alternatives text #'parse-castles-queenside #'parse-castles-kingside))
 
 
+(defun parse-move
+    (text)
+  (parse-alternatives text
+		      #'parse-pawn-move
+		      #'parse-piece-move
+		      #'parse-castles-move))
+
+
+
 (def-suite pgn :description "Testing of the pgn package")
 (in-suite pgn)
+
+(defmacro works
+    (&rest args)
+  `(progn ,@args t))
+
+(test parse-move
+  (is (works (parse-move (coerce "O-O" 'list))))
+  (is (works (parse-move (coerce "Rd2xd7" 'list))))
+  (is (works (parse-move (coerce "exd7" 'list)))))
+
 
 (test parse-rank
   (multiple-value-bind (_ r) (parse-rank (list #\3))
@@ -217,9 +238,16 @@
        (is (null ,pos))
        ,r)))
 
+(test parse-piece-move-long
+  (let ((r (parses-all (parse-piece-move (coerce "Bd2xe3" 'list)))))
+    (is (not (null r)))
+    (is (equal '(#\d 2)
+	       (nested-assoc-value '(:source :square) r)))))
+
 (test parse-piece-move
   (let ((r (parses-all (parse-piece-move (coerce "Nxe4" 'list)))))
     (is (eql :knight (assoc-value :piece-type r)))
-    (is (eql :takes (assoc-value :move-type r)))))
+    (is (eql :takes (assoc-value :move-type r)))
+    (is (equal '(#\e 4) (assoc-value :destination r)))))
 
 (run! 'pgn)

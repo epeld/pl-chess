@@ -1,5 +1,5 @@
 
-(in-package :peldan.seq)
+(in-package :peldan.util.seq)
 
 (defun take
     (n seq)
