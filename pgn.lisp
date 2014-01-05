@@ -198,6 +198,7 @@
 (def-suite pgn :description "Testing of the pgn package")
 (in-suite pgn)
 
+;; "Does not throw an error"
 (defmacro works
     (&rest args)
   `(progn ,@args t))
@@ -241,13 +242,16 @@
 (test parse-piece-move-long
   (let ((r (parses-all (parse-piece-move (coerce "Bd2xe3" 'list)))))
     (is (not (null r)))
+    (is (eql :takes (assoc-value :move-type r)))
     (is (equal '(#\d 2)
-	       (nested-assoc-value '(:source :square) r)))))
+	       (nested-assoc-value '(:source :square) r)))
+    (is (equal '(#\e 3)
+	       (assoc-value :destination r)))))
 
 (test parse-piece-move
-  (let ((r (parses-all (parse-piece-move (coerce "Nxe4" 'list)))))
+  (let ((r (parses-all (parse-piece-move (coerce "Ne4" 'list)))))
     (is (eql :knight (assoc-value :piece-type r)))
-    (is (eql :takes (assoc-value :move-type r)))
+    (is (eql :moves (assoc-value :move-type r)))
     (is (equal '(#\e 4) (assoc-value :destination r)))))
 
 (run! 'pgn)
