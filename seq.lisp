@@ -16,10 +16,18 @@
       seq
       (drop (- n 1) (cdr seq))))
 
+
 (defun prefixp
     (seq prefix-seq)
   (let ((prefix (take (length prefix-seq) seq)))
     (equal prefix prefix-seq)))
+
+
+(defun replicate
+    (val times)
+  (if (zerop times)
+      nil
+      (cons val (repeat val (dec times)))))
 
 
 (def-suite seqs :description "Testing of the seq package")
@@ -46,6 +54,10 @@
   (let ((ls (list 1 2 3)))
     (is (eql 3 (length (take 5 ls))))))
 
+
+(test replicate
+  (let ((res (replicate :test-val 13)))
+    (is (eql 13 (count res)))))
 
 
 (run! 'seqs)
