@@ -10,9 +10,13 @@
 	:peldan.util.alist
 	:it.bese.FiveAM))
 
+(defpackage :peldan.fen
+  (:use :common-lisp
+	:it.bese.FiveAM))
+
 (defpackage :peldan.util.parse
   (:use :common-lisp)
-  (:export char-to-number))
+  (:export number-char-p))
 
 (defpackage :peldan.util.alist
   (:use :common-lisp)
