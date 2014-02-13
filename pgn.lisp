@@ -20,7 +20,7 @@
 	(rest (cdr text)))
     (unless (member c ranks)
       (error 'parse-error))
-    (values rest (char-to-number c))))
+    (values rest (number-char-p c))))
 
 
 (defun parse-consecutive
