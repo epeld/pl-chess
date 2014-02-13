@@ -1,5 +1,7 @@
 (in-package :peldan.util.parse)
 
-(defun char-to-number
+(defun number-char-p
     (c)
-  (- (char-int c) (char-int #\0)))
+  (let ((num (- (char-int c) (char-int #\0))))
+    (when (and (<= 0 num) (<= num 9))
+      num)))
