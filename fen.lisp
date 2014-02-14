@@ -1,27 +1,41 @@
 (in-package :peldan.fen)
 
-(defconstant example-fen "rnbqkbnr/pp1ppppp/8/2p5/4P3/5N2/PPPP1PPP/RNBQKB1R b KQkq - 1 2")
-(defconstant initial-fen "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1")
+(defconstant +example-fen+ "rnbqkbnr/pp1ppppp/8/2p5/4P3/5N2/PPPP1PPP/RNBQKB1R b KQkq - 1 2")
+(defconstant +initial-fen+ "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1")
 
 
-(defun parse-piece-type
-    (char)
+(defun char->piece-type (char)
   (case (char-upcase char)
     (#\P :pawn)
     (#\B :bishop)
     (#\N :knight)
     (#\R :rook)
     (#\K :king)
-    (#\Q :queen)
-    (otherwise (error 'parse-error))))
+    (#\Q :queen)))
 
 
-(defun parse-piece
+(defun char->color (char)
+  (if (upper-case-p char) :white :black))
+
+
+(defun piece-char-p
     (char)
-  (let ((piece-type (parse-piece-type char))
-	(color (if (upper-case-p char) :white :black)))
-    (pairlis '(:piece-type :color)
-	     '(parse-piece-type color))))
+  (let ((piece-type (char->piece-type char))
+	(color (char->color char)))
+    (when piece-type
+      (pairlis '(:piece-type :color)
+	       '(parse-piece-type color)))))
+
+
+(defun blanks-char-p (char)
+  (when-let ((num (number-char-p char)))
+    (replicate nil num)))
+
+
+(defun parse-board-char (char)
+  (cond ((piece-char-p char))
+	((blanks-char-p char))
+	(t (error 'parse-error))))
 
 
 (defun parse-board
@@ -29,11 +43,9 @@
   (let ((board (list)))
     (dolist (char board-part)
       (unless (eql #\/ char)
-	;; TODO fix this. Should branch in a better way
-	(if-let ((num (number-char-p char)))
-	  (setf board (append (replicate nil num)))
-	  (setf board (cons (parse-piece char) board)))))
-    board))
+	(setf board
+	      (cons (parse-board-char char) board))))
+    (nreverse board)))
 
 
 (defun parse
