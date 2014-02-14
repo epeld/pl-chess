@@ -1,5 +1,18 @@
-
 (in-package :peldan.util.seq)
+
+
+(defun split (seq on)
+  "Split a sequence on each occurence of 'on'."
+  (labels ((rec (word seq acc)
+	     (if seq
+		 (let ((char (first seq))
+		       (seq (rest seq)))
+		   (if (eql char on)
+		       (rec nil seq (cons (nreverse word) acc))
+		       (rec (cons char word) seq acc)))
+		 (nreverse (cons (nreverse word) acc)))))
+    (rec nil seq nil)))
+
 
 (defun take
     (n seq)
@@ -27,7 +40,7 @@
     (val times)
   (if (zerop times)
       nil
-      (cons val (repeat val (dec times)))))
+      (cons val (replicate val (dec times)))))
 
 
 (def-suite seqs :description "Testing of the seq package")
@@ -57,7 +70,16 @@
 
 (test replicate
   (let ((res (replicate :test-val 13)))
-    (is (eql 13 (count res)))))
+    (is (eql 13 (length res)))))
+
+
+(test split
+  (let ((res (split (coerce "aaabbaba" 'list) #\b)))
+    (is (= 4 (length res)))))
+
+(test split-ending-in-space
+  (let ((res (split (coerce "aaabbb" 'list) #\b)))
+    (is (= 4 (length res)))))
 
 
 (run! 'seqs)
