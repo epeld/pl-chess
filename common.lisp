@@ -10,3 +10,13 @@
     `(let ,defs
        (when ,last-let
 	 ,@forms))))
+
+
+(defmacro thread-first (&rest forms)
+  (let ((first (car forms))
+	(second (car (nthcdr 1 forms)))
+	(remainder (nthcdr 2 forms))))
+    `(thread-first ,(insert first second 1)
+		   ,@remainder))
+
+(macroexpand '(
