@@ -12,13 +12,6 @@
   (:use :common-lisp)
   (:export number-char-p))
 
-(defpackage :peldan.fen
-  (:use :common-lisp
-	:peldan.util.common
-	:peldan.util.parse
-	:peldan.util.seq
-	:it.bese.FiveAM))
-
 (defpackage :peldan.util.alist
   (:use :common-lisp)
   (:export assoc-value nested-assoc nested-assoc-value))
@@ -32,4 +25,13 @@
 	:peldan.util.parse
 	:peldan.util.seq
 	:peldan.util.alist
+	:it.bese.FiveAM)
+  (:export parse-square))
+
+(defpackage :peldan.fen
+  (:use :common-lisp
+	:peldan.util.common
+	:peldan.util.parse
+	:peldan.util.seq
+	:peldan.pgn
 	:it.bese.FiveAM))
