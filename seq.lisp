@@ -1,7 +1,7 @@
 (in-package :peldan.util.seq)
 
 
-(defun split (seq on)
+(defun split (seq &optional (on #\space))
   "Split a sequence on each occurence of 'on'."
   (labels ((rec (word seq acc)
 	     (if seq

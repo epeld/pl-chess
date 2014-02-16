@@ -1,20 +1,23 @@
 (defpackage :peldan.util.common
   (:use :common-lisp)
-  (:export dec))
+  (:export dec when-let))
 
 (defpackage :peldan.util.seq
   (:use :common-lisp
 	:peldan.util.common
 	:it.bese.FiveAM)
-  (:export take drop prefixp))
-
-(defpackage :peldan.fen
-  (:use :common-lisp
-	:it.bese.FiveAM))
+  (:export take drop prefixp replicate split))
 
 (defpackage :peldan.util.parse
   (:use :common-lisp)
   (:export number-char-p))
+
+(defpackage :peldan.fen
+  (:use :common-lisp
+	:peldan.util.common
+	:peldan.util.parse
+	:peldan.util.seq
+	:it.bese.FiveAM))
 
 (defpackage :peldan.util.alist
   (:use :common-lisp)
