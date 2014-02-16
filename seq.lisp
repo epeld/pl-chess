@@ -29,6 +29,10 @@
       seq
       (drop (- n 1) (cdr seq))))
 
+;; TODO Test.
+(defun insert (e list index)
+  (append (take index list) (cons e (drop index list))))
+
 
 (defun prefixp
     (seq prefix-seq)
