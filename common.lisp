@@ -15,8 +15,14 @@
 (defmacro thread-first (&rest forms)
   (let ((first (car forms))
 	(second (car (nthcdr 1 forms)))
-	(remainder (nthcdr 2 forms))))
+	(remainder (nthcdr 2 forms)))
     `(thread-first ,(insert first second 1)
-		   ,@remainder))
+		   ,@remainder)))
 
-(macroexpand '(
+
+(defun make-keyword (string)
+  (values (intern (string-upcase string) "KEYWORD")))
+
+
+(defun symbol-to-keyword (symbol)
+  (make-keyword (symbol-name symbol)))

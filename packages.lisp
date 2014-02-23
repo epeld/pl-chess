@@ -1,6 +1,6 @@
 (defpackage :peldan.util.common
   (:use :common-lisp)
-  (:export dec when-let))
+  (:export dec when-let symbol-to-keyword))
 
 (defpackage :peldan.util.seq
   (:use :common-lisp
@@ -13,7 +13,8 @@
   (:export number-char-p))
 
 (defpackage :peldan.util.alist
-  (:use :common-lisp)
+  (:use :common-lisp
+	:peldan.util.common)
   (:export assoc-value nested-assoc nested-assoc-value))
 
 (defpackage :peldan.util.list
