@@ -44,7 +44,7 @@
     (val times)
   (if (zerop times)
       nil
-      (cons val (replicate val (dec times)))))
+      (cons val (replicate val (- times 1)))))
 
 
 (def-suite seqs :description "Testing of the seq package")

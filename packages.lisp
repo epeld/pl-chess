@@ -1,12 +1,12 @@
-(defpackage :peldan.util.common
-  (:use :common-lisp)
-  (:export dec when-let symbol-to-keyword))
-
 (defpackage :peldan.util.seq
   (:use :common-lisp
-	:peldan.util.common
 	:it.bese.FiveAM)
   (:export take drop prefixp replicate split insert))
+
+(defpackage :peldan.util.common
+  (:use :common-lisp
+	:peldan.util.seq)
+  (:export dec when-let symbol-to-keyword))
 
 (defpackage :peldan.util.parse
   (:use :common-lisp)

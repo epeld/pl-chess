@@ -16,8 +16,23 @@
   (let ((first (car forms))
 	(second (car (nthcdr 1 forms)))
 	(remainder (nthcdr 2 forms)))
-    `(thread-first ,(insert first second 1)
-		   ,@remainder)))
+    (let ((joined (insert first second 1)))
+      (if (null remainder)
+	  joined
+	  `(thread-first ,joined ,@remainder)))))
+
+
+(defmacro thread-last (&rest forms)
+  (let ((first (car forms))
+	(second (car (nthcdr 1 forms)))
+	(remainder (nthcdr 2 forms)))
+    (let ((joined (append second (list first))))
+      (if (null remainder)
+	  joined
+	  `(thread-last ,joined ,@remainder)))))
+
+
+(thread-last 3 (+ 4) (* (+ 2 1)))
 
 
 (defun make-keyword (string)
