@@ -14,6 +14,18 @@
     (rec nil seq nil)))
 
 
+(defun range (n &optional (init 0))
+  (unless (= init n)
+    (cons init (range n (+ 1 init)))))
+
+
+(defun foldl
+    (seq f init)
+  (if (null seq)
+      init
+      (foldl (cdr seq) f (funcall f (car seq) init))))
+
+
 (defun take
     (n seq)
   (if (zerop n)
@@ -28,6 +40,7 @@
   (if (zerop n)
       seq
       (drop (- n 1) (cdr seq))))
+
 
 ;; TODO Test.
 (defun insert (e list index)
@@ -85,5 +98,14 @@
   (let ((res (split (coerce "aaabbb" 'list) #\b)))
     (is (= 4 (length res)))))
 
+(test range
+  (let ((res (range 100 90)))
+    (is (= (length res) 10))
+    (is (= (car (last res)) 99))
+    (is (= (car res) 90))))
+
+(test foldl
+  (let ((res (foldl (range 10) #'+ 0)))
+    (is (= res 45))))
 
 (run! 'seqs)
