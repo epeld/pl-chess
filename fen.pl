@@ -19,25 +19,22 @@ fen_string(FEN, Position) :-
     fen_movenumber(HalfMove, HalfMovePart),
     position(Position, [Board, Turn, Castling, Passant, FullMove, HalfMove]).
 
-fen_castling(CastlingPart, Castling) :-
-    is_set(CastlingPart),
-    every(fen_castling_char, CastlingPart, Castling).
 
-fen_castling_char(Term, Out) :- fen_castling_right([Term], Out).
-fen_castling_right("K", [white, kingside]).
-fen_castling_right("Q", [white, queenside]).
-fen_castling_right("k", [black, kingside]).
-fen_castling_right("q", [black, queenside]).
+fen_castling(S, []) :- string_chars("-", S).
+fen_castling(A0, B0) :- 
+    string_chars("KQkq", KQkq), append([_, A0, _], KQkq),
+    length(A0, N), N > 0,
+    maplist(fen_castling_right, A0, B0).
+
+
+fen_castling_right(Char, [Color, Piece]) :- member(Piece, [king, queen]), fen_piecetype(Char, Piece), fen_color(Char, Color).
 
 
 fen_board(BoardPart, Board) :-
     fen_board_rows(BoardPart, ReversedRows),
     reverse(ReversedRows, Rows),
-    every(fen_single_row, Rows, ParsedRows),
-    every(length8, ParsedRows),
+    maplist(fen_single_row, Rows, ParsedRows),
     board_rows(Board, ParsedRows).
-
-length8(L) :- length(L, 8).
 
 fen_turn("w", white).
 fen_turn("b", black).
@@ -53,40 +50,49 @@ board_rows(X, X).
 
 
 fen_parts(FEN, Parts) :-
-    split(Parts, " ", FEN, 6).
+    split_string(FEN, " ", "", Parts),
+    length(Parts, 6).
 
 fen_board_rows(BoardPart, Rows) :-
-    split(Rows, "/", BoardPart, 8).
+    split_string(BoardPart, "/", "", Rows),
+    length(Rows, 8).
 
-fen_single_row([], []).
-fen_single_row([Char | Rest], [Piece | Row]) :-
+
+fen_single_row(A, B) :- fen_single_row(A, B, 8).
+
+fen_single_row(_, [], 0).
+
+fen_single_row([Char | Rest], [Piece | Row], N0) :-
     fen_piece([Char], Piece),
-    fen_single_row(Rest, Row).
+    N is N0 - 1,
+    fen_single_row(Rest, Row, N).
 
-fen_single_row([NumberChar | RestChars], Row) :-
-    number_term([NumberChar], N),
-    between(1, 8, N),
-    length(Empties, N),
-    every(is_empty, Empties),
-    fen_single_row(RestChars, Rest),
-    append(Empties, Rest, Row).
+fen_single_row([NumberChar | RestChars], Row, N0) :-
+    number_term([NumberChar], M), between(1, 8, M), filled(nothing, Empties, M),
+    N is N0 - M,
+    append(Empties, Rest, Row),
+    fen_single_row(RestChars, Rest, N).
 
-is_empty(nothing).
 
-fen_piece(Char, [PieceType, Color]) :-
-    fen_color(Char, Color),
-    fen_piecetype(Upper, PieceType),
-    term_upper(Char, Upper).
+filled(_, []).
+filled(X, [X | L]) :- filled(X, L).
+filled(X, L, N) :- length(L, N), filled(X, L).
 
-fen_color(Char, white) :- term_upper(Char, Char).
-fen_color(Char, black) :- term_lower(Char, Char).
 
-fen_piecetype("P", pawn).
-fen_piecetype("B", bishop).
-fen_piecetype("R", rook).
-fen_piecetype("N", knight).
-fen_piecetype("Q", queen).
-fen_piecetype("K", king).
+fen_piece(Char, [PieceType, Color]) :- fen_color(Char, Color), fen_piecetype(Char, PieceType).
+
+
+fen_color(Char, white) :- to_upper(Char, Char).
+fen_color(Char, black) :- to_lower(Char, Char).
+
+
+fen_piecetype(p, pawn).
+fen_piecetype(b, bishop).
+fen_piecetype(r, rook).
+fen_piecetype(n, knight).
+fen_piecetype(q, queen).
+fen_piecetype(k, king).
+fen_piecetype(Char, Piece) :- to_upper(Char, Char), to_lower(Char, Lower), fen_piecetype(Lower, Piece).
 
 
 piece_at([F,R], Position, Piece) :-
