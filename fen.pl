@@ -23,7 +23,7 @@ fen_string2(FEN, Position) :-
     fen_passant(Passant, PassantPart),
     fen_movenumber(FullMove, FullMovePart),
     fen_movenumber(HalfMove, HalfMovePart),
-    position(Position, [Board, Turn, Castling, Passant, FullMove, HalfMove]).
+    Position = [Board, Turn, Castling, Passant, FullMove, HalfMove].
 
 
 fen_castling(S, []) :- string_chars("-", S).
@@ -45,15 +45,10 @@ fen_board(BoardPart, Board) :-
 fen_turn("w", white).
 fen_turn("b", black).
 
-fen_passant(nothing, "-").
-fen_passant(Square, Term) :- pgn_square(Square, Term).
+fen_passant("-", nothing).
+fen_passant(Term, Square) :- pgn_square(Square, Term).
 
 fen_movenumber(Number, Term) :- parsed_number(Term, Number).
-
-position(X,X). % abstraction
-position_board(Pos, Board) :- nth0(0, Pos, Board).
-board_rows(X, X).
-
 
 fen_parts(FEN, Parts) :-
     split_string(FEN, " ", "", Parts),
