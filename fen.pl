@@ -10,6 +10,11 @@ parsed_board(example_board, FEN) :-
 example_board(B) :- parsed_board(B, F), example_fen(F).
 
 fen_string(FEN, Position) :-
+    fen_parts(FEN, Position),
+    Parsers = [fen_board, fen_turn, fen_castling, fen_passant, fen_movenumber, fen_movenumber],
+    maplist(call, Parsers, Position).
+    
+fen_string2(FEN, Position) :-
     fen_parts(FEN, [BoardPart, TurnPart, CastlingPart, PassantPart,
 		    FullMovePart, HalfMovePart]),
     fen_board(BoardPart, Board),
