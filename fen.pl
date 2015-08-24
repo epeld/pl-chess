@@ -88,36 +88,4 @@ fen_piecetype(r, rook).
 fen_piecetype(n, knight).
 fen_piecetype(q, queen).
 fen_piecetype(k, king).
-fen_piecetype(Char, Piece) :- to_upper(Char, Char), to_lower(Char, Lower), fen_piecetype(Lower, Piece).
-
-
-piece_at([F,R], Position, Piece) :-
-    position_board(Position, Board),
-    board_rows(Board, Rows),
-    nth0(R, Rows, Row),
-    nth0(F, Row, Piece).
-
-:- begin_tests(fen).
-
-test(fen_piece) :-
-    fen_piece("R", [rook, white]).
-
-test(fen_rows) :-
-    example_fen(FEN),
-    fen_parts(FEN, Parts),
-    length(Parts, 6).
-
-test(piece_at) :-
-    example_fen(FEN),
-    fen_string(FEN, Pos),
-    atom_square(S, g8),
-    piece_at(S, Pos, [knight, black]).
-
-
-test(piece_at2) :-
-    example_fen(FEN),
-    fen_string(FEN, Pos),
-    atom_square(S, e5),
-    piece_at(S, Pos, nothing).
-
-:- end_tests(fen).
+fen_piecetype(Char, Piece) :- char_type(Char, upper(Lower)), fen_piecetype(Lower, Piece).
