@@ -28,8 +28,8 @@ fen_string2(FEN, Position) :-
 
 fen_castling(S, []) :- string_chars("-", S).
 fen_castling(A0, B0) :- 
-    string_chars("KQkq", KQkq), append([_, A0, _], KQkq),
     length(A0, N), N > 0,
+    string_chars("KQkq", KQkq), listutils:sublist(KQkq, A0),
     maplist(fen_castling_right, A0, B0).
 
 
@@ -75,16 +75,11 @@ fen_single_row([NumberChar | RestChars], Row, N0) :-
     fen_single_row(RestChars, Rest, N).
 
 
-filled(_, []).
-filled(X, [X | L]) :- filled(X, L).
-filled(X, L, N) :- length(L, N), filled(X, L).
-
-
 fen_piece(Char, [PieceType, Color]) :- fen_color(Char, Color), fen_piecetype(Char, PieceType).
 
 
-fen_color(Char, white) :- to_upper(Char, Char).
-fen_color(Char, black) :- to_lower(Char, Char).
+fen_color(Char, white) :- fen_piecetype(Char, _), char_type(Char, upper).
+fen_color(Char, black) :- fen_piecetype(Char, _), char_type(Char, lower).
 
 
 fen_piecetype(p, pawn).
