@@ -7,20 +7,21 @@ use_module(square).
 example_fen("rnbqkbnr/pp1ppppp/8/2p5/4P3/5N2/PPPP1PPP/RNBQKB1R b KQkq - 1 2").
 
 
-test(Position) :- string_chars(FEN, Chars), example_fen(FEN), fen_string(Chars, Position).
+fen_string(FEN, Position) :- string(FEN), string_chars(FEN, Chars), fen_string(Chars, Position).
 
-test_board(Board) :- fen_board("rnbqkbnr/pp1ppppp/8/2p5/4P3/5N2/PPPP1PPP/RNBQKB1R", Board).
-% test_board(Board) :- string_chars("5r2", Chars), fen_single_row(Chars, Board).
-
-fen_string(FEN, Position) :-
-    string_chars(FEN, Chars), fen_parts(Chars, Parts),
+fen_string(Chars, Position) :-
+    compound(Chars),
+    fen_parts(Chars, Parts),
     Parsers = [fen_board, fen_turn, fen_castling, fen_passant, fen_movenumber, fen_movenumber],
     maplist(call, Parsers, Parts, Position).
     
 
 fen_castling(['-'], []).
+
+fen_castling(A0, B0) :- string(A0), string_chars(A0, A0Chars), fen_castling(A0Chars, B0).
+
 fen_castling(A0, B0) :- 
-    length(A0, N), N > 0,
+    compound(A0), length(A0, N), N > 0,
     string_chars("KQkq", KQkq), listutils:sublist(KQkq, A0),
     maplist(fen_castling_right, A0, B0).
 
@@ -36,11 +37,15 @@ fen_board(BoardPart, Board) :-
 
 
 fen_turn('w', white).
+fen_turn("w", white).
 fen_turn('b', black).
+fen_turn("b", black).
 
 
 fen_passant('-', nothing).
-fen_passant(SquareChars, Square) :- square(SquareChars, Square).
+fen_passant("-", nothing).
+fen_passant(SquareChars, Square) :- square_chars(Square, SquareChars).
+fen_passant(SquareString, Square) :- square_string(Square, SquareString).
 
 
 fen_movenumber(Number, Term) :- parsed_number(Term, Number).
@@ -86,3 +91,17 @@ fen_piecetype(n, knight).
 fen_piecetype(q, queen).
 fen_piecetype(k, king).
 fen_piecetype(Char, Piece) :- char_type(Char, upper(Lower)), fen_piecetype(Lower, Piece).
+
+
+:- begin_tests(fen).
+
+test(fen_piecetype, [nondet]) :- 
+    fen_piecetype('R', rook),
+    fen_piecetype('N', knight),
+    fen_piecetype('Q', queen).
+
+test(fen_passant, [nondet]) :- fen_passant("e4", Square), square_file(Square, 'e'), square_rank(Square, 4).
+test(fen_castling, [nondet]) :- fen_castling("KQk", [[white, king], [white, queen], [black, king]]).
+
+
+:- end_tests(fen).
