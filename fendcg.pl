@@ -50,7 +50,8 @@ row(Row) --> { length(Row, 8) }, rle_row(Row).
 
 
 rle_row([Piece | Rest]) --> piece(Piece), rle_row(Rest).
-rle_row(Elements) --> { append(Nothings, Rest, Elements) }, nothings(Nothings), rle_row(Rest).
+rle_row(Elements) --> { append(Nothings, [Piece | Rest], Elements) }, nothings(Nothings), piece(Piece), rle_row(Rest). % an intermediate 'empty'-sequence
+rle_row(Nothings) --> nothings(Nothings). % the ending 'empty'-sequence
 rle_row([]) --> [].
 
 nothings(Nothings) -->
