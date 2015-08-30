@@ -1,4 +1,7 @@
 
+use_module(listutils).
+use_module(square).
+use_module(library(clpfd)).
 
 
 % "rnbqkbnr/pp1ppppp/8/2p5/4P3/5N2/PPPP1PPP/RNBQKB1R b KQkq - 1 2".
@@ -23,9 +26,64 @@ fen(Position) -->
 
 */
 
-board(Board) -->
+digit(0) --> ['0'].
+digit(N) --> nonzero(N).
+
+
+nonzero(1) --> ['1'].
+nonzero(2) --> ['2'].
+nonzero(3) --> ['3'].
+nonzero(4) --> ['4'].
+nonzero(5) --> ['5'].
+nonzero(6) --> ['6'].
+nonzero(7) --> ['7'].
+nonzero(8) --> ['8'].
+nonzero(9) --> ['9'].
+
+
+
+multiples_of_ten(Mults, X) :-
+    X0 is X - 1,
+    numlist(0, X0, Range),
+    reverse(Rev, Range),
+    maplist(pow(10), Rev, Mults).
+
+
+nat(N)   --> 
     {
-        length(Board, 64), 
+        between(1, 4, X),
+        length(Digits, X),
+        Digits = [First | Rest]
+    },
+    nonzero(First),
+    nats(Rest),
+    {
+        multiples_of_ten(Mults, X),
+        scalar_product(Mults, Digits, #=, N)
+    }.
+
+nats([D | Digits]) --> digit(D), nats(Digits).
+nats([]) --> [].
+
+passant_square(nothing) --> ['-'].
+passant_square(Square) --> { square:square_chars(Square, [File, Rank]) }, [File], [Rank].
+
+
+castling_rights(Rights) -->
+    { string_chars("KQkq", AllRights), listutils:sublist(AllRights, Rights) },
+    Rights.
+
+
+turn(Turn) --> ['w'], { Turn = white }.
+turn(Turn) --> ['b'], { Turn = black }.
+
+
+board(Board) --> {  board_rows(Board, Rows) }, rows(Rows).
+
+
+rows(Rows) -->
+    {
+        length(Rows, 64), 
         length(Row8, 8),
         length(Row7, 8),
         length(Row6, 8),
@@ -34,7 +92,7 @@ board(Board) -->
         length(Row3, 8),
         length(Row2, 8),
         length(Row1, 8),
-        append([Row1, Row2, Row3, Row4, Row5, Row6, Row7, Row8], Board)
+        append([Row1, Row2, Row3, Row4, Row5, Row6, Row7, Row8], Rows)
     },
     row(Row8), ['/'],
     row(Row7), ['/'],
@@ -87,9 +145,9 @@ is_piece(Piece) :- string_chars("PNBRQKpnbrqk", Chars), member(Piece, Chars).
 
 :- begin_tests(fen).
 
-test(board_decode, [nondet]) :- string_chars("rnbqkbnr/pp1ppppp/8/2p5/4P3/5N2/PPPP1PPP/RNBQKB1R", L), phrase(board(_), L).
-test(board_decode, [nondet]) :- string_chars("8/8/8/8/8/8/8/8", L), phrase(board(_), L).
-test(board_encode, [nondet]) :- length(X, 64), maplist(=(nothing), X), phrase(board(X), L), string_chars("8/8/8/8/8/8/8/8", L).
+test(rows_decode, [nondet]) :- string_chars("rnbqkbnr/pp1ppppp/8/2p5/4P3/5N2/PPPP1PPP/RNBQKB1R", L), phrase(board(_), L).
+test(rows_decode, [nondet]) :- string_chars("8/8/8/8/8/8/8/8", L), phrase(board(_), L).
+test(rows_encode, [nondet]) :- length(X, 64), maplist(=(nothing), X), phrase(board(X), L), string_chars("8/8/8/8/8/8/8/8", L).
 
 test(row_decode, [nondet]) :- phrase(row(X), ['R', '2', b, n, '3']), X = ['R', nothing, nothing, b, n, nothing, nothing, nothing].
 test(row_decode2, [nondet]) :- string_chars("rnbqkbnr", L), phrase(row(L), L). 
