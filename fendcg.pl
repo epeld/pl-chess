@@ -6,25 +6,23 @@ use_module(library(clpfd)).
 
 % "rnbqkbnr/pp1ppppp/8/2p5/4P3/5N2/PPPP1PPP/RNBQKB1R b KQkq - 1 2".
 
-
-/*
-fen(Position) -->
-    board(Board),
-    " "
+position(Position) -->
+    board(Board), 
+    space,
     turn(Turn),
-    " "
-    rights(Rights),
-    " "
-    passant(Passant),
-    " "
-    number(FullMove),
-    " "
-    number(HalfMove),
-    {
-        position_parts(Position, [Board, Turn, Rights, Passant, FullMove, HalfMove])
-    }.
+    space,
+    castling_rights(Rights),
+    space,
+    passant_square(Passant),
+    space,
+    nat(HalfMoveNr),
+    space
+    nat(FullMoveNr),
+    position_parts(Position, [Board, Turn, Rights, Passant, HalfMoveNr, FullMoveNr]).
 
-*/
+
+space --> [' '].
+
 
 digit(0) --> ['0'].
 digit(N) --> nonzero(N).
@@ -78,7 +76,7 @@ turn(Turn) --> ['w'], { Turn = white }.
 turn(Turn) --> ['b'], { Turn = black }.
 
 
-board(Board) --> {  board_rows(Board, Rows) }, rows(Rows).
+board(Board) --> {  board_occupants(Board, Occupants) }, rows(Occupants).
 
 
 rows(Rows) -->
