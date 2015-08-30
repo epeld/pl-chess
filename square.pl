@@ -1,6 +1,14 @@
 
+use_module(library(clfpd)).
+
+
+edge_rank('1').
+edge_rank('8').
+
 
 rank(Coord, Rank) :- between(0, 7, Coord), Rank is Coord + 1.
+
+rank_char(Rank, Char) :- rank(_, Rank), char_type(Char, digit(Rank)).
 
 
 file(0, 'a').
@@ -22,6 +30,12 @@ square_rank_coord(Sq, Coord) :- square_rank(Sq, Rank), rank(Coord, Rank).
 
 square_file([File, _], File).
 square_rank([_, Rank], Rank).
+
+
+square_index(Square, Index) :-
+    between(0, 63, Index),
+    square([FileCoord, RankCoord], Square),
+    Index #= RankCoord * 8 + FileCoord.
 
 
 square_chars([File, Rank], [File, RankChar]) :- 
