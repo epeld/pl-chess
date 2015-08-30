@@ -3,6 +3,10 @@
 use_module(move).
 
 
+move(Move) --> pawn_move(Move).
+move(Move) --> piece_move(Move).
+move(Move) --> castling_move(Move).
+
 
 pawn_move(PawnMove) -->
     square(Destination),
@@ -17,8 +21,26 @@ pawn_move(PawnMove) -->
     { move(PawnMove, [pawn, SourceFile, capture, Destination, Promotion]) }.
 
 
-edge_rank('1').
-edge_rank('8').
+piece_move(PieceMove) -->
+    officer(Officer),
+    source_indicator(Source),
+    move_type(MoveType),
+    square(Destination),
+    { move(PieceMove, [Officer, Source, MoveType, Destination]).
+
+
+castling_move(CastlingMove) --> ['O-O-O'], { move(CastlingMove, [castling, queenside]) }.
+castling_move(CastlingMove) --> ['O-O'], { move(CastlingMove, [castling, kingside]) }.
+
+
+move_type(capture) --> ['x'].
+move_type(move) --> [].
+
+
+source_indicator(nothing) --> [].
+source_indicator(File) --> file(File).
+source_indicator(Rank) --> rank(Rank).
+source_indicator(Square) --> square(Square).
 
 
 file(File) -->
@@ -36,13 +58,21 @@ square(Square) -->
     { square_chars(Square, [File, Rank]) }.
 
 
+officer(Officer) --> [OfficerChar], { officer_char(Officer, OfficerChar) }.
+
+
 promotion(nothing) --> [].
-promotion(Officer) --> ['='], officer(Officer).
+promotion(Promotee) --> ['='], promotee(Promotee).
 
 
-officer(Officer) --> [Atom], { officer_atom(Officer, Atom) }.
+promotee(Promotee) --> [Atom], { promotee_atom(Promotee, Atom) }.
 
-officer_atom(bishop, 'B').
-officer_atom(knight, 'N').
-officer_atom(rook, 'R').
-officer_atom(queen, 'Q').
+
+promotee_atom(bishop, 'B').
+promotee_atom(knight, 'N').
+promotee_atom(rook, 'R').
+promotee_atom(queen, 'Q').
+
+
+officer_char(Officer, Atom) :- promotee_atom(Officer, Atom).
+officer_char(king, 'K').
