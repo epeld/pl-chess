@@ -1,3 +1,4 @@
+:- module(move).
 
 :- use_module(library(clpfd)).
 :- use_module(square).

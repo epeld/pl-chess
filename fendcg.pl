@@ -1,3 +1,4 @@
+:- module(fen, [position//1]).
 
 :- use_module(listutils).
 :- use_module(square).
@@ -16,7 +17,7 @@ position(Position) -->
     passant_square(Passant),
     space,
     nat(HalfMoveNr),
-    space
+    space,
     nat(FullMoveNr),
     position_parts(Position, [Board, Turn, Rights, Passant, HalfMoveNr, FullMoveNr]).
 
@@ -72,40 +73,25 @@ castling_rights(Rights) -->
     Rights.
 
 
-turn(Turn) --> ['w'], { Turn = white }.
-turn(Turn) --> ['b'], { Turn = black }.
+turn(white) --> [w].
+turn(black) --> [b].
 
 
 board(Board) --> {  board_occupants(Board, Occupants) }, rows(Occupants).
 
 
 rows(Rows) -->
-    {
-        length(Rows, 64), 
-        length(Row8, 8),
-        length(Row7, 8),
-        length(Row6, 8),
-        length(Row5, 8),
-        length(Row4, 8),
-        length(Row3, 8),
-        length(Row2, 8),
-        length(Row1, 8),
-        append([Row1, Row2, Row3, Row4, Row5, Row6, Row7, Row8], Rows)
-    },
-    row(Row8), ['/'],
-    row(Row7), ['/'],
-    row(Row6), ['/'],
-    row(Row5), ['/'],
-    row(Row4), ['/'],
-    row(Row3), ['/'],
-    row(Row2), ['/'],
-    row(Row1).
+        { length(Rs, 8),
+          maplist(same_length(Rs), Rs),
+          append(Rs, Rows),
+          reverse(Rs, [Row8|RRs]) },
+        row(Row8),
+        rows_(RRs).
+
+rows_([]) --> [].
+rows_([R|Rs]) --> [/], row(R), rows_(Rs).
 
 
-
-
-interleaved([Part1 | Parts], Inbetween, List) :- length(Part1, 8), append(Part1, Inbetween, A), append(A, B, List), interleaved(Parts, Inbetween, B).
-interleaved([], _, []).
 
 row(Row) --> { length(Row, 8) }, rle_row(Row).
 
@@ -116,9 +102,9 @@ rle_row(Elements) -->
         member(X, [1,2,3,4,5,6,7,8]), length(Elements, X), 
         append(Nothings, [Piece | Rest], Elements)
     }, 
-    nothings(Nothings), 
+    nothings(Nothings),  % an intermediate 'empty'-sequence
     piece(Piece), 
-    rle_row(Rest). % an intermediate 'empty'-sequence
+    rle_row(Rest).
 
 rle_row(Nothings) --> nothings(Nothings). % the ending 'empty'-sequence
 rle_row([]) --> [].

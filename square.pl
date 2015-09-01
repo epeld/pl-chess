@@ -1,5 +1,6 @@
+:- module(square, [file/2, rank/2, square/2, square_index/2]).
 
-use_module(library(clfpd)).
+:- use_module(library(clpfd)).
 
 
 edge_rank('1').

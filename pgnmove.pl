@@ -1,3 +1,4 @@
+:- module(pgnmove).
 
 
 :- use_module(move).
