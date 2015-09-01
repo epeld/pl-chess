@@ -3,6 +3,7 @@
 :- use_module(listutils).
 :- use_module(square).
 :- use_module(library(clpfd)).
+:- use_module(position).
 
 
 % "rnbqkbnr/pp1ppppp/8/2p5/4P3/5N2/PPPP1PPP/RNBQKB1R b KQkq - 1 2".
