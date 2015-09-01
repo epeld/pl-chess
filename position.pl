@@ -1,4 +1,5 @@
 
+:- module(position, [position_parts/2, position_board/2, board_occupants/2, board_occupant/3]).
 
 position_parts([position | Parts], Parts) :- length(Parts, 6).
 
