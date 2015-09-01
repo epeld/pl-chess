@@ -1,6 +1,6 @@
 
 
-use_module(move).
+:- use_module(move).
 
 
 move(Move) --> pawn_move(Move).
