@@ -1,10 +1,12 @@
 
-:- module(movement, [knights_jump/2, 
-                     distance/3, 
-                     diagonal/2,
-                     diagonal/3,
-                     horizontal/2,
-                     vertical/2]).
+:- module(movement, [
+        knights_jump/2, 
+        distance/3, 
+        diagonal/2,
+        diagonal/3,
+        horizontal/2,
+        vertical/2
+    ]).
 
 :- use_module(library(clpfd)).
 :- use_module(square).
