@@ -10,6 +10,7 @@
 
 :- use_module(library(clpfd)).
 :- use_module(square).
+:- use_module(listutils).
 
 
 % a piece move will be represented by a list of 3-4 elements
@@ -57,16 +58,39 @@ uniquely_determined(Move, Position) :-
     bagof(X, possible_source_square(Move, Position, X), [_]).
 
 
+legal_source_square(Move, Pos, Square) :-
+    full_move(Move, FullMove, Square),
+    legal(FullMove, Pos).
+
+
+% FullMove is an 'Upgrade' of Move with source_indicator set to Square
+full_move(Move, FullMove, Square) :-
+    piece_move(Move),
+    possible_source_square(Move, Pos, Square),
+    replace(1, Move, FullMove, Square).
+
+
 % A square is a possible source square of a move
 % if it is occupied by the right piece (of the right color)
 % and the square matches the move's source indicator
 % TODO: and the resulting positon would be legal
 possible_source_square(Move, Pos, Square) :-
+    compatible_source_square(Move, Square),
     moved_piece(Move, Piece),
     position_turn(Pos, Color),
     board_occupant(Pos, Square, [Piece, Color]),
+    legal(Move, Pos).
+
+
+compatible_source_square(Move, Square) :-
     source_indicator(Move, Indicator),
     square_indicator(Square, Indicator).
+
+
+square_indicator(_, nothing).
+square_indicator([File, _], File).
+square_indicator([_, Rank], Rank).
+square_indicator(X, X).
 
 
 knights_jump(Square1, Square2) :-
