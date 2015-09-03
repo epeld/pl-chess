@@ -9,6 +9,11 @@ position_board(Position, Board) :-
     nth0(0, Parts, Board).
 
 
+position_turn(Position, Turn) :- 
+    position_parts(Position, Parts), 
+    nth(1, Parts, Turn).
+
+
 board_occupants([board | Occupants], Occupants) :- length(Occupants, 64).
 board_occupants(Position, Occupants) :- % shortcut: treat position as board 
     position_board(Position, Board), 
