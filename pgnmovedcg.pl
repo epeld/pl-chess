@@ -1,7 +1,7 @@
-:- module(pgnmove).
+:- module(pgnmovedcg).
 
 
-:- use_module(move).
+:- use_module(pgnmove).
 
 
 move(Move) --> pawn_move(Move).
