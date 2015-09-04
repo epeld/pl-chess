@@ -1,4 +1,12 @@
-:- module(square, [file/2, rank/2, square/2, square_index/2, square/1, file/1, rank/1]).
+:- module(square, [
+        file/2, 
+        rank/2, 
+        square/2,
+        square_index/2,
+        square/1,
+        file/1,
+        rank/1
+    ]).
 
 :- use_module(library(clpfd)).
 
