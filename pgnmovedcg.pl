@@ -1,4 +1,6 @@
-:- module(pgnmovedcg).
+:- module(pgnmovedcg, [
+        square//1
+    ]).
 
 
 :- use_module(pgnmove).
