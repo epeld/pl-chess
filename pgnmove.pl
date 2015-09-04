@@ -9,14 +9,16 @@
 %  Castling moves are represented by the atoms queenside/kingside.
 %
 :- module(pgnmove, [
-        move/2, 
-        piece_move/1,
+        pawn_move/1,
+        officer_move/1,
         castling_move/1,
+        moved_officer/2,
         moved_piece/2,
         source_indicator/2,
         move_type/2,
         destination/2,
-        promotion/2
+        promotion/2,
+        square_source/3
     ]).
 
 
@@ -25,19 +27,27 @@
 :- use_module(listutils).
 
 
-% a piece move will be represented by a list of 3-4 elements
-move([pawn | Rest], [pawn | Rest]) :- length(Rest, 4).
-move([Officer | Rest], [Officer | Rest]) :- officer(Officer), length(Rest, 3).
+pawn_move(Move) :-
+    moved_piece(Move, pawn),
+    length(Move, 5). % Piece, Source, MoveType, Destination, promotee
+
+
+officer_move(Move) :-
+    moved_officer(Move, _), 
+    length(Move, 4). % Piece, Source, MoveType, Destination
+
+
+castling_move(Side) :- castling_side(Side).
 
 
 % Non-castling move:
 piece_move([Piece | _]) :- piece(Piece).
 
 
-castling_move([castling, Side]) :- castling_side(Side).
-
-
 moved_piece(Move, Piece) :- piece_move(Move), nth0(0, Move, Piece).
+
+
+moved_officer(Move, Officer) :- moved_piece(Move, Officer), officer(Officer).
 
 
 %  A source indicator indicates what could be the source square of a move.
@@ -74,9 +84,16 @@ destination(Move, Destination) :-
 
 
 promotion(Move, Promotion) :- 
+    pawn_move(Move), 
     promotee(Promotion),
-    piece_move(Move), 
     nth0(4, Move, Promotion).
+
+
+% FullMove is Move but with compatible source square Square
+square_source(Move, Square, FullMove) :-
+    square:square(Square), piece_move(Move),
+    compatible_source_square(Move, Square),
+    replacement_at(1, Move, ResultingMove, Square).
 
 
 compatible_indicator(_, nothing).
@@ -88,13 +105,6 @@ compatible_indicator(X, X) :- square:square(X).
 compatible_source_square(Move, Square) :-
     source_indicator(Move, Indicator),
     compatible_indicator(Square, Indicator).
-
-
-% FullMove is Move but with compatible source square Square
-square_source(Move, Square, FullMove) :-
-    square:square(Square), piece_move(Move),
-    compatible_source_square(Move, Square),
-    replacement_at(1, Move, ResultingMove, Square).
 
 
 piece(pawn).
