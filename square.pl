@@ -1,4 +1,4 @@
-:- module(square, [file/2, rank/2, square/2, square_index/2]).
+:- module(square, [file/2, rank/2, square/2, square_index/2, square/1]).
 
 :- use_module(library(clpfd)).
 
@@ -20,6 +20,9 @@ file(4, 'e').
 file(5, 'f').
 file(6, 'g').
 file(7, 'h').
+
+
+square([File, Rank]) :- file(_, File), rank(_, Rank).
 
 
 files(X) :- string_chars("abcdefgh", X).
