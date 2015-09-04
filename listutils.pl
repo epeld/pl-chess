@@ -13,8 +13,8 @@ filled(X, [X | L]) :- filled(X, L).
 filled(X, L, N) :- length(L, N), filled(X, L).
 
 
-replace(_, [], [], _).
-replace(0, [_ | L], [El | L], El).
-replace(Ix, [A | L], [A | L2], El) :-
+replacement_at(_, [], [], _).
+replacement_at(0, [_ | L], [El | L], El).
+replacement_at(Ix, [A | L], [A | L2], El) :-
     Ix #> 0, Ix2 #= Ix - 1,
     replace(Ix2, L, L2, El).
