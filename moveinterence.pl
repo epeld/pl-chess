@@ -25,7 +25,7 @@ legal_source_square(Move, Pos, Square) :-
 full_move(Move, FullMove, Square) :-
     piece_move(Move),
     possible_source_square(Move, Pos, Square),
-    replace(1, Move, FullMove, Square).
+    replacement_at(1, Move, FullMove, Square).
 
 
 % A square is a possible source square of a move
@@ -38,14 +38,3 @@ possible_source_square(Move, Pos, Square) :-
     position_turn(Pos, Color),
     board_occupant(Pos, Square, [Piece, Color]),
     legal(Move, Pos).
-
-
-compatible_source_square(Move, Square) :-
-    source_indicator(Move, Indicator),
-    square_indicator(Square, Indicator).
-
-
-square_indicator(_, nothing).
-square_indicator([File, _], File).
-square_indicator([_, Rank], Rank).
-square_indicator(X, X).
