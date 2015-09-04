@@ -91,9 +91,12 @@ promotion(Move, Promotion) :-
 
 % FullMove is Move but with compatible source square Square
 square_source(Move, Square, FullMove) :-
-    square:square(Square), piece_move(Move),
-    compatible_source_square(Move, Square),
+    square_source(Move, Square),
     replacement_at(1, Move, ResultingMove, Square).
+
+square_source(Move, Square) :- 
+    square:square(Square), piece_move(Move),
+    compatible_source_square(Move, Square).
 
 
 compatible_indicator(_, nothing).
