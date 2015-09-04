@@ -1,4 +1,4 @@
-:- module(square, [file/2, rank/2, square/2, square_index/2, square/1]).
+:- module(square, [file/2, rank/2, square/2, square_index/2, square/1, file/1, rank/1]).
 
 :- use_module(library(clpfd)).
 
@@ -21,11 +21,13 @@ file(5, 'f').
 file(6, 'g').
 file(7, 'h').
 
+file(File) :- file(_, File).
 
-square([File, Rank]) :- file(_, File), rank(_, Rank).
+
+rank(Rank) :- rank(_, Rank).
 
 
-files(X) :- string_chars("abcdefgh", X).
+square([File, Rank]) :- file(File), rank(Rank).
 
 
 square_file_coord(Sq, Coord) :- square_file(Sq, File), file(Coord, File).
@@ -43,8 +45,7 @@ square_index(Square, Index) :-
 
 
 square_chars([File, Rank], [File, RankChar]) :- 
-    files(Files), 
-    member(File, Files), 
+    file(File), rank(Rank),
     char_type(RankChar, digit(Rank)).
 
 
