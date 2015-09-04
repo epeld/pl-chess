@@ -8,11 +8,6 @@ sublist([_ | As], [B | Bs]) :- sublist(As, [B | Bs]).
 sublist(_, []). 
 
 
-filled(_, []).
-filled(X, [X | L]) :- filled(X, L).
-filled(X, L, N) :- length(L, N), filled(X, L).
-
-
 replacement_at(_, [], [], _).
 replacement_at(0, [_ | L], [El | L], El).
 replacement_at(Ix, [A | L], [A | L2], El) :-
