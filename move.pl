@@ -37,6 +37,12 @@ destination(Move, Destination) :- piece_move(Move), nth0(3, Move, Destination).
 promotion(Move, Promotion) :- piece_move(Move), nth0(4, Move, Promotion).
 
 
+% FullMove is Move but with source indicator upgraded to be Square
+full_source(Move, Square, FullMove) :-
+    square:square(Square), piece_move(Move),
+    replacement_at(1, Move, ResultingMove, Square).
+
+
 piece(pawn).
 piece(Officer) :- officer(Officer).
 
