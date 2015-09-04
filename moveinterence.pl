@@ -18,6 +18,13 @@ sufficient_indicator(Indicator, Position, FullMove) :-
     bagof(Indicator, blabla, _). % TODO
 
 
+% FullMove is like move, except that its source is
+% the uniquely determined source square of Move
+uniquely_determined_move(Move, Position, FullMove) :-
+    uniquely_determined(source(Move, Position, Square),
+    source_square(Move, Position, Square).
+
+
 % A Move is uniquely determined in a given position
 % whenever it has only one legal_source_square.
 uniquely_determined_source(Move, Position, UniqueSource) :-
