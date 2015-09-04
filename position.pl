@@ -1,15 +1,22 @@
 
-:- module(position, [position_parts/2, position_board/2, board_occupants/2, board_occupant/3]).
+:- module(position, [
+        parts/2, 
+        board/2, 
+        board_occupants/2, 
+        board_occupant/3
+    ]).
 
-position_parts([position | Parts], Parts) :- length(Parts, 6).
+% A position consists of the 6 parts that can be parsed out of a FEN string
+% See the fen-module
+parts([position | Parts], Parts) :- length(Parts, 6).
 
 
-position_board(Position, Board) :- 
+board(Position, Board) :- 
     position_parts(Position, Parts), 
     nth0(0, Parts, Board).
 
 
-position_turn(Position, Turn) :- 
+turn(Position, Turn) :- 
     position_parts(Position, Parts), 
     nth(1, Parts, Turn).
 

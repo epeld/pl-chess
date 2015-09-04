@@ -20,7 +20,7 @@ position(Position) -->
     nat(HalfMoveNr),
     space,
     nat(FullMoveNr),
-    position_parts(Position, [Board, Turn, Rights, Passant, HalfMoveNr, FullMoveNr]).
+    position:parts(Position, [Board, Turn, Rights, Passant, HalfMoveNr, FullMoveNr]).
 
 
 space --> [' '].
@@ -65,8 +65,9 @@ nat(N)   -->
 nats([D | Digits]) --> digit(D), nats(Digits).
 nats([]) --> [].
 
+
 passant_square(nothing) --> ['-'].
-passant_square(Square) --> { square:square_chars(Square, [File, Rank]) }, [File], [Rank].
+passant_square(Square) --> pgnmovedcg:square(Square).
 
 
 castling_rights(Rights) -->
@@ -78,20 +79,21 @@ turn(white) --> [w].
 turn(black) --> [b].
 
 
-board(Board) --> {  board_occupants(Board, Occupants) }, rows(Occupants).
+board(Board) --> {  position:board_occupants(Board, Occupants) }, rows(Occupants).
 
 
 rows(Rows) -->
-        { length(Rs, 8),
-          maplist(same_length(Rs), Rs),
-          append(Rs, Rows),
-          reverse(Rs, [Row8|RRs]) },
+        {
+            length(Rs, 8),
+            maplist(same_length(Rs), Rs),
+            append(Rs, Rows),
+            reverse(Rs, [Row8|RRs])
+        },
         row(Row8),
         rows_(RRs).
 
 rows_([]) --> [].
 rows_([R|Rs]) --> [/], row(R), rows_(Rs).
-
 
 
 row(Row) --> { length(Row, 8) }, rle_row(Row).
