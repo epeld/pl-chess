@@ -2,6 +2,7 @@
 
 
 :- use_module(pgnmove).
+:- use_module(square).
 
 
 move(Move) --> pawn_move(Move).
@@ -12,14 +13,26 @@ move(Move) --> castling_move(Move).
 pawn_move(PawnMove) -->
     square(Destination),
     promotion(Promotion),
-    { move(PawnMove, [pawn, nothing, move, Destination, Promotion]) }.
+    {
+        pgnmove:pawn_move(Move),
+        pgnmove:source_indicator(Move, nothing),
+        pgnmove:move_type(Move, moves),
+        pgnmove:destination(Move, Destination)
+        pgnmove:promotion(Move, Promotion)
+    }.
 
 pawn_move(PawnMove) -->
     file(SourceFile),
     ['x'],
     square(Destination),
     promotion(Promotion),
-    { move(PawnMove, [pawn, SourceFile, capture, Destination, Promotion]) }.
+    {
+        pgnmove:pawn_move(Move),
+        pgnmove:source_indicator(Move, Source),
+        pgnmove:move_type(Move, captures),
+        pgnmove:destination(Move, Destination)
+        pgnmove:promotion(Move, Promotion)
+    }.
 
 
 piece_move(PieceMove) -->
@@ -27,11 +40,17 @@ piece_move(PieceMove) -->
     source_indicator(Source),
     move_type(MoveType),
     square(Destination),
-    { move(PieceMove, [Officer, Source, MoveType, Destination]).
+    {
+        pgnmove:officer_move(Move),
+        pgnmove:moved_officer(Move, Officer),
+        pgnmove:source_indicator(Move, Source),
+        pgnmove:move_type(Move, MoveType),
+        pgnmove:destination(Move, Destination)
+    }.
 
 
-castling_move(CastlingMove) --> ['O-O-O'], { move(CastlingMove, [castling, queenside]) }.
-castling_move(CastlingMove) --> ['O-O'], { move(CastlingMove, [castling, kingside]) }.
+castling_move(queenside) --> ['O-O-O'].
+castling_move(kingside) --> ['O-O'].
 
 
 move_type(capture) --> ['x'].
@@ -44,19 +63,23 @@ source_indicator(Rank) --> rank(Rank).
 source_indicator(Square) --> square(Square).
 
 
-file(File) -->
-    [File],
-    { square:file(_, File) }.
+file(File) --> [File],
+    {
+        square:file(File)
+    }.
 
 
-rank(RankChar) -->
-    [RankChar],
-    { square:rank_char(_, RankChar) }.
+rank(Rank) --> [RankChar],
+    {
+        square:rank_char(Rank, RankChar)
+    }.
 
 
-square(Square) -->
-    file(File), rank(Rank),
-    { square_chars(Square, [File, Rank]) }.
+square(Square) --> file(File), rank(Rank),
+    {
+        square:square_file(Square, File),
+        square:square_rank(Square, Rank)
+    }.
 
 
 officer(Officer) --> [OfficerChar], { officer_char(Officer, OfficerChar) }.
