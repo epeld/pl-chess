@@ -21,7 +21,7 @@ sufficient_indicator(Indicator, Position, FullMove) :-
 % FullMove is like move, except that its source is
 % the uniquely determined source square of Move
 uniquely_determined_move(Move, Position, FullMove) :-
-    uniquely_determined(source(Move, Position, Square),
+    uniquely_determined_source(Move, Position, Square),
     source_square(Move, Position, Square).
 
 
@@ -41,7 +41,7 @@ legal_source_square(Move, Pos, Square) :-
 
 % TODO create legality-module
 % TODO determine if a move is legal in a given position
-legal(_, _).
+legal(Move, Position).
 
 
 % A candidate source square of a Move is a source square
