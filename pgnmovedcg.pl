@@ -12,32 +12,36 @@ move(Move) --> piece_move(Move).
 move(Move) --> castling_move(Move).
 
 
-pawn_move(PawnMove) -->
+% e8
+pawn_move(Move) -->
     square(Destination),
     promotion(Promotion),
     {
         pgnmove:pawn_move(Move),
         pgnmove:source_indicator(Move, nothing),
         pgnmove:move_type(Move, moves),
-        pgnmove:destination(Move, Destination)
+        pgnmove:destination(Move, Destination),
         pgnmove:promotion(Move, Promotion)
     }.
 
-pawn_move(PawnMove) -->
+% e4
+% dxc3
+pawn_move(Move) -->
     file(SourceFile),
     ['x'],
     square(Destination),
     promotion(Promotion),
     {
         pgnmove:pawn_move(Move),
-        pgnmove:source_indicator(Move, Source),
+        pgnmove:source_indicator(Move, SourceFile),
         pgnmove:move_type(Move, captures),
-        pgnmove:destination(Move, Destination)
+        pgnmove:destination(Move, Destination),
         pgnmove:promotion(Move, Promotion)
     }.
 
 
-piece_move(PieceMove) -->
+% Nxe4
+piece_move(Move) -->
     officer(Officer),
     source_indicator(Source),
     move_type(MoveType),
