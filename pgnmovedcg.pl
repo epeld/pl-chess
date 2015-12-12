@@ -1,5 +1,5 @@
 :- module(pgnmovedcg, [
-        square//1
+        square//1, move//1
     ]).
 
 
@@ -24,7 +24,6 @@ pawn_move(Move) -->
         pgnmove:promotion(Move, Promotion)
     }.
 
-% e4
 % dxc3
 pawn_move(Move) -->
     file(SourceFile),
@@ -48,18 +47,18 @@ piece_move(Move) -->
     square(Destination),
     {
         pgnmove:officer_move(Move),
-        pgnmove:moved_officer(Move, Officer),
+        pgnmove:moved_officer_type(Move, Officer),
         pgnmove:source_indicator(Move, Source),
         pgnmove:move_type(Move, MoveType),
         pgnmove:destination(Move, Destination)
     }.
 
 
-castling_move(queenside) --> ['O-O-O'].
-castling_move(kingside) --> ['O-O'].
+castling_move(queenside) --> ['O','-','O','-','O'].
+castling_move(kingside) --> ['O','-','O'].
 
 
-move_type(capture) --> ['x'].
+move_type(captures) --> ['x'].
 move_type(move) --> [].
 
 
@@ -106,3 +105,47 @@ promotee_atom(queen, 'Q').
 
 officer_char(Officer, Atom) :- promotee_atom(Officer, Atom).
 officer_char(king, 'K').
+
+:- begin_tests(pgnmovedcg).
+
+test(castling_kingside, [nondet]) :- 
+    string_chars("O-O", MoveChars),
+    phrase(move(kingside), MoveChars),
+
+    assertion(pgnmove:castling_move(kingside)).
+
+test(castling_queenside, [nondet]) :- 
+    string_chars("O-O-O", MoveChars),
+    phrase(move(Move), MoveChars),
+
+    assertion(pgnmove:castling_move(Move)),
+    assertion(Move = queenside).
+
+
+test(short_pawn_move, [nondet]) :- 
+    string_chars("e4", MoveChars),
+    phrase(move(Move), MoveChars),
+
+    assertion(pgnmove:pawn_move(Move)),
+    assertion(destination(Move, ['e', 4])).
+
+test(pawn_capture, [nondet]) :- 
+    string_chars("fxg6", MoveChars),
+    phrase(move(Move), MoveChars),
+
+    assertion(pgnmove:pawn_move(Move)),
+    assertion(destination(Move, ['g', 6])),
+    assertion(source_indicator(Move, 'f')),
+    assertion(move_type(Move, captures)).
+
+test(piece_capture, [nondet]) :- 
+    string_chars("Nxg6", MoveChars),
+    phrase(move(Move), MoveChars),
+
+    assertion(pgnmove:officer_move(Move)),
+    assertion(pgnmove:moved_officer_type(Move, knight)),
+    assertion(destination(Move, ['g', 6])),
+    assertion(source_indicator(Move, nothing)),
+    assertion(move_type(Move, captures)).
+
+:- end_tests(pgnmovedcg).

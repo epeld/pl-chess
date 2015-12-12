@@ -1,4 +1,4 @@
-:- module(listutils, [sublist/2, filled/2]).
+:- module(listutils, [sublist/2, replacement_at/2]).
 
 :- use_module(library(clpfd)).
 
@@ -12,4 +12,4 @@ replacement_at(_, [], [], _).
 replacement_at(0, [_ | L], [El | L], El).
 replacement_at(Ix, [A | L], [A | L2], El) :-
     Ix #> 0, Ix2 #= Ix - 1,
-    replace(Ix2, L, L2, El).
+    replacement_at(Ix2, L, L2, El).

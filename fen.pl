@@ -8,6 +8,9 @@
 
 % "rnbqkbnr/pp1ppppp/8/2p5/4P3/5N2/PPPP1PPP/RNBQKB1R b KQkq - 1 2".
 
+initial_position(X) :- string_chars("rnbqkbnr/pp1ppppp/8/2p5/4P3/5N2/PPPP1PPP/RNBQKB1R b KQkq - 1 2", Chars), phrase(position(X), Chars).
+
+
 position(Position) -->
     board(Board), 
     space,
@@ -20,7 +23,7 @@ position(Position) -->
     nat(HalfMoveNr),
     space,
     nat(FullMoveNr),
-    position:parts(Position, [Board, Turn, Rights, Passant, HalfMoveNr, FullMoveNr]).
+    { position:parts(Position, [Board, Turn, Rights, Passant, HalfMoveNr, FullMoveNr]) }.
 
 
 space --> [' '].
@@ -132,9 +135,22 @@ is_piece(Piece) :- string_chars("PNBRQKpnbrqk", Chars), member(Piece, Chars).
 
 :- begin_tests(fen).
 
+empty_board("8/8/8/8/8/8/8/8").
+
 test(rows_decode, [nondet]) :- string_chars("rnbqkbnr/pp1ppppp/8/2p5/4P3/5N2/PPPP1PPP/RNBQKB1R", L), phrase(board(_), L).
-test(rows_decode, [nondet]) :- string_chars("8/8/8/8/8/8/8/8", L), phrase(board(_), L).
-test(rows_encode, [nondet]) :- length(X, 64), maplist(=(nothing), X), phrase(board(X), L), string_chars("8/8/8/8/8/8/8/8", L).
+test(rows_decode, [nondet]) :- 
+    empty_board(String),
+    string_chars(String, L), 
+    phrase(board(_), L).
+
+test(rows_encode, [nondet]) :- 
+    length(X, 64), 
+    maplist(=(nothing), X),
+
+    phrase(board(X), L), 
+
+    empty_board(Board),
+    assertion(string_chars("8/8/8/8/8/8/8/8", L)).
 
 test(row_decode, [nondet]) :- phrase(row(X), ['R', '2', b, n, '3']), X = ['R', nothing, nothing, b, n, nothing, nothing, nothing].
 test(row_decode2, [nondet]) :- string_chars("rnbqkbnr", L), phrase(row(L), L). 

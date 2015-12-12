@@ -1,7 +1,5 @@
 
-:- module(moveinference, [
-        uniquely_determined/2
-    ]).
+:- module(moveinference, [ uniquely_determined/2 ]).
 
 :- use_module(pgnmove).
 :- use_module(movement).
@@ -42,13 +40,3 @@ legal_source_square(Move, Pos, Square) :-
 % TODO create legality-module
 % TODO determine if a move is legal in a given position
 legal(Move, Position).
-
-
-% A candidate source square of a Move is a source square
-% that is occupied by a piece that is capable of
-% performing the Move in question
-candidate_source_square(Move, Pos, Square) :-
-    pgnmove:source_square(Move, Square),
-    pgnmove:moved_piece(Move, Piece),
-    position_turn(Pos, Color),
-    board_occupant(Pos, Square, [Piece, Color]).

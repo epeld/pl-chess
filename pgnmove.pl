@@ -12,8 +12,8 @@
         pawn_move/1,
         officer_move/1,
         castling_move/1,
-        moved_officer/2,
-        moved_piece/2,
+        moved_officer_type/2,
+        moved_piece_type/2,
         source_indicator/2,
         move_type/2,
         destination/2,
@@ -28,12 +28,12 @@
 
 
 pawn_move(Move) :-
-    moved_piece(Move, pawn),
+    moved_piece_type(Move, pawn),
     length(Move, 5). % Piece, Source, MoveType, Destination, promotee
 
 
 officer_move(Move) :-
-    moved_officer(Move, _), 
+    moved_officer_type(Move, _), 
     length(Move, 4). % Piece, Source, MoveType, Destination
 
 
@@ -44,10 +44,10 @@ castling_move(Side) :- castling_side(Side).
 piece_move([Piece | _]) :- piece(Piece).
 
 
-moved_piece(Move, Piece) :- piece_move(Move), nth0(0, Move, Piece).
+moved_piece_type(Move, Piece) :- piece_move(Move), nth0(0, Move, Piece).
 
 
-moved_officer(Move, Officer) :- moved_piece(Move, Officer), officer(Officer).
+moved_officer_type(Move, Officer) :- moved_piece_type(Move, Officer), officer(Officer).
 
 
 %  A source indicator indicates what could be the source square of a move.
@@ -89,22 +89,25 @@ promotion(Move, Promotion) :-
     nth0(4, Move, Promotion).
 
 
-% FullMove is Move but with compatible source square Square
+% FullMove is Move but with a full square as source indicator
 source_square(Move, Square, FullMove) :-
-    square_source(Move, Square),
-    replacement_at(1, Move, ResultingMove, Square).
+    compatible_source_square(Move, Square),
+    source_square(FullMove, Square).
 
 source_square(Move, Square) :- 
     square:square(Square), piece_move(Move),
     compatible_source_square(Move, Square).
 
 
+% Is a square compatible with a given source indicator?
 compatible_indicator(_, nothing).
-compatible_indicator(Square, File) :- square:square_file(Square, File).
-compatible_indicator([_, Rank], Rank) :- square:square_rank(Square, Rank).
+compatible_indicator([File, _], File) :- square:file(File).
+compatible_indicator([_, Rank], Rank) :- square:rank(Rank).
 compatible_indicator(X, X) :- square:square(X).
 
 
+% A compatible source square is a square that *could* be the source
+% of a square (i.e it is compatible with its source indicator)
 compatible_source_square(Move, Square) :-
     source_indicator(Move, Indicator),
     compatible_indicator(Square, Indicator).
