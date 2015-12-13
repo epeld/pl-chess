@@ -1,4 +1,4 @@
-:- module(fen, [position//1, fen/2, initial_position/1]).
+:- module(fen, [position//1, string/2, initial_position/1]).
 
 :- use_module(listutils).
 :- use_module(square).
@@ -6,14 +6,24 @@
 :- use_module(position).
 
 
-fen(Position, String) :- ground(Position), !, phrase(position(Position), Chars), string_chars(String, Chars).
-fen(Position, String) :- ground(String), !, string_chars(String, Chars), phrase(position(Position), Chars).
+string(Position, String) :- 
+    ground(Position), !, 
+    
+    phrase(position(Position), Chars), 
+    string_chars(String, Chars).
 
-initial_position(X) :- initial_fen_string(Fen), fen(X, Fen).
+string(Position, String) :- 
+    ground(String), !, 
+    
+    string_chars(String, Chars), 
+    phrase(position(Position), Chars).
+
+initial_position(X) :- initial_fen_string(Fen), string(X, Fen).
 
 initial_fen_string("rnbqkbnr/pp1ppppp/8/2p5/4P3/5N2/PPPP1PPP/RNBQKB1R b KQkq - 1 2").
 
 position(Position) -->
+    { position:parts(Position, [Board, Turn, Rights, Passant, HalfMoveNr, FullMoveNr]) },
     board(Board), 
     space,
     turn(Turn),
@@ -24,8 +34,8 @@ position(Position) -->
     space,
     nat(HalfMoveNr),
     space,
-    nat(FullMoveNr),
-    { position:parts(Position, [Board, Turn, Rights, Passant, HalfMoveNr, FullMoveNr]) }.
+    nat(FullMoveNr).
+    
 
 
 space --> [' '].
@@ -136,12 +146,40 @@ empty_board_chars(Chars) :-
     string_chars("8/8/8/8/8/8/8/8", Chars).
 
 initial_position_chars(Chars) :-
+    % Yes, not quite the initial position:
     string_chars("rnbqkbnr/pp1ppppp/8/2p5/4P3/5N2/PPPP1PPP/RNBQKB1R", Chars).
+
+test(initial_board_encode) :-
+    initial_position(P),
+    position:board(P, B), !,
+
+    setof(Chars, phrase(board(B), Chars, _), [Result]),
+    assertion(string_chars("rnbqkbnr/pp1ppppp/8/2p5/4P3/5N2/PPPP1PPP/RNBQKB1R", Result)).
+
+test(turn_black) :- phrase(turn(black), ['b']).
+
+test(turn_white) :- phrase(turn(white), ['w']).
+
+test(turn_encode_white) :- setof(C, phrase(turn(white), [C]), ['w']).
+test(turn_encode_black) :- setof(C, phrase(turn(black), [C]), ['b']).
+
+test(turn_decode_white) :- setof(T, phrase(turn(T), ['w']), [white]).
+test(turn_decode_black) :- setof(T, phrase(turn(T), ['b']), [black]).
+
+test(castling_rights_encode) :- 
+    setof(Rights, phrase(castling_rights(Rights), ['K', 'Q', 'k']), [Result]),
+    assertion(Result = ['K', 'Q', 'k']).
+
+test(castling_rights_decode) :- 
+    setof(Chars, phrase(castling_rights(['K', 'k']), Chars), [Result]),
+    assertion(Result = ['K', 'k']).
 
 
 test(initial_position, [nondet]) :- 
-    initial_position_chars(Chars), 
-    phrase(board(_), Chars).
+    initial_position(P),
+    string(P, String),
+
+    assertion(initial_fen_string(String)).
 
 test(empty_board_decode, [nondet]) :- 
     empty_board_chars(Chars),
