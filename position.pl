@@ -16,12 +16,20 @@ parts([position | Parts], Parts) :- length(Parts, 6).
 board(Position, Board) :- parts(Position, Parts), nth0(0, Parts, Board).
 
 
-turn(Position, Turn) :- parts(Position, Parts), nth0(1, Parts, Turn).
+turn(Position, white) :- parts(Position, Parts), nth0(1, Parts, white).
+turn(Position, black) :- parts(Position, Parts), nth0(1, Parts, black).
+
+opposite(white, black).
+opposite(black, white).
 
 
-position_occupants(Position, Occupants) :- % shortcut: treat position as board 
+occupants(Position, Occupants) :- % shortcut: treat position as board 
     board(Position, Board), 
     board_occupants(Board, Occupants).
+
+occupant(Position, Square, Piece) :-
+    board(Position, Board), 
+    board_occupant(Board, Square, Piece).
 
 board_occupants([board | Occupants], Occupants) :- length(Occupants, 64).
 
