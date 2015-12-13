@@ -13,3 +13,9 @@ replacement_at(0, [_ | L], [El | L], El).
 replacement_at(Ix, [A | L], [A | L2], El) :-
     Ix #> 0, Ix2 #= Ix - 1,
     replacement_at(Ix2, L, L2, El).
+
+
+filled([], _, 0) :- !.
+filled([A | As], A, N) :- 
+    N1 #= N - 1,
+    filled(As, A, N1).
