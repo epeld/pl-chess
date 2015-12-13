@@ -1,4 +1,4 @@
-:- module(listutils, [sublist/2, replacement_at/2]).
+:- module(listutils, [sublist/2, replacement_at/4]).
 
 :- use_module(library(clpfd)).
 

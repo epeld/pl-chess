@@ -1,4 +1,4 @@
-:- module(fen, [position//1]).
+:- module(fen, [position//1, fen/2, initial_position/1]).
 
 :- use_module(listutils).
 :- use_module(square).
@@ -6,9 +6,14 @@
 :- use_module(position).
 
 
+fen(Position, String) :- ground(Position), phrase(position(Position), Chars), string_chars(String, Chars).
+fen(Position, String) :- ground(String), string_chars(String, Chars), phrase(position(Position), Chars).
+
 % "rnbqkbnr/pp1ppppp/8/2p5/4P3/5N2/PPPP1PPP/RNBQKB1R b KQkq - 1 2".
 
-initial_position(X) :- string_chars("rnbqkbnr/pp1ppppp/8/2p5/4P3/5N2/PPPP1PPP/RNBQKB1R b KQkq - 1 2", Chars), phrase(position(X), Chars).
+initial_position(X) :- 
+    string_chars("rnbqkbnr/pp1ppppp/8/2p5/4P3/5N2/PPPP1PPP/RNBQKB1R b KQkq - 1 2", Chars),
+    phrase(position(X), Chars).
 
 
 position(Position) -->
@@ -132,42 +137,89 @@ piece(Piece) --> [Piece], { is_piece(Piece) }.
 
 is_piece(Piece) :- string_chars("PNBRQKpnbrqk", Chars), member(Piece, Chars).
 
-
 :- begin_tests(fen).
 
-empty_board("8/8/8/8/8/8/8/8").
+empty_board(B) :-
+    position:board_occupants(B, Occupants),
+    maplist(=(nothing), Occupants).
 
-test(rows_decode, [nondet]) :- string_chars("rnbqkbnr/pp1ppppp/8/2p5/4P3/5N2/PPPP1PPP/RNBQKB1R", L), phrase(board(_), L).
-test(rows_decode, [nondet]) :- 
-    empty_board(String),
-    string_chars(String, L), 
-    phrase(board(_), L).
+empty_board_chars(Chars) :- 
+    string_chars("8/8/8/8/8/8/8/8", Chars).
 
-test(rows_encode, [nondet]) :- 
-    length(X, 64), 
-    maplist(=(nothing), X),
-
-    phrase(board(X), L), 
-
-    empty_board(Board),
-    assertion(string_chars("8/8/8/8/8/8/8/8", L)).
-
-test(row_decode, [nondet]) :- phrase(row(X), ['R', '2', b, n, '3']), X = ['R', nothing, nothing, b, n, nothing, nothing, nothing].
-test(row_decode2, [nondet]) :- string_chars("rnbqkbnr", L), phrase(row(L), L). 
-test(row_decode3, [nondet]) :- string_chars("pp1ppppp", L), phrase(row([p,p,nothing,p,p,p,p,p]), L). 
-test(row_decode4, [nondet]) :- string_chars("8", L), phrase(row(X), L), length(X, 8), maplist(=(nothing), X). 
-test(row_decode5, [nondet]) :- string_chars("rrrrrrrr", L), phrase(row([r,r,r,r,r,r,r,r]), L). 
-test(row_decode6, [nondet]) :- string_chars("RNBQKB1R", L), phrase(row(X), L), X = ['R', 'N', 'B', 'Q', 'K', 'B', nothing, 'R']. 
-test(row_decode7, [nondet]) :- string_chars("5N2", L), phrase(row(_), L). 
-test(row_encode, [nondet]) :- phrase(row(['R', nothing, nothing, b, n, nothing, nothing, nothing]), X), X = ['R', '2', b, n, '3'].
+initial_position_chars(Chars) :-
+    string_chars("rnbqkbnr/pp1ppppp/8/2p5/4P3/5N2/PPPP1PPP/RNBQKB1R", Chars).
 
 
-test(nothings_decode, [nondet]) :-  phrase(nothings(X), ['3']), X = [nothing, nothing, nothing].
-test(nothings_encode, [nondet]) :-  phrase(nothings([nothing, nothing, nothing]), [X]), X = '3'.
-test(nothings_encode2, [nondet]) :-  length(X, 8), maplist(=(nothing), X), phrase(nothings(X), L), L = ['8'].
+test(initial_position, [nondet]) :- 
+    initial_position_chars(Chars), 
+    phrase(board(_), Chars).
+
+test(empty_board_decode, [nondet]) :- 
+    empty_board_chars(Chars),
+    phrase(board(_), Chars).
+
+test(empty_board_encode, [nondet]) :- 
+    empty_board(B),
+
+    phrase(board(B), Chars),
+
+    assertion(empty_board_chars(Chars)).
+
+test(row_decode, [nondet]) :- 
+    phrase(row(X), ['R', '2', b, n, '3']),
+    X = ['R', nothing, nothing, b, n, nothing, nothing, nothing].
+
+test(row_decode2, [nondet]) :- 
+    string_chars("rnbqkbnr", L),
+    phrase(row(L), L). 
+
+test(row_decode3, [nondet]) :- 
+    string_chars("pp1ppppp", L),
+    phrase(row([p,p,nothing,p,p,p,p,p]), L). 
+
+test(row_decode4, [nondet]) :- 
+    string_chars("8", L), 
+    phrase(row(X), L), length(X, 8), 
+    maplist(=(nothing), X). 
+
+test(row_decode5, [nondet]) :- 
+    string_chars("rrrrrrrr", L), 
+    phrase(row([r,r,r,r,r,r,r,r]), L). 
+
+test(row_decode6, [nondet]) :- 
+    string_chars("RNBQKB1R", L),
+    phrase(row(X), L),
+    X = ['R', 'N', 'B', 'Q', 'K', 'B', nothing, 'R']. 
+
+test(row_decode7, [nondet]) :- 
+    string_chars("5N2", L), 
+    phrase(row(_), L). 
+
+test(row_encode, [nondet]) :- 
+    phrase(row(['R', nothing, nothing, b, n, nothing, nothing, nothing]), X), 
+    X = ['R', '2', b, n, '3'].
 
 
-test(piece_decode, [nondet]) :- phrase(piece(X), [r]), X = r.
-test(piece_encode, [nondet]) :- phrase(piece('N'), [X]), X = 'N'.
+test(nothings_decode, [nondet]) :-  
+    phrase(nothings(X), ['3']),
+    X = [nothing, nothing, nothing].
+
+test(nothings_encode, [nondet]) :-  
+    phrase(nothings([nothing, nothing, nothing]), [X]),
+    X = '3'.
+
+test(nothings_encode2, [nondet]) :-  
+    length(X, 8), 
+    maplist(=(nothing), X), 
+    phrase(nothings(X), L), L = ['8'].
+
+
+test(piece_decode, [nondet]) :- 
+    phrase(piece(X), [r]), 
+    X = r.
+
+test(piece_encode, [nondet]) :- 
+    phrase(piece('N'), [X]),
+    X = 'N'.
 
 :- end_tests(fen).

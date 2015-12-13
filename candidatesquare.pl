@@ -8,9 +8,9 @@
 candidate_source_square(Move, Pos, Square) :-
     pgnmove:source_square(Move, Square),
     position:board_occupant(Pos, Square, Piece),
-    candidate_piece(Move, Pos, Piece).
+    compatible_piece(Move, Pos, Piece).
 
 
-candidate_piece(Move, Pos, [PieceType, Color]) :-
+compatible_piece(Move, Pos, [PieceType, Color]) :-
     pgnmove:moved_piece_type(Move, PieceType),
     position:turn(Pos, Color).

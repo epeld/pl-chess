@@ -18,7 +18,8 @@
         move_type/2,
         destination/2,
         promotion/2,
-        source_square/3
+        full_move/2,
+        full_move/3
     ]).
 
 
@@ -41,7 +42,7 @@ castling_move(Side) :- castling_side(Side).
 
 
 % Non-castling move:
-piece_move([Piece | _]) :- piece(Piece).
+piece_move([Piece | Rest]) :- piece(Piece), between(4, 5, L), length([Piece | Rest], L).
 
 
 moved_piece_type(Move, Piece) :- piece_move(Move), nth0(0, Move, Piece).
@@ -89,8 +90,25 @@ promotion(Move, Promotion) :-
     nth0(4, Move, Promotion).
 
 
-% FullMove is Move but with a full square as source indicator
-source_square(Move, Square, FullMove) :-
+% FullMove is Move but with a square as source indicator
+full_move(Move, FullMove) :- full_move(Move, _, FullMove).
+
+full_move(Move, Square, FullMove) :-
+    piece_move(Move), 
+    piece_move(FullMove),
+
+    move_type(Move, MoveType),
+    move_type(FullMove, MoveType),
+
+    moved_piece_type(Move, Pt),
+    moved_piece_type(FullMove, Pt),
+
+    destination(Move, Dest),
+    destination(FullMove, Dest),
+
+    % Keep search space small..
+    between(4, 5, L), length(FullMove, L), length(Move, L),
+
     compatible_source_square(Move, Square),
     source_square(FullMove, Square).
 
@@ -133,3 +151,25 @@ promotee(rook).
 
 castling_side(queenside).
 castling_side(kingside).
+
+valid_indicators(FullMove, Indicators) :-
+    setof(Indicator, Move^(full_move(FullMove, Move), source_indicator(Move, Indicator)), Indicators).
+
+mock_piece_move(FullMove) :-
+    officer_move(FullMove),
+    moved_officer_type(FullMove, queen),
+    source_indicator(FullMove, ['e', 2]),
+    move_type(FullMove, captures),
+    destination(FullMove, ['d', 3]).
+
+:- begin_tests(pgnmove).
+
+test(compatible_indicator) :-
+    setof(Indicator, compatible_indicator(['e', 4], Indicator), [4, e, nothing, [e, 4]]).
+
+test(valid_indicators) :-
+    mock_piece_move(FullMove),
+    valid_indicators(FullMove, [2, e, nothing, [e, 2]]).
+    
+
+:- end_tests(pgnmove).
