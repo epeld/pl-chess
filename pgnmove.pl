@@ -106,8 +106,7 @@ full_move(Move, Square, FullMove) :-
     destination(Move, Dest),
     destination(FullMove, Dest),
 
-    % Keep search space small..
-    between(4, 5, L), length(FullMove, L), length(Move, L),
+    same_length(FullMove, Move),
 
     compatible_source_square(Move, Square),
     source_square(FullMove, Square).
@@ -160,7 +159,7 @@ mock_piece_move(FullMove) :-
     moved_officer_type(FullMove, queen),
     source_indicator(FullMove, ['e', 2]),
     move_type(FullMove, captures),
-    destination(FullMove, ['d', 3]).
+    destination(FullMove, ['d', 3]), !.
 
 :- begin_tests(pgnmove).
 
@@ -168,7 +167,7 @@ test(compatible_indicator) :-
     setof(Indicator, compatible_indicator(['e', 4], Indicator), [4, e, nothing, [e, 4]]).
 
 test(valid_indicators) :-
-    mock_piece_move(FullMove),
+    mock_piece_move(FullMove), 
     valid_indicators(FullMove, [2, e, nothing, [e, 2]]).
     
 
