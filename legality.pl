@@ -44,4 +44,28 @@ enemy_piece(P, Square) :-
     position:opposite(Turn, Opposite),
     position:occupant(P, Square, [Opposite, _]).
     
-can_capture(P, PieceSquare, TargetSquare) :- fail.
+can_capture(P, SourceSquare, TargetSquare) :- 
+    position:occupant(P, SourceSquare, [Turn, PieceType]),
+    position:occupant(P, SourceSquare, [Opposite, _]),
+
+    position:turn(P, Turn),
+    position:opposite(Turn, Opposite),
+
+    can_capture(P, [Turn, PieceType], SourceSquare, TargetSquare).
+
+can_reach(P, knight, Source, Target) :- knights_jump(Source, Target).
+
+can_reach(P, king, Source, Target) :- distance(Source, Target, 2), diagonal(Source, Target).
+can_reach(P, king, Source, Target) :- 
+    distance(Source, Target, 1), 
+    (
+        vertical(Source, Target) ; horizontal(Source, Target
+    ).
+
+can_reach(P, queen, Source, Target) :- diagonal(Source, Target) ; horizontal(Source, Target) ; vertical(Source, Target).
+
+
+can_attack_diagonally(P, PieceSquare, TargetSquare) :-
+    position:occupant(P, PieceSquare, [Turn, PieceType]),
+    member(PieceType, [queen, bishop, king]).
+    
