@@ -56,6 +56,7 @@ horizontal(Square1, Square2) :-
 
 horizontal(Square1, Square2, Between) :-
     horizontal(Square1, Square2),
+    square(Between),
     horizontal_between(Square1, Square2, Between).
 
 horizontal_between(Square1, Square2, Between) :- left_of(Square1, Between), right_of(Square2, Between).
@@ -70,11 +71,14 @@ vertical(Square1, Square2) :-
 
 vertical(Square1, Square2, Between) :-
     vertical(Square1, Square2),
+    square(Between),
     vertical_between(Square1, Square2, Between).
 
 vertical_between(Square1, Square2, Between) :- below(Square1, Between), above(Square2, Between).
 vertical_between(Square1, Square2, Between) :- below(Square2, Between), above(Square1, Between).
 
+
+straight(Square1, Square2) :- vertical(Square1, Square2) ; horizontal(Square1, Square2).
 
 straight(Square1, Square2, Between) :- vertical(Square1, Square2, Between) ; horizontal(Square1, Square2, Between).
 
@@ -107,7 +111,7 @@ piece_can_capture([_, Officer], Source, Target, Between) :-
 piece_can_capture([white, pawn], Source, Target, []) :-
     distance(Source, Target, 2),
     diagonal(Source, Target),
-    below(Source, Target, Between).
+    below(Source, Target).
 
 piece_can_capture([black, pawn], Source, Target, []) :-
     distance(Source, Target, 2),
@@ -125,12 +129,12 @@ piece_can_reach([_, Officer], Source, Target, Between) :-
     can_reach(Officer, Source, Target, Between).
 
 piece_can_reach([white, pawn], Source, Target, []) :-
-    distance(Source, Target, 1)
+    distance(Source, Target, 1),
     vertical(Source, Target),
     below(Source, Target).
 
 piece_can_reach([black, pawn], Source, Target, []) :-
-    distance(Source, Target, 1)
+    distance(Source, Target, 1),
     vertical(Source, Target),
     below(Target, Source).
 
