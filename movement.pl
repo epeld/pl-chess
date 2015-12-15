@@ -56,7 +56,7 @@ horizontal(Square1, Square2) :-
 
 horizontal(Square1, Square2, Between) :-
     horizontal(Square1, Square2),
-    square(Between),
+    horizontal(Square1, Between),
     horizontal_between(Square1, Square2, Between).
 
 horizontal_between(Square1, Square2, Between) :- left_of(Square1, Between), right_of(Square2, Between).
@@ -71,7 +71,7 @@ vertical(Square1, Square2) :-
 
 vertical(Square1, Square2, Between) :-
     vertical(Square1, Square2),
-    square(Between),
+    vertical(Square1, Between),
     vertical_between(Square1, Square2, Between).
 
 vertical_between(Square1, Square2, Between) :- below(Square1, Between), above(Square2, Between).
@@ -89,11 +89,11 @@ can_reach(king, Source, Target, []) :- distance(Source, Target, 1), straight(Sou
 
 can_reach(knight, Source, Target, []) :- knights_jump(Source, Target).
 
-can_reach(bishop, Source, Target, Between) :- setof(X, diagonal(Source, Target, X), Between).
 can_reach(bishop, Source, Target, []) :- distance(Source, Target, 2), diagonal(Source, Target). 
+can_reach(bishop, Source, Target, Between) :- setof(X, diagonal(Source, Target, X), Between).
 
-can_reach(rook, Source, Target, Between) :- setof(X, straight(Source, Target, X), Between).
 can_reach(rook, Source, Target, []) :- distance(Source, Target, 1), straight(Source, Target).
+can_reach(rook, Source, Target, Between) :- setof(X, straight(Source, Target, X), Between).
 
 
 can_capture(Officer, Source, Target, Between) :- officer(Officer), can_reach(Officer, Source, Target, Between).
@@ -139,15 +139,31 @@ piece_can_reach([black, pawn], Source, Target, []) :-
     below(Target, Source).
 
 
-not_equal([X1, Y1], [X2, Y2]) :- 
-    X1 #\= X2 ; Y1 #\ Y2.
+not_equal(Square1, Square2) :-
+    square:square([X1, Y1], Square1),
+    square:square([X2, Y2], Square2),
+    (X1 #\= X2 ; Y1 #\= Y2).
 
 
-below([_, Y1], [_, Y2]) :- Y1 #< Y2.
-above([_, Y1], [_, Y2]) :- Y1 #> Y2.
+below(Square1, Square2) :-
+    square:square([_, Y1], Square1),
+    square:square([_, Y2], Square2),
+    Y1 #< Y2.
 
-left_of([X1, _], [X2, _]) :- X1 #< X2.
-right_of([X1, _], [X2, _]) :- X1 #> X2.
+above(Square1, Square2) :-
+    square:square([_, Y1], Square1),
+    square:square([_, Y2], Square2),
+    Y1 #> Y2.
+
+left_of(Square1, Square2) :-
+    square:square([X1, _], Square1),
+    square:square([X2, _], Square2),
+    X1 #< X2.
+
+right_of(Square1, Square2) :-
+    square:square([X1, _], Square1),
+    square:square([X2, _], Square2),
+    X1 #> X2.
 
 
 officer(rook).
