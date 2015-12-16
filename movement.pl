@@ -5,7 +5,9 @@
         diagonal/2,
         diagonal/3,
         horizontal/2,
-        vertical/2
+        vertical/2,
+        piece_can_reach/4,
+        piece_can_capture/4
     ]).
 
 :- use_module(library(clpfd)).

@@ -5,6 +5,7 @@
 :- use_module(pgnmove).
 :- use_module(square).
 :- use_module(position).
+:- use_library(apply).
 
 legal(P) :-
     king_is_safe(P),
@@ -39,33 +40,49 @@ friendly_king(P, Square) :-
     position:turn(P, Turn),
     position:occupant(P, Square, [Turn, king]).
 
+
 enemy_piece(P, Square) :-
     position:turn(P, Turn),
     position:opposite(Turn, Opposite),
     position:occupant(P, Square, [Opposite, _]).
     
-can_capture(P, SourceSquare, TargetSquare) :- 
-    position:occupant(P, SourceSquare, [Turn, PieceType]),
-    position:occupant(P, SourceSquare, [Opposite, _]),
 
-    position:turn(P, Turn),
-    position:opposite(Turn, Opposite),
-
-    can_capture(P, [Turn, PieceType], SourceSquare, TargetSquare).
-
-can_reach(P, knight, Source, Target) :- knights_jump(Source, Target).
-
-can_reach(P, king, Source, Target) :- distance(Source, Target, 2), diagonal(Source, Target).
-can_reach(P, king, Source, Target) :- 
-    distance(Source, Target, 1), 
-    (
-        vertical(Source, Target) ; horizontal(Source, Target
-    ).
-
-can_reach(P, queen, Source, Target) :- diagonal(Source, Target) ; horizontal(Source, Target) ; vertical(Source, Target).
+square_is_empty(Position, Square) :-
+    position:occupant(Position, Square, nothing).
 
 
-can_attack_diagonally(P, PieceSquare, TargetSquare) :-
-    position:occupant(P, PieceSquare, [Turn, PieceType]),
-    member(PieceType, [queen, bishop, king]).
-    
+legal_result(Position, FullMove) :-
+    position_after(Position, FullMove, ResultingPosition),
+    legal(ResultingPosition).
+
+position_after(Position, FullMove, ResultingPosition) :-
+    fail. % TODO
+
+% TODO generalize to avoid copy paste for reach/capture
+
+piece_can_reach(Position, FullMove) :- 
+    pgnmove:source_square(FullMove, Source),
+    pgnmove:destination(FullMove, Target),
+    pgnmove:moved_piece_type(PieceType),
+
+    position:turn(Turn),
+    Piece = [Turn, PieceType],
+
+    movement:piece_can_reach(Piece, Source, Target, IntermediateSquares),
+    apply:maplist(square_is_empty(Position), IntermediateSquares),
+
+    legal_result(Position, FullMove).
+
+
+piece_can_capture(Position, Piece, Source, Target) :- 
+    pgnmove:source_square(FullMove, Source),
+    pgnmove:destination(FullMove, Target),
+    pgnmove:moved_piece_type(PieceType),
+
+    position:turn(Turn),
+    Piece = [Turn, PieceType],
+
+    movement:piece_can_capture(Piece, Source, Target, IntermediateSquares),
+    apply:maplist(square_is_empty(Position), IntermediateSquares),
+
+    legal_result(Position, FullMove).
