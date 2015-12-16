@@ -56,7 +56,11 @@ legal_result(Position, FullMove) :-
     legal(ResultingPosition).
 
 position_after(Position, FullMove, ResultingPosition) :-
-    fail. % TODO
+    pgnmove:source_square(FullMove, Source),
+    pgnmove:destination(FullMove, Target),
+
+    % TODO define this predicate
+    position:move(Position, Source, Target).
 
 % TODO generalize to avoid copy paste for reach/capture
 
@@ -68,6 +72,7 @@ piece_can_reach(Position, FullMove) :-
     position:turn(Turn),
     Piece = [Turn, PieceType],
 
+    % TODO move this out of legality and into position:move?
     movement:piece_can_reach(Piece, Source, Target, IntermediateSquares),
     apply:maplist(square_is_empty(Position), IntermediateSquares),
 
