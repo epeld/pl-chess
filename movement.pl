@@ -174,6 +174,24 @@ right_of(Square1, Square2) :-
     square:square([X2, _], Square2),
     X1 #> X2.
 
+horizontally_relative(Square1, Square2, right_of) :-
+    right_of(Square1, Square2).
+
+horizontally_relative(Square1, Square2, left_of) :-
+    left_of(Square1, Square2).
+
+vertically_relative(Square1, Square2, above) :-
+    above(Square1, Square2).
+
+vertically_relative(Square1, Square2, below) :-
+    below(Square1, Square2).
+
+passant_square(Source, Destination, PassantSquare) :-
+    horizontally_relative(Source, Destination, V),
+    horizontally_relative(Source, PassantSquare, V),
+
+    rank(Source, R), rank(PassantSquare, R).
+
 
 officer(rook).
 officer(bishop).

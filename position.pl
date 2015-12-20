@@ -13,12 +13,21 @@
 :- use_module(piece).
 :- use_module(library(clpfd)).
 
-move(Position, Source, Target, NewPosition) :-
-    occupant(Position, Source, Piece),
+replaced_board(Position, NewBoard, NewPosition) :-
+    parts(Position, Parts),
+    listutils:replacement_at(0, Parts, NewParts, NewBoard),
+    parts(NewPosition, NewParts).
 
-    put(Position, Source, nothing, P2),
-    put(P2, Target, Piece, NewPosition).
 
+board_move(Board, Source, Target, NewBoard) :-
+    board_occupant(Board, Square, Piece),
+    board_put(Board, Source, nothing, B2),
+    board_put(B2, Target, Piece, NewBoard).
+
+
+board_put(Board, Square, Piece, NewBoard) :-
+    square_index(Square, Ix),
+    replacement_at(Ix, Board, NewBoard, Piece).
 
 put(Position, Square, Piece, Position2) :-
     parts(Position, [Board | Rest]),
@@ -28,9 +37,13 @@ put(Position, Square, Piece, Position2) :-
     parts(Position2, [Board2 | Rest]).
 
 
-board_put(Board, Square, Piece, Board2) :-
-    square_index(Square, Ix),
-    replacement_at(Ix, Board, Board2, Piece).
+move(Position, Source, Target, NewPosition) :-
+    board(Position, Board),
+    board_move(Board, Source, Target, NewBoard),
+
+    parts(Position, Parts),
+    listutils:replacement_at(0, Parts, NewParts, NewBoard),
+    parts(NewPosition, NewParts).
 
     
 

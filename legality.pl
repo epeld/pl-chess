@@ -55,19 +55,106 @@ legal_result(Position, FullMove) :-
     position_after(Position, FullMove, ResultingPosition),
     legal(ResultingPosition).
 
-position_after(Position, FullMove, ResultingPosition) :-
+
+% TODO handle castling
+board_after(Position, FullMove, NewBoard) :-
+    (officer_move(FullMove) ; standard_pawn_move(FullMove)),
+
     pgnmove:source_square(FullMove, Source),
     pgnmove:destination(FullMove, Target),
 
-    % TODO define this predicate
-    position:move(Position, Source, Target).
+    position:board(Position, Board),
+    position:board_move(Board, Square, Target, NewBoard).
 
-% TODO generalize to avoid copy paste for reach/capture
+board_after(Position, FullMove, NewBoard) :-
+    passant_move(FullMove),
 
-all_empty(Position, Squares) :-
-    apply:maplist(square_is_empty(Position), Squares).
+    pgnmove:source_square(FullMove, Source),
+    pgnmove:destination(FullMove, Target),
 
-piece_can_reach(Position, FullMove) :- 
+    position:board(Position, Board),
+    position:board_put(Board, PassantSquare, nothing, B2),
+    position:board_move(B2, Square, Target, NewBoard).
+
+movenumber_after(Position, _, NewNr) :-
+    turn(Position, black),
+    move_number(Position, Nr),
+    next(Nr, NewNr).
+
+movenumber_after(Position, _, Nr) :-
+    turn(Position, white),
+    move_number(Position, Nr).
+
+half_movenumber_after(_, FullMove, 0) :- pawn_move(FullMove).
+half_movenumber_after(_, FullMove, 0) :- capture(FullMove).
+half_movenumber_after(Position, FullMove, NewNr) :- 
+    half_move_number(Position, Nr),
+    NewNr #= Nr + 1.
+
+castling_rights_after(Position, FullMove, NewRights) :-
+    castling_rights(Position, NewRights). % TODO implement
+
+passant_after(_, FullMove, PassantSquare) :-
+    long_pawn_move(FullMove),
+    source_square(FullMove, Source),
+    destination(FullMove, Destination),
+    (
+        below(PassantSquare, Source), below(Destination, PassantSquare) ;
+        above(PassantSquare, Source), above(Destination, PassantSquare)
+    ).
+
+passant_after(_, FullMove, nothing) :-
+    short_pawn_move(FullMove),
+
+    source_square(FullMove, Source),
+    destination(FullMove, Destination),
+    (
+        right_of(Source, Destination) ;
+        left_of(Source, Destination) ;
+        distance(Source, Target, 1)
+    ).
+
+passant_after(_, FullMove, nothing) :- officer_move(FullMove).
+passant_after(_, queenside, nothing). % Castling
+passant_after(_, kingside, nothing). % Castling
+
+turn_after(Position, _, NewTurn) :- turn(Position, T), opposite(T, NewTurn).
+
+position_after(Position, FullMove, ResultingPosition) :-
+    board_after(Position, FullMove, NewBoard),
+    turn_after(Position, FullMove, NewTurn),
+    castling_rights_after(Position, FullMove, NewRights),
+    passant_after(Position, FullMove, NewPassant),
+    move_number_after(Position, FullMove, NewNr),
+    half_move_number_after(Position, FullMove, NewHalfNr),
+
+    position:parts(
+        ResultingPosition, 
+        [NewBoard, NewTurn, NewRights, NewPassant, NewHalfNr, NewNr]
+    ).
+
+
+standard_pawn_move(Move) :-
+    pawn_move(Move),
+
+    non_passant_squares(Position, NonPassant),
+    destination(Move, Destination),
+    member(Destination, NonPassant).
+
+non_passant_squares(Position, Squares) :-
+    passant_square(Position, Passant),
+    bag_of(Square, square(Square), All),
+    delete(All, Passant, Squares).
+
+passant_move(Move, PassantSquare) :-
+    pawn_move(Move),
+
+    destination(Move, Destination), source_square(Move, Source),
+
+    passant_square(Source, Destination, PassantSquare).
+
+
+valid_move(Position, FullMove) :- 
     pgnmove:source_square(FullMove, Source),
     pgnmove:destination(FullMove, Target),
     pgnmove:moved_piece_type(PieceType),
@@ -76,22 +163,11 @@ piece_can_reach(Position, FullMove) :-
     position:turn(Turn),
     Piece = [Turn, PieceType],
 
-    % TODO move this out of legality and into position:move?
-    movement:piece_can_reach(Piece, Source, Target, IntermediateSquares),
+    movement:piece_can(MoveType, Piece, Source, Target, IntermediateSquares),
     all_empty(Position, IntermediateSquares),
 
     legal_result(Position, FullMove).
 
+all_empty(Position, Squares) :-
+    apply:maplist(square_is_empty(Position), Squares).
 
-piece_can_capture(Position, Piece, Source, Target) :- 
-    pgnmove:source_square(FullMove, Source),
-    pgnmove:destination(FullMove, Target),
-    pgnmove:moved_piece_type(PieceType),
-
-    position:turn(Turn),
-    Piece = [Turn, PieceType],
-
-    movement:piece_can_capture(Piece, Source, Target, IntermediateSquares),
-    apply:maplist(square_is_empty(Position), IntermediateSquares),
-
-    legal_result(Position, FullMove).
