@@ -141,6 +141,13 @@ piece_can_reach([black, pawn], Source, Target, []) :-
     below(Target, Source).
 
 
+piece_can(captures, Pc, Source, Target, Between) :-
+    piece_can_capture(Pc, Source, Target, Between).
+
+piece_can(moves, Pc, Source, Target, Between) :-
+    piece_can_reach(Pc, Source, Target, Between).
+
+
 not_equal(Square1, Square2) :-
     square:square([X1, Y1], Square1),
     square:square([X2, Y2], Square2),

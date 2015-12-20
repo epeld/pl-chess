@@ -8,6 +8,7 @@ sublist([_ | As], [B | Bs]) :- sublist(As, [B | Bs]).
 sublist(_, []). 
 
 
+% Index, Before, After, Element
 replacement_at(_, [], [], _).
 replacement_at(0, [_ | L], [El | L], El).
 replacement_at(Ix, [A | L], [A | L2], El) :-

@@ -85,9 +85,7 @@ passant_square(nothing) --> ['-'].
 passant_square(Square) --> pgnmovedcg:square(Square).
 
 
-castling_rights(Rights) -->
-    { string_chars("KQkq", AllRights), listutils:sublist(AllRights, Rights) },
-    Rights.
+castling_rights(Rights) --> { position:castling_rights(Rights) }, Rights.
 
 
 turn(white) --> [w].

@@ -64,17 +64,21 @@ position_after(Position, FullMove, ResultingPosition) :-
 
 % TODO generalize to avoid copy paste for reach/capture
 
+all_empty(Position, Squares) :-
+    apply:maplist(square_is_empty(Position), Squares).
+
 piece_can_reach(Position, FullMove) :- 
     pgnmove:source_square(FullMove, Source),
     pgnmove:destination(FullMove, Target),
     pgnmove:moved_piece_type(PieceType),
+    pgnmove:move_type(MoveType),
 
     position:turn(Turn),
     Piece = [Turn, PieceType],
 
     % TODO move this out of legality and into position:move?
     movement:piece_can_reach(Piece, Source, Target, IntermediateSquares),
-    apply:maplist(square_is_empty(Position), IntermediateSquares),
+    all_empty(Position, IntermediateSquares),
 
     legal_result(Position, FullMove).
 
