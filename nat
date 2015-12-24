@@ -6,6 +6,8 @@ nat(s(N)) :- nat(N).
 greater(s(_), zero).
 greater(s(N), s(M)) :- greater(N, M).
 
+nonzero(s(_)).
+
 greater_than_or_equal(X, Y) :- greater(X, Y) ; X = Y.
 
 
@@ -28,8 +30,8 @@ drop(s(N), [_ | L], R) :- drop(N, L, R).
 
 head(H, [H | _]).
 
-list_length([], zero).
-list_length([_ | Rest], s(N)) :- length(Rest, N).
+len([], zero).
+len([_ | Rest], s(N)) :- len(Rest, N).
 
 
 nat_to_digit(N, Digit) :- drop(N, [0,1,2,3,4,5,6,7,8,9], [Digit | _]).
@@ -47,21 +49,53 @@ nats_to_digits([N | Ns], [Digit | Digits]) :-
     nats_to_digits(Ns, Digits).
 
 
+digit(X) :- memberchk(X, [0,1,2,3,4,5,6,7,8,9]).
+
+arabic([]).
+arabic([Digit | Digits]) :- digit(Digit), arabic(Digits).
 
 arabic(Number, Digits) :- 
     nats_to_digits(Ns, Digits), 
     decimals(Ns, Number).
 
-sum([], zero).
-sum([N | Ns], Sum) :- 
-    less_than_or_equal(N, Sum),
 
-    add(N, PartialSum, Sum), 
+sum([], zero).
+
+sum([zero | Ns], Sum) :- sum(Ns, Sum).
+
+sum([s(X) | Ns], Sum) :- 
+    less(X, Sum),
+
+    add(s(X), PartialSum, Sum),
     sum(Ns, PartialSum).
 
-decimals([N], N).
-decimals([N | Ns], Result) :- 
-    decimals(Ns, Part),
 
-    add(N, Next, Result),
-    multiply(10, Part, Next).
+decimals(Ns, Result) :-
+    head(H, Ns), nonzero(H),
+
+    reverse(Ns, RNs),
+    reversed_decimals(RNs, Result).
+
+reversed_decimals([N], N).
+reversed_decimals([N | Ns], Result) :- 
+    reversed_decimals(Ns, Rest),
+    perform([1, 0] * Rest + N = Result).
+
+
+perform(X=Y) :- 
+    calculate(X, Result1), 
+    calculate(Y, Result1).
+
+calculate(Arabic, Result) :- arabic(Result, Arabic).
+
+calculate(X + Y, Res) :- 
+    calculate(X, XRes), 
+    calculate(Y, YRes), 
+    add(XRes, YRes, Res).
+
+calculate(X * Y, Res) :- 
+    calculate(X, XRes), 
+    calculate(Y, YRes), 
+    multiply(XRes, YRes, Res).
+
+
