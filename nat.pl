@@ -44,6 +44,8 @@ decimal_nat(N) :-
 
 nats_to_digits([N], [Digit]) :- nat_to_digit(N, Digit).
 nats_to_digits([N | Ns], [Digit | Digits]) :- 
+    same_length(Ns, Digits),
+
     nat_to_digit(N, Digit), 
     decimal_nat(N),
     nats_to_digits(Ns, Digits).
@@ -54,9 +56,9 @@ digit(X) :- memberchk(X, [0,1,2,3,4,5,6,7,8,9]).
 arabic([]).
 arabic([Digit | Digits]) :- digit(Digit), arabic(Digits).
 
-arabic(Number, Digits) :- 
-    nats_to_digits(Ns, Digits), 
-    decimals(Ns, Number).
+arabic(Digits, Number) :- 
+    decimals(Ns, Number),
+    nats_to_digits(Ns, Digits).
 
 
 sum([], zero).
@@ -71,15 +73,33 @@ sum([s(X) | Ns], Sum) :-
 
 
 decimals(Ns, Result) :-
-    head(H, Ns), nonzero(H),
+    head(s(_), Ns),
 
     reverse(Ns, RNs),
     reversed_decimals(RNs, Result).
 
-reversed_decimals([N], N).
+reversed_decimals([s(N)], s(N)) :- ten(Ten), less(s(N), Ten).
+
 reversed_decimals([N | Ns], Result) :- 
-    reversed_decimals(Ns, Rest),
-    perform([1, 0] * Rest + N = Result).
+    non_empty(Ns),
+
+    % Limit the search space
+    ten(Ten),
+    less(N, Ten),
+    %len([N | Ns], Len),
+    %power(Ten, Len, UpperBound),
+    %greater(UpperBound, Result),
+
+    add(N, PartialResult10, Result),
+    multiply(Ten, PartialResult, PartialResult10),
+    reversed_decimals(Ns, PartialResult).
+
+
+power(_, zero, s(zero)).
+power(Exponent, s(zero), Exponent).
+power(Exponent, s(s(Log)), Value) :-
+    power(Exponent, s(Log), Rest),
+    multiply(Exponent, Rest, Value).
 
 
 perform(X=Y) :- 
@@ -99,3 +119,15 @@ calculate(X * Y, Res) :-
     multiply(XRes, YRes, Res).
 
 
+one(s(zero)).
+two(s(s(zero))).
+three(s(Two)) :- two(Two).
+four(s(Three)) :- three(Three).
+five(s(Four)) :- four(Four).
+six(s(Five)) :- five(Five).
+seven(s(Six)) :- six(Six).
+eight(s(Seven)) :- seven(Seven).
+nine(s(Eight)) :- eight(Eight).
+ten(s(Nine)) :- nine(Nine).
+
+non_empty([_ | _]).
