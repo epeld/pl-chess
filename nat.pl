@@ -17,11 +17,13 @@ less_than_or_equal(X, Y) :- less(X, Y) ; X = Y.
 
 
 add(zero, Y, Y).
-add(s(N), Y, Sum) :- greater(Sum, Y), add(N, s(Y), Sum).
+add(s(N), Y, s(Sum)) :- add(N, Y, Sum).
 
 
 multiply(zero, _, zero).
-multiply(s(X), Y, Product) :- greater_than_or_equal(Product, Y), multiply(X, Y, Part), add(Y, Part, Product).
+multiply(s(X), Y, Product) :- 
+    add(Y, Part, Product),
+    multiply(Y, X, Part).
 
 
 drop(zero, L, L).
@@ -72,27 +74,27 @@ sum([s(X) | Ns], Sum) :-
     sum(Ns, PartialSum).
 
 
-decimals(Ns, Result) :-
-    head(s(_), Ns),
+decimals([N | Ns], Result) :-
+    reversed_decimals(RNs, Result),
+    reverse([N | Ns], RNs).
 
-    reverse(Ns, RNs),
-    reversed_decimals(RNs, Result).
 
-reversed_decimals([s(N)], s(N)) :- ten(Ten), less(s(N), Ten).
+reversed_decimals([zero], zero).
+reversed_decimals([s(N)], s(N)) :- 
+    ten(Ten), 
+    less(s(N), Ten).
 
-reversed_decimals([N | Ns], Result) :- 
-    non_empty(Ns),
-
-    % Limit the search space
-    ten(Ten),
+reversed_decimals([N, N2 | Ns], s(Result)) :- 
+    ten(Ten), 
     less(N, Ten),
-    %len([N | Ns], Len),
-    %power(Ten, Len, UpperBound),
-    %greater(UpperBound, Result),
+    less(PartialResult, Ten),
 
-    add(N, PartialResult10, Result),
+    add(N, PartialResult10, s(Result)),
     multiply(Ten, PartialResult, PartialResult10),
-    reversed_decimals(Ns, PartialResult).
+
+    less(zero, PartialResult),
+
+    reversed_decimals([N2 | Ns], PartialResult).
 
 
 power(_, zero, s(zero)).
