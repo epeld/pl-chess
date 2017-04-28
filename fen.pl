@@ -1,10 +1,6 @@
 :- module(fen, [position//1, string/2, initial_position/1]).
 
-:- use_module(listutils).
-:- use_module(square).
 :- use_module(library(clpfd)).
-:- use_module(position).
-
 
 string(Position, String) :-
   phrase(position(Position), String).
