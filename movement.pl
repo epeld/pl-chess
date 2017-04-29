@@ -25,6 +25,11 @@ diagonal([ Square | Diagonal], Direction) :-
   sequence(Square, Direction, Diagonal).
 
 
+line(StartSquare, EndSquare, Line, Direction) :-
+  line(Line, Direction),
+  append([ [StartSquare], _, [EndSquare] ], Line).
+
+
 line([ Square | Line], Direction) :-
   square(Square),
   member(Direction, [up, down, left, right]),
@@ -102,25 +107,25 @@ offset([square, X, Y], [square, X, Y2], down) :-
 %
 %  Pawn Logic
 %
-pawn_move_square([piece, pawn, white], [square, X, Y], [square, X, Y2]) :-
+pawn_move_square(white, [square, X, Y], [square, X, Y2]) :-
   succ(Y, Y2).
 
-pawn_move_square([piece, pawn, white], [square, X, Y], [square, X, Y2]) :-
+pawn_move_square(white, [square, X, Y], [square, X, Y2]) :-
   % Second rank pawns can walk two steps
   rank(X, "2", []),
   succ(Y, Y1), succ(Y1, Y2).
 
-pawn_move_square([piece, pawn, white], [square, X, Y], [square, X, Y2]) :-
+pawn_move_square(white, [square, X, Y], [square, X, Y2]) :-
   % Seventh rank pawns can walk two steps
   rank(X, "7", []),
   succ(Y2, Y1), succ(Y1, Y).
 
-pawn_move_square([piece, pawn, black], [square, X, Y], [square, X, Y2]) :-
+pawn_move_square(black, [square, X, Y], [square, X, Y2]) :-
   succ(Y2, Y).
 
 
 
-pawn_capture_square([piece, pawn, Color], Sq, Sq2) :-
+pawn_capture_square(Color, Sq, Sq2) :-
   pawn_direction(capture, Color, Direction),
   diagonal(Sq, Sq2, [Sq, Sq2], Direction).
 
