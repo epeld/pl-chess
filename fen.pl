@@ -174,20 +174,21 @@ rle_pieces([], 0) --> [].
 
 
 rle_piece([Piece], N, N1) -->
-  piece(Piece),
+  piece(Piece), 
   {
-    % N =/= 0,
+    N > 0,
     succ(N1, N)
   }.
 
 rle_piece(Elements, N, N1) -->
-  digit(LenDigit),
+  digit(LenDigit), 
   {
-    number_codes(Len, [LenDigit]),
     between(1, 8, Len),
     length(Elements, Len),
     maplist(=(nothing), Elements),
-    N1 #= N - Len
+    number_codes(Len, [LenDigit]),
+    plus(N1, Len, N),
+    N1 >= 0
   }.
 
 
