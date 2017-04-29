@@ -59,13 +59,16 @@ digit(Digit) -->
   },
   [Digit].
 
-nat(N) -->
-  digits(Codes),
-  {
-    ( ground(Codes) ; nonvar(N) ),
-    number_codes(N, Codes)
-  }.
+nat(N, Before, After) :-
+  nonvar(N), !, 
+  number_codes(N, Codes),
+  digits(Codes, Before, After).
 
+
+nat(N, Before, After) :-
+  var(N), 
+  digits(Codes, Before, After),
+  number_codes(N, Codes).
 
 passant_square(nothing) --> "-".
 passant_square(Square) --> square(Square).
