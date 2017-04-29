@@ -1,7 +1,5 @@
 :- module(fen, [position//1, string/2, initial_position/1]).
 
-:- use_module(library(clpfd)).
-
 string(Position, String) :-
   phrase(position(Position), String).
 
