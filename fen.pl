@@ -137,15 +137,34 @@ rows_n([Row]) -->
   row(Row).
 
 
-row(Row) -->
-  rle_pieces(Parts, 8),
-  {
-    between(1,8, NParts),
-    length(Parts, NParts),
-    append(Parts, Row),
-    length(Row, 8)
-  }.
+group([Piece | Rest], [[Piece] | Rest2]) :-
+  Piece = [_, _],
+  group(Rest, Rest2).
 
+
+group([nothing | Rest], [Nothings | Rest2]) :-
+  append(Nothings, [Something | Other], [nothing | Rest]),
+  
+  maplist(=(nothing), Nothings),
+  Something = [_, _],
+  
+  group([Something | Other], Rest2).
+
+
+group(Nothings, [Nothings]) :-
+  Nothings = [_ | _],
+  maplist(=(nothing), Nothings).
+
+
+group([], []).
+
+
+row(Row, Before, After) :-
+  (var(Row), rle_pieces(Grouped, 8, Before, After) ; nonvar(Row)),
+  
+  length(Row, 8),
+  group(Row, Grouped),
+  rle_pieces(Grouped, 8, Before, After).
 
 rle_pieces([ Piece | Pieces ], N) -->
   rle_piece(Piece, N, N1),
