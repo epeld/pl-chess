@@ -1,196 +1,140 @@
-
-:- module(movement, [
-        knights_jump/2, 
-        distance/3, 
-        diagonal/2,
-        diagonal/3,
-        horizontal/2,
-        vertical/2,
-        piece_can_reach/4,
-        piece_can_capture/4
-    ]).
-
-:- use_module(library(clpfd)).
-:- use_module(square).
-
-knights_jump(Square1, Square2) :-
-    square([X1, Y1], Square1), 
-    square([X2, Y2], Square2),
-
-    abs(X2 - X1) + abs(Y2 - Y1) #= 3, 
-    abs(Y2 - Y1) #>= 1,
-    abs(X2 - X1) #>= 1.
-    
-
-distance(Square1, Square2, Range) :-
-    square([X1, Y1], Square1), 
-    square([X2, Y2], Square2),
-
-    abs(X2 - X1) + abs(Y2 - Y1) #= Range.
+:- module(movement, []).
 
 
-diagonal(Square1, Square2) :-
-    square([X1, Y1], Square1), 
-    square([X2, Y2], Square2),
+knights_jump([square, X1, Y1], [square, X2, Y2]) :-
+  square(X1, Y1), square(X2, Y2),
 
-    abs(X2 - X1) #= abs(Y2 - Y1), 
-    X2 #\= X1.
+  plus(XDif, X1, X2),
+  plus(YDif, Y1, Y2),
 
+  abs(XDif, XDif2),
+  abs(YDif, YDif2),
 
-diagonal(Square1, Square2, SquareOnDiagonal) :-
-    diagonal(Square1, Square2),
-
-    square([X1, Y1], Square1), 
-    square([X2, Y2], Square2), 
-    square([X3, Y3], SquareOnDiagonal),
-
-    min(X1, X2) #< X3, X3 #< max(X1, X2),
-    min(Y1, Y2) #< Y3, Y3 #< max(Y1, Y2),
-
-    diagonal(Square1, SquareOnDiagonal).
+  plus(XDif2, YDif2, 3).
 
 
-horizontal(Square1, Square2) :-
-    square([_, Y1], Square1), 
-    square([_, Y1], Square2),
-
-    not_equal(Square1, Square2).
-
-horizontal(Square1, Square2, Between) :-
-    horizontal(Square1, Square2),
-    horizontal(Square1, Between),
-    horizontal_between(Square1, Square2, Between).
-
-horizontal_between(Square1, Square2, Between) :- left_of(Square1, Between), right_of(Square2, Between).
-horizontal_between(Square1, Square2, Between) :- left_of(Square2, Between), right_of(Square1, Between).
-    
-
-vertical(Square1, Square2) :-
-    square([X2, _], Square1), 
-    square([X2, _], Square2),
-
-    not_equal(Square1, Square2).
-
-vertical(Square1, Square2, Between) :-
-    vertical(Square1, Square2),
-    vertical(Square1, Between),
-    vertical_between(Square1, Square2, Between).
-
-vertical_between(Square1, Square2, Between) :- below(Square1, Between), above(Square2, Between).
-vertical_between(Square1, Square2, Between) :- below(Square2, Between), above(Square1, Between).
+diagonal(StartSquare, EndSquare, Diagonal, Direction) :-
+  Diagonal = [ StartSquare | Rest ],
+  diagonal(Diagonal, Direction),
+  append(_, [EndSquare], Rest).
 
 
-straight(Square1, Square2) :- vertical(Square1, Square2) ; horizontal(Square1, Square2).
-
-straight(Square1, Square2, Between) :- vertical(Square1, Square2, Between) ; horizontal(Square1, Square2, Between).
-
-can_reach(queen, Source, Target, Between) :- can_reach(rook, Source, Target, Between) ; can_reach(bishop, Source, Target, Between).
-
-can_reach(king, Source, Target, []) :- distance(Source, Target, 2), diagonal(Source, Target).
-can_reach(king, Source, Target, []) :- distance(Source, Target, 1), straight(Source, Target).
-
-can_reach(knight, Source, Target, []) :- knights_jump(Source, Target).
-
-can_reach(bishop, Source, Target, []) :- distance(Source, Target, 2), diagonal(Source, Target). 
-can_reach(bishop, Source, Target, Between) :- setof(X, diagonal(Source, Target, X), Between).
-
-can_reach(rook, Source, Target, []) :- distance(Source, Target, 1), straight(Source, Target).
-can_reach(rook, Source, Target, Between) :- setof(X, straight(Source, Target, X), Between).
+diagonal([ Square | Diagonal], Direction) :-
+  square(Square),
+  member(Direction, [ up_right, up_left, down_right, down_left ]),
+  sequence(Square, Direction, Diagonal).
 
 
-can_capture(Officer, Source, Target, Between) :- officer(Officer), can_reach(Officer, Source, Target, Between).
+line([ Square | Line], Direction) :-
+  square(Square),
+  member(Direction, [up, down, left, right]),
+  sequence(Square, Direction, Line).
 
 
-% Determine if a piece can capture a given square
-% First argument is a piece
-% Second argument is the source square
-% Third argument is target square
-% Fourth argument will be a list of all squares in between source and target
-piece_can_capture([_, Officer], Source, Target, Between) :- 
-    officer(Officer), 
-    can_capture(Officer, Source, Target, Between).
-
-piece_can_capture([white, pawn], Source, Target, []) :-
-    distance(Source, Target, 2),
-    diagonal(Source, Target),
-    below(Source, Target).
-
-piece_can_capture([black, pawn], Source, Target, []) :-
-    distance(Source, Target, 2),
-    diagonal(Source, Target),
-    below(Target, Source).
+sequence(Square, Direction, [Square2 | Squares]) :-
+  offset(Square, Square2, Direction),
+  sequence(Square2, Direction, Squares).
 
 
-% Determine if a piece can reach a given square
-% First argument is a piece
-% Second argument is the source square
-% Third argument is target square
-% Fourth argument will be a list of all squares in between source and target
-piece_can_reach([_, Officer], Source, Target, Between) :-
-    officer(Officer),
-    can_reach(Officer, Source, Target, Between).
+sequence(_, _, []).
 
-piece_can_reach([white, pawn], Source, Target, []) :-
-    distance(Source, Target, 1),
-    vertical(Source, Target),
-    below(Source, Target).
-
-piece_can_reach([black, pawn], Source, Target, []) :-
-    distance(Source, Target, 1),
-    vertical(Source, Target),
-    below(Target, Source).
+square([square, X, Y]) :-
+  between(0, 7, X),
+  between(0, 7, Y).
 
 
-piece_can(captures, Pc, Source, Target, Between) :-
-    piece_can_capture(Pc, Source, Target, Between).
-
-piece_can(moves, Pc, Source, Target, Between) :-
-    piece_can_reach(Pc, Source, Target, Between).
+square(X, Y) :-
+  between(0, 7, X),
+  between(0, 7, Y).
 
 
-not_equal(Square1, Square2) :-
-    square:square([X1, Y1], Square1),
-    square:square([X2, Y2], Square2),
-    (X1 #\= X2 ; Y1 #\= Y2).
+%
+% Diagonal
+%
+offset([square, X, Y], [square, X2, Y2], up_right) :-
+  square(X, Y), square(X2, Y2),
+  succ(X, X2),
+  succ(Y, Y2).
 
 
-below(Square1, Square2) :-
-    square:square([_, Y1], Square1),
-    square:square([_, Y2], Square2),
-    Y1 #< Y2.
+offset([square, X, Y], [square, X2, Y2], up_left) :-
+  square(X, Y), square(X2, Y2),
+  succ(X2, X),
+  succ(Y, Y2).
 
-above(Square1, Square2) :-
-    square:square([_, Y1], Square1),
-    square:square([_, Y2], Square2),
-    Y1 #> Y2.
 
-left_of(Square1, Square2) :-
-    square:square([X1, _], Square1),
-    square:square([X2, _], Square2),
-    X1 #< X2.
+offset([square, X, Y], [square, X2, Y2], down_right) :-
+  square(X, Y), square(X2, Y2),
+  succ(X, X2),
+  succ(Y2, Y).
 
-right_of(Square1, Square2) :-
-    square:square([X1, _], Square1),
-    square:square([X2, _], Square2),
-    X1 #> X2.
 
-horizontally_relative(Square1, Square2, right_of) :-
-    right_of(Square1, Square2).
+offset([square, X, Y], [square, X2, Y2], down_left) :-
+  square(X, Y), square(X2, Y2),
+  succ(X2, X),
+  succ(Y2, Y).
 
-horizontally_relative(Square1, Square2, left_of) :-
-    left_of(Square1, Square2).
+%
+% Straight
+%
+offset([square, X, Y], [square, X2, Y], right) :-
+  square(X, Y), square(X2, Y),
+  succ(X, X2).
 
-vertically_relative(Square1, Square2, above) :-
-    above(Square1, Square2).
 
-vertically_relative(Square1, Square2, below) :-
-    below(Square1, Square2).
+offset([square, X, Y], [square, X2, Y], left) :-
+  square(X, Y), square(X2, Y),
+  succ(X2, X).
 
-passant_square(Source, Destination, PassantSquare) :-
-    horizontally_relative(Source, Destination, V),
-    horizontally_relative(Source, PassantSquare, V),
 
-    rank(Source, R), rank(PassantSquare, R).
+offset([square, X, Y], [square, X, Y2], up) :-
+  square(X, Y), square(X, Y2),
+  succ(Y, Y2).
+
+
+offset([square, X, Y], [square, X, Y2], down) :-
+  square(X, Y), square(X, Y2),
+  succ(Y2, Y).
+
+
+
+
+%
+%  Pawn Logic
+%
+pawn_move_square([piece, pawn, white], [square, X, Y], [square, X, Y2]) :-
+  succ(Y, Y2).
+
+pawn_move_square([piece, pawn, white], [square, X, Y], [square, X, Y2]) :-
+  % Second rank pawns can walk two steps
+  rank(X, "2", []),
+  succ(Y, Y1), succ(Y1, Y2).
+
+pawn_move_square([piece, pawn, white], [square, X, Y], [square, X, Y2]) :-
+  % Seventh rank pawns can walk two steps
+  rank(X, "7", []),
+  succ(Y2, Y1), succ(Y1, Y).
+
+pawn_move_square([piece, pawn, black], [square, X, Y], [square, X, Y2]) :-
+  succ(Y2, Y).
+
+
+
+pawn_capture_square([piece, pawn, Color], Sq, Sq2) :-
+  pawn_direction(capture, Color, Direction),
+  diagonal(Sq, Sq2, [Sq, Sq2], Direction).
+
+
+pawn_direction(move, white, up).
+pawn_direction(move, black, down).
+
+pawn_direction(capture, white, up_right).
+pawn_direction(capture, white, up_left).
+
+pawn_direction(capture, black, down_right).
+pawn_direction(capture, black, down_left).
+
+
 
 
 officer(rook).
