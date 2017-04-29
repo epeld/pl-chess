@@ -48,7 +48,7 @@ possible_move(move, Officer, Src, Dst, P) :-
   possible_move(Officer, Src, Dst, P).
 
 
-possible_move(move, Officer, Src, Dst, P) :-
+possible_move(capture, Officer, Src, Dst, P) :-
   officer(Officer),
   piece_at(P, Dst, [_, Enemy]),
 
