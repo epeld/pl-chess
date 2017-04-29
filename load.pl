@@ -1,8 +1,8 @@
 
-:- use_library(fen).
-:- use_library(pgn).
-:- use_library(movement).
-:- use_library(color).
+:- use_module(fen).
+:- use_module(pgn).
+:- use_module(movement).
+:- use_module(color).
 
 %
 % TODOs
