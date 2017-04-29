@@ -23,6 +23,19 @@ position([position, Board, Turn, Rights, Passant, HalfMoveNr, FullMoveNr]) -->
     nat(FullMoveNr).
 
 
+piece_at([position, B | _], Square, Piece) :-
+  piece_at(B, Square, Piece).
+
+
+piece_at([board, Rows], [square, X, Y], Piece) :-
+  movement:square(X, Y),
+
+  % Flip the y-coord becaues FEN stores 'black' rows first
+  plus(Y0, Y, 7),
+  nth0(Y0, Rows, Row),
+  nth0(X, Row, Piece).
+
+
 space --> " ".
     
 
