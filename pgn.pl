@@ -23,11 +23,9 @@ compatible(nothing, _Square).
 
 
 possible_move(capture, pawn, Src, Dst, P) :-
-  ( piece_at(P, Dst, [_, Enemy])
+  ( piece_at(P, Dst, [_, Enemy]), turn(P, Color), opposite(Color, Enemy)
   ; passant(P, Dst) ),
   
-  turn(P, Color),
-  opposite(Color, Enemy),
   pawn_capture_square(Color, Src, Dst).
 
 possible_move(move, pawn, Src, Dst, P) :-
@@ -92,5 +90,6 @@ middle_is_nothing(P,Squares) :-
 
 diagonal_mover(bishop).
 diagonal_mover(queen).
+
 straight_mover(queen).
 straight_mover(rook).
