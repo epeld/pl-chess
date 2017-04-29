@@ -51,12 +51,20 @@ nat(N) -->
 passant_square(nothing) --> "-".
 passant_square(Square) --> square(Square).
 
+
+square_codes(Square, Codes) :-
+  square(Square, Codes, []).
+
 square([square, X, Y]) -->
-  {
-    nth0(X, "abcdefgh", File),
-    nth0(Y, "12345678", Rank)
-  },
-  [File, Rank].
+  file(X), rank(Y).
+
+
+rank(Y, [Char | Rest], Rest) :-
+  nth0(Y, "12345678", Char).
+
+file(X, [Char | Rest], Rest) :-
+  nth0(X, "abcdefgh", Char).
+  
   
 
 
