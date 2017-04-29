@@ -23,6 +23,12 @@ position([position, Board, Turn, Rights, Passant, HalfMoveNr, FullMoveNr]) -->
     nat(FullMoveNr).
 
 
+turn([position, _, Turn | _], Turn).
+passant([position, _, _, Passant | _], Passant).
+rights([position, _ , _, _, Rights | _], Rights).
+half_move([position, _ , _, _, _, HalfMoveNr | _], HalfMoveNr).
+full_move([position, _ , _, _, _, _, FullMoveNr | _], FullMoveNr).
+
 piece_at([position, B | _], Square, Piece) :-
   piece_at(B, Square, Piece).
 
