@@ -193,10 +193,10 @@ rle_piece(Elements, N, N1) -->
 
 
 piece(Piece) -->
-  [Char],
   {
     piece_char(Piece, Char)
-  }.
+  },
+  [Char].
 
 
 piece_char([PieceType, white], Char) :-
