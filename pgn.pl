@@ -99,6 +99,8 @@ straight_mover(rook).
 %  Parsing
 %
 
+move(Castles) --> castles(Castles).
+
 move([move, OfficerType, SourceHint, MoveType, Destination]) -->
   officer(OfficerType),
   source_hint(SourceHint),
@@ -146,3 +148,6 @@ officer(OfficerType) -->
     fen:piece_char([OfficerType, white], Char)
   },
   [Char].
+
+castles([castles, queenside]) --> "O-O-O".
+castles([castles, kingside]) --> "O-O".
