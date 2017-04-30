@@ -93,3 +93,56 @@ diagonal_mover(queen).
 
 straight_mover(queen).
 straight_mover(rook).
+
+
+%
+%  Parsing
+%
+
+move([move, OfficerType, SourceHint, MoveType, Destination]) -->
+  officer(OfficerType),
+  source_hint(SourceHint),
+  move_type(MoveType),
+  fen:square(Destination).
+
+
+move([move, pawn, SourceHint, MoveType, Destination, Promotion]) -->
+  source_hint(SourceHint), { \+ SourceHint == [rank, _ ] } , 
+  move_type(MoveType), 
+  fen:square(Destination),
+  promotion(Promotion).
+
+
+move_type(move) --> [].
+move_type(capture) --> "x".
+
+source_hint([file, File]) -->
+  {
+    member(File, "abcdefgh")
+  },
+  [File].
+
+source_hint([rank, Rank]) -->
+  {
+    member(Rank, "12345678")
+  },
+  [Rank].
+
+source_hint(Square) -->
+  fen:square(Square).
+
+
+source_hint(nothing) --> [].
+
+
+promotion(nothing) --> [].
+promotion(OfficerType) -->
+  "=",
+  officer(OfficerType).
+
+officer(OfficerType) -->
+  {
+    movement:officer(OfficerType),
+    fen:piece_char([OfficerType, white], Char)
+  },
+  [Char].
