@@ -28,8 +28,9 @@ diagonal([ Square | Diagonal], Direction) :-
 
 
 line(StartSquare, EndSquare, Line, Direction) :-
+  Line = [StartSquare | Rest],
   line(Line, Direction),
-  append([ [StartSquare], _, [EndSquare] ], Line).
+  append(_, [EndSquare], Rest).
 
 
 line([ Square | Line], Direction) :-
