@@ -21,9 +21,9 @@ source_square([move, pawn, Hint, MoveType, Destination, _Promo], Position, Sourc
 
 
 source_square2(PieceType, Hint, MoveType, Destination, Position, SourceSquare) :-
-  movement:square(SourceSquare),
-  fen:piece_at(Position, SourceSquare, [PieceType, Color]),
   fen:turn(Position, Color),
+  fen:piece_at(Position, SourceSquare, [PieceType, Color]),
+  movement:square(SourceSquare),
   possible_move(MoveType, PieceType, SourceSquare, Destination, Position),
   compatible(Hint, SourceSquare).
 
@@ -38,7 +38,7 @@ possible_move(capture, pawn, Src, Dst, P) :-
   ( fen:piece_at(P, Dst, [_, Enemy]), fen:turn(P, Color), color:opposite(Color, Enemy)
   ; fen:passant(P, Dst) ),
   
-  pawn_capture_square(Color, Src, Dst).
+  movement:pawn_capture_square(Color, Src, Dst).
 
 possible_move(move, pawn, Src, Dst, P) :-
   fen:piece_at(P, Dst, nothing),
@@ -63,14 +63,14 @@ possible_move(capture, Officer, Src, Dst, P) :-
   fen:piece_at(P, Dst, [_, Enemy]),
 
   fen:turn(P, Color),
-  fen:opposite(Color, Enemy),
+  color:opposite(Color, Enemy),
 
   possible_move(Officer, Src, Dst, P).
 
 
 possible_move(DiagonalMover, Src, Dst, P) :-
   diagonal_mover(DiagonalMover),
-  diagonal(Src, Dst, Diagonal, _),
+  movement:diagonal(Src, Dst, Diagonal, _),
   middle_is_nothing(P,Diagonal).
 
 
@@ -81,7 +81,7 @@ possible_move(StraightMover, Src, Dst, P) :-
 
 
 possible_move(king, Src, Dst, _P) :-
-  diagonal(Src, Dst, Diagonal, _),
+  movement:diagonal(Src, Dst, Diagonal, _),
   length(Diagonal, 2).
 
 
@@ -96,7 +96,7 @@ possible_move(knight, Src, Dst, _P) :-
 
 middle_is_nothing(P,Squares) :-
   append([ [_], Middle, [_] ], Squares),
-  maplist(piece_at(P), Middle, Pieces),
+  maplist(fen:piece_at(P), Middle, Pieces),
   maplist(=(nothing), Pieces).
 
 
@@ -163,3 +163,8 @@ officer(OfficerType) -->
 
 castles([castles, queenside]) --> "O-O-O".
 castles([castles, kingside]) --> "O-O".
+
+
+available_moves(Position) :-
+  fen:square(SourceSquare),
+  full_move(Position, Move, Move).
