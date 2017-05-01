@@ -112,12 +112,12 @@ pawn_move_square(white, [square, X, Y], [square, X, Y2]) :-
 
 pawn_move_square(white, [square, X, Y], [square, X, Y2]) :-
   % Second rank pawns can walk two steps
-  rank(X, "2", []),
+  fen:rank(X, "2", []),
   succ(Y, Y1), succ(Y1, Y2).
 
 pawn_move_square(white, [square, X, Y], [square, X, Y2]) :-
   % Seventh rank pawns can walk two steps
-  rank(X, "7", []),
+  fen:rank(X, "7", []),
   succ(Y2, Y1), succ(Y1, Y).
 
 pawn_move_square(black, [square, X, Y], [square, X, Y2]) :-
