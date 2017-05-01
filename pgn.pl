@@ -15,8 +15,8 @@ source_square([move, PieceType, Hint, MoveType, Destination | _], Position, Sour
 
 
 compatible(Square, Square).
-compatible([file, File], [square, _, File]).
-compatible([rank, Rank], [square, Rank, _]).
+compatible([file, File], [square, File, _]).
+compatible([rank, Rank], [square, _, Rank]).
 compatible(nothing, _Square).
 
 
