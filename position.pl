@@ -98,13 +98,14 @@ position_after( [move, pawn, SourceSquare, capture, Destination, nothing]
   fen:piece_at(Board, BehindPassant, [pawn, Turn2]).
 
 
-position_after( [move, Movement:Officer, SourceSquare, MoveType, Destination]
+position_after( [move, Officer, SourceSquare, MoveType, Destination]
                 , Position
                 , [position, Board2, Turn2, Rights2, nothing, HalfMoveNr2, FullMoveNr2] ) :-
   Position = [position, Board, Turn, Rights, _, HalfMoveNr, FullMoveNr],
   
-  movement:officer(Movement:Officer),
+  movement:officer(Officer),
   Rights = Rights2, % TODO!
+
 
   % HalfMove = move since the last pawn move or capture
   ( MoveType = capture, HalfMoveNr2 = 0
@@ -113,14 +114,14 @@ position_after( [move, Movement:Officer, SourceSquare, MoveType, Destination]
   next_full_move_nr(Turn, FullMoveNr, FullMoveNr2),
   color:opposite(Turn, Turn2),
 
-  pgn:possible_move(MoveType, Movement:Officer, SourceSquare, Destination, Position),
+  pgn:possible_move(MoveType, Officer, SourceSquare, Destination, Position),
 
   % Remove piece from source square
   board_replace(SourceSquare, nothing, Board, Board_1),
-  board_replace(Destination, [pawn, Turn], Board_1, Board2),
+  board_replace(Destination, [Officer, Turn], Board_1, Board2),
 
   % Sanity check:
-  fen:piece_at(SourceSquare, Board, [Movement:Officer, Turn]).
+  fen:piece_at(Board, SourceSquare, [Officer, Turn]).
 
 
 
