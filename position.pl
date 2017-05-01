@@ -114,6 +114,7 @@ position_after( [move, Officer, SourceSquare, MoveType, Destination]
   next_full_move_nr(Turn, FullMoveNr, FullMoveNr2),
   color:opposite(Turn, Turn2),
 
+
   pgn:possible_move(MoveType, Officer, SourceSquare, Destination, Position),
 
   % Remove piece from source square
@@ -123,6 +124,27 @@ position_after( [move, Officer, SourceSquare, MoveType, Destination]
   % Sanity check:
   fen:piece_at(Board, SourceSquare, [Officer, Turn]).
 
+
+% TODO handle castling
+
+positions_after_pgn(InitialPosition, Moves, Positions) :-
+  ground(Moves), ground(InitialPosition),
+  
+  length(Moves, N), length(Positions, N), length(Positions_, N), length(RealMoves, N),
+  
+  maplist(pgn:pgn_string, RealMoves, Moves),
+  
+  positions_after_all(InitialPosition, RealMoves, Positions_),
+  maplist(fen:string, Positions_, Positions).
+
+positions_after_all(_, [], _).
+
+positions_after_all(InitialPosition, [Move | Moves], [Position1 | Positions]) :-
+  pgn:unique_full_move(InitialPosition, Move, FullMove),
+  position_after(FullMove, InitialPosition, Position1),
+  positions_after_all(Position1, Moves, Positions).
+
+  
 
 
 %
@@ -145,6 +167,7 @@ promote([square, X, Y], Promotion, Board, Board2) :-
 %  Misc Helpers
 %
 next_full_move_nr(black, Nr, Nr2) :- succ(Nr, Nr2).
+next_full_move_nr(white, Nr, Nr).
 
 rights_after(Source, Destination, Rights, Rights2) :-
   Rights = Rights2. % TODO
