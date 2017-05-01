@@ -77,7 +77,7 @@ possible_move(king, Src, Dst, _P) :-
 
 
 possible_move(knight, Src, Dst, _P) :-
-  knights_jump(Src, Dst).
+  movement:knights_jump(Src, Dst).
 
 
 middle_is_nothing(P,Squares) :-
