@@ -5,7 +5,8 @@ string(Position, String) :-
 
 initial_position(X) :- initial_fen_string(Fen), string(X, Fen).
 
-initial_fen_string("rnbqkbnr/pp1ppppp/8/2p5/4P3/5N2/PPPP1PPP/RNBQKB1R b KQkq - 1 2").
+%initial_fen_string("rnbqkbnr/pp1ppppp/8/2p5/4P3/5N2/PPPP1PPP/RNBQKB1R b KQkq - 1 2").
+initial_fen_string("rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1").
 
 position([position, Board, Turn, Rights, Passant, HalfMoveNr, FullMoveNr]) -->
     board(Board), 
