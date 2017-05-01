@@ -125,6 +125,18 @@ pawn_move_square(black, [square, X, Y], [square, X, Y2]) :-
 
 
 
+passant_square(Turn, Source, Destination, Passant) :-
+  pawn_move_square(Turn, Source, Destination),
+  
+  line(Source, Destination, Line, _),
+  ( append([[Source], [Passant], [Destination]], Line)
+  
+  ; Passant = nothing ).
+
+
+pawn_square(capture, Color, Sq, Sq2) :- pawn_capture_square(Color, Sq, Sq2).
+pawn_square(move, Color, Sq, Sq2) :- pawn_move_square(Color, Sq, Sq2).
+
 pawn_capture_square(Color, Sq, Sq2) :-
   pawn_direction(capture, Color, Direction),
   diagonal(Sq, Sq2, [Sq, Sq2], Direction).
