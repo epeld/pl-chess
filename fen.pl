@@ -34,11 +34,15 @@ piece_at([position, B | _], Square, Piece) :-
 piece_at([board, Rows], [square, X, Y], Piece) :-
   movement:square(X, Y),
 
-  % Flip the y-coord becaues FEN stores 'black' rows first
-  plus(Y0, Y, 7),
+  fen_y_coord(Y, Y0),
+  
   nth0(Y0, Rows, Row),
   nth0(X, Row, Piece).
 
+
+% Flip the y-coord becaues FEN stores 'black' rows first
+fen_y_coord(FenCoord, CartesianCoord) :-
+  plus(FenCoord, CartesianCoord, 7).
 
 space --> " ".
     
