@@ -1,17 +1,17 @@
 :- module(pgn, []).
 
 
-full_move(Move, FullMove) :-
-  source_square(Move, SourceSquare),
+full_move(Position, Move, FullMove) :-
+  source_square(Move, Position, SourceSquare),
   position:list_replace(2, SourceSquare, Move, FullMove).
 
 
 source_square([move, PieceType, Hint, MoveType, Destination | _], Position, SourceSquare) :-
-  square(SourceSquare),
-  piece_at(Position, SourceSquare, [PieceType, Color]),
-  turn(Position, Color),
+  movement:square(SourceSquare),
+  fen:piece_at(Position, SourceSquare, [PieceType, Color]),
+  fen:turn(Position, Color),
   possible_move(MoveType, PieceType, SourceSquare, Destination, Position),
-  compatible(SourceSquare, Hint).
+  compatible(Hint, SourceSquare).
 
 
 compatible(Square, Square).
@@ -21,35 +21,35 @@ compatible(nothing, _Square).
 
 
 possible_move(capture, pawn, Src, Dst, P) :-
-  ( piece_at(P, Dst, [_, Enemy]), turn(P, Color), opposite(Color, Enemy)
-  ; passant(P, Dst) ),
+  ( fen:piece_at(P, Dst, [_, Enemy]), fen:turn(P, Color), color:opposite(Color, Enemy)
+  ; fen:passant(P, Dst) ),
   
   pawn_capture_square(Color, Src, Dst).
 
 possible_move(move, pawn, Src, Dst, P) :-
-  piece_at(P, Dst, nothing),
+  fen:piece_at(P, Dst, nothing),
 
-  pawn_move_square(Color, Src, Dst),
-  turn(P, Color),
+  movement:pawn_move_square(Color, Src, Dst),
+  fen:turn(P, Color),
   
-  line(Src, Dst, Line, _),
+  movement:line(Src, Dst, Line, _),
   append([[Src], Middle, [Dst]], Line),
   maplist(=(nothing), Middle).
 
 
 possible_move(move, Officer, Src, Dst, P) :-
-  officer(Officer),
-  piece_at(P, Dst, nothing),
+  movement:officer(Officer),
+  fen:piece_at(P, Dst, nothing),
 
   possible_move(Officer, Src, Dst, P).
 
 
 possible_move(capture, Officer, Src, Dst, P) :-
-  officer(Officer),
-  piece_at(P, Dst, [_, Enemy]),
+  movement:officer(Officer),
+  fen:piece_at(P, Dst, [_, Enemy]),
 
-  turn(P, Color),
-  opposite(Color, Enemy),
+  fen:turn(P, Color),
+  fen:opposite(Color, Enemy),
 
   possible_move(Officer, Src, Dst, P).
 
@@ -62,7 +62,7 @@ possible_move(DiagonalMover, Src, Dst, P) :-
 
 possible_move(StraightMover, Src, Dst, P) :-
   straight_mover(StraightMover),
-  line(Src, Dst, Line, _),
+  movement:line(Src, Dst, Line, _),
   middle_is_nothing(P,Line).
 
 
@@ -72,7 +72,7 @@ possible_move(king, Src, Dst, _P) :-
 
 
 possible_move(king, Src, Dst, _P) :-
-  line(Src, Dst, Diagonal, _),
+  movement:line(Src, Dst, Diagonal, _),
   length(Diagonal, 2).
 
 
