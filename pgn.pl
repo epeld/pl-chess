@@ -9,16 +9,9 @@ source_square([move, PieceType, Hint, MoveType, Destination], Position, SourceSq
   compatible(SourceSquare, Hint).
 
 
-compatible([file, File], Square) :-
-  square_codes(Square, [File, _]).
-
-
-compatible([rank, Rank], Square) :-
-  square_codes(Square, [_, Rank]).
-
-
 compatible(Square, Square).
-
+compatible([file, File], [square, _, File]).
+compatible([rank, Rank], [square, Rank, _]).
 compatible(nothing, _Square).
 
 
@@ -120,15 +113,15 @@ move_type(capture) --> "x".
 
 source_hint([file, File]) -->
   {
-    member(File, "abcdefgh")
+    nth0(File, "abcdefgh", Char)
   },
-  [File].
+  [Char].
 
 source_hint([rank, Rank]) -->
   {
-    member(Rank, "12345678")
+    nth0(Rank, "12345678", Char)
   },
-  [Rank].
+  [Char].
 
 source_hint(Square) -->
   fen:square(Square).
