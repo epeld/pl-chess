@@ -165,6 +165,14 @@ castles([castles, queenside]) --> "O-O-O".
 castles([castles, kingside]) --> "O-O".
 
 
-available_moves(Position) :-
-  fen:square(SourceSquare),
-  full_move(Position, Move, Move).
+check(Position, SourceSquare) :-
+  Position = [position, Board, Color | Rest],
+  
+  fen:piece_at(Position, KingSquare, [king, Color]),
+  
+  color:opposite(Color, Opponent),
+  Flipped = [position, Board, Opponent | Rest],
+
+  SourceSquare = [square, _X, _Y],
+  full_move(Flipped, [move, _, SourceSquare, capture, KingSquare | _], _).
+
