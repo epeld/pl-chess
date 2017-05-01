@@ -176,3 +176,21 @@ check(Position, SourceSquare) :-
   SourceSquare = [square, _X, _Y],
   full_move(Flipped, [move, _, SourceSquare, capture, KingSquare | _], _).
 
+
+legal(Position, FullMove) :-
+  position_after(FullMove, Position, [position, B, Color | Rest]),
+
+  color:opposite(Color, Opponent),
+  Position2 = [position, B, Opponent | Rest],
+  
+  \+ check(Position2).
+
+
+stalemate(Position) :-
+  \+ check(Position),
+  \+ legal(Position, _Move).
+
+
+checkmate(Position) :-
+  check(Position),
+  \+ legal(Position, _Move).
