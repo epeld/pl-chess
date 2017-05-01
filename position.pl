@@ -6,7 +6,7 @@
 %
 
 list_replace(Ix, Item, [X | List], [ X | Result]) :-
-  nonvar(Ix), nonvar(Item),
+  nonvar(Ix), 
   Ix > 0,
   succ(Ix0, Ix),
   list_replace(Ix0, Item, List, Result).
@@ -15,7 +15,6 @@ list_replace(0, Item, [_ | List], [Item | List]).
 
 
 % Note: This function is inspired by piece_at predicate inside fen-module
-% TODO refactor Y-coord transformation into separate predicate for reuse
 board_replace([square, X, Y], NewPiece, [board, Rows], [board, NewRows]) :-
   movement:square(X, Y),
 
@@ -24,3 +23,125 @@ board_replace([square, X, Y], NewPiece, [board, Rows], [board, NewRows]) :-
   nth0(Y0, Rows, Row),
   list_replace(X, NewPiece, Row, NewRow),
   list_replace(Y0, NewRow, Rows, NewRows).
+
+
+position_after( [move, pawn, SourceSquare, capture, Destination, Promotion]
+                , Position
+                , [position, Board2, Turn2, Rights, nothing, 0, FullMoveNr2] ) :-
+  
+  Position = [position, Board, Turn, Rights, _, _, FullMoveNr],
+  possible_move(capture, pawn, SourceSquare, Destination, Position),
+  
+  next_full_move_nr(Turn, FullMoveNr, FullMoveNr2),
+  color:opposite(Turn, Turn2),
+
+  pawn_capture_square(Turn, SourceSquare, Destination),
+
+  % Remove piece from source square
+  board_replace(SourceSquare, nothing, Board, Board_1),
+  board_replace(Destination, [pawn, Turn], Board_1, Board_2),
+
+  promote(Destination, Promotion, Board_2, Board2),
+
+  % sanity check
+  piece_at(Destination, Board, [pawn, Turn2]),
+  piece_at(SourceSquare, Board, [pawn, Turn]).
+
+
+position_after( [move, pawn, SourceSquare, move, Destination, Promotion]
+                , Position
+                , [position, Board2, Turn2, Rights, nothing, 0, FullMoveNr2] ) :-
+
+  Position = [position, Board, Turn, Rights, _, _, FullMoveNr],
+  possible_move(capture, pawn, SourceSquare, Destination, Position),
+  
+  next_full_move_nr(Turn, FullMoveNr, FullMoveNr2),
+  color:opposite(Turn, Turn2),
+
+  pawn_move_square(Turn, SourceSquare, Destination),
+  passant_square(Turn, SourceSquare, Destination, Passant2),
+
+  % Remove piece from source square
+  board_replace(SourceSquare, nothing, Board, Board_1),
+  board_replace(Destination, [pawn, Turn], Board_1, Board_2),
+
+  promote(Destination, Promotion, Board_2, Board2),
+  
+  % sanity check
+  piece_at(Destination, Board, nothing),
+  piece_at(SourceSquare, Board, [pawn, Turn]),
+  
+  ( piece_at(Passant2, Board, nothing)
+  ; Passant2 = nothing ).
+
+
+position_after( [move, pawn, SourceSquare, capture, Destination, nothing]
+                , Position
+                , [position, Board2, Turn2, Rights, nothing, 0, FullMoveNr2] ) :-
+
+  Position = [position, Board, Turn, Rights, Destination, _, FullMoveNr],
+  
+  next_full_move_nr(Turn, FullMoveNr, FullMoveNr2),
+  color:opposite(Turn, Turn2),
+
+  % Figure out where the enemy pawn is
+  pawn_move_square(Turn, BehindPassant, Destination),
+
+  % Remove piece from source square
+  board_replace(SourceSquare, nothing, Board, Board_1),
+  board_replace(Destination, [pawn, Turn], Board_1, Board_2),
+  board_replace(BehindPassant, nothing, Board_2, Board2),
+
+  % Sanity checks:
+  piece_at(Destination, Board, nothing),
+  piece_at(BehindPassant, Board, [pawn, Turn2]).
+
+
+position_after( [move, Officer, SourceSquare, MoveType, Destination]
+                , Position
+                , [position, Board2, Turn2, Rights2, nothing, HalfMoveNr2, FullMoveNr2] ) :-
+  Position = [position, Board, Turn, Rights, _, HalfMoveNr, FullMoveNr],
+  
+  officer(Officer),
+  Rights = Rights2, % TODO!
+
+  % HalfMove = move since the last pawn move or capture
+  ( MoveType = capture, HalfMoveNr2 = 0
+  ; MoveType = move, succ(HalfMoveNr, HalfMoveNr2) ),
+
+  next_full_move_nr(Turn, FullMoveNr, FullMoveNr2),
+  color:opposite(Turn, Turn2),
+
+  possible_move(MoveType, Officer, SourceSquare, Destination, Position),
+
+  % Remove piece from source square
+  board_replace(SourceSquare, nothing, Board, Board_1),
+  board_replace(Destination, [pawn, Turn], Board_1, Board2),
+
+  % Sanity check:
+  piece_at(SourceSquare, Board, [Officer, Turn]).
+
+
+
+%
+% Promotion helper
+%
+promote([square, X, Y], nothing, Board, Board) :-
+  last_pawn_rank(Color, LastRank),
+  LastRank =\= Y,
+  piece_at([square, X, Y], Board, [pawn, Color]).
+
+promote([square, X, Y], Promotion, Board, Board2) :-
+  officer(Promotion),
+  last_pawn_rank(Color, Y),
+  piece_at([square, X, Y], Board, [pawn, Color]),
+  board_replace([square, X, Y], [Promotion, Color], Board, Board2).
+
+
+%
+%  Misc Helpers
+%
+next_full_move_nr(black, Nr, Nr2) :- succ(Nr, Nr2).
+
+rights_after(Source, Destination, Rights, Rights2) :-
+  Rights = Rights2. % TODO
