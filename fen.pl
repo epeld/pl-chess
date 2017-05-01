@@ -57,7 +57,7 @@ digits([Digit]) -->
 
 digit(Digit) -->
   {
-    member(Digit, "123456789")
+    member(Digit, "1234567890")
   },
   [Digit].
 
