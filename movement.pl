@@ -10,6 +10,8 @@ knights_jump([square, X1, Y1], [square, X2, Y2]) :-
   abs(XDif, XDif2),
   abs(YDif, YDif2),
 
+  XDif2 > 0, YDif2 > 0,
+
   plus(XDif2, YDif2, 3).
 
 
