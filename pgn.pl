@@ -1,7 +1,12 @@
 :- module(pgn, []).
 
 
-source_square([move, PieceType, Hint, MoveType, Destination], Position, SourceSquare) :-
+full_move(Move, FullMove) :-
+  source_square(Move, SourceSquare),
+  position:list_replace(2, SourceSquare, Move, FullMove).
+
+
+source_square([move, PieceType, Hint, MoveType, Destination | _], Position, SourceSquare) :-
   square(SourceSquare),
   piece_at(Position, SourceSquare, [PieceType, Color]),
   turn(Position, Color),
