@@ -1,12 +1,26 @@
 :- module(pgn, []).
 
+pgn_string(Move, String) :-
+  phrase(move(Move), String).
+
+unique_full_move(Position, Move, FullMove) :-
+  findall(FullMove0, full_move(Position, Move, FullMove0), FullMoves),
+  FullMoves = [FullMove].
 
 full_move(Position, Move, FullMove) :-
   source_square(Move, Position, SourceSquare),
   position:list_replace(2, SourceSquare, Move, FullMove).
 
 
-source_square([move, PieceType, Hint, MoveType, Destination | _], Position, SourceSquare) :-
+source_square([move, PieceType, Hint, MoveType, Destination], Position, SourceSquare) :-
+  movement:officer(PieceType),
+  source_square2(PieceType, Hint, MoveType, Destination, Position, SourceSquare).
+
+source_square([move, pawn, Hint, MoveType, Destination, _Promo], Position, SourceSquare) :-
+  source_square2(pawn, Hint, MoveType, Destination, Position, SourceSquare).
+
+
+source_square2(PieceType, Hint, MoveType, Destination, Position, SourceSquare) :-
   movement:square(SourceSquare),
   fen:piece_at(Position, SourceSquare, [PieceType, Color]),
   fen:turn(Position, Color),
@@ -39,8 +53,8 @@ possible_move(move, pawn, Src, Dst, P) :-
 
 possible_move(move, Officer, Src, Dst, P) :-
   movement:officer(Officer),
+  
   fen:piece_at(P, Dst, nothing),
-
   possible_move(Officer, Src, Dst, P).
 
 
