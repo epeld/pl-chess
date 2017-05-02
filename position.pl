@@ -104,7 +104,7 @@ position_after( [move, Officer, SourceSquare, MoveType, Destination]
   Position = [position, Board, Turn, Rights, _, HalfMoveNr, FullMoveNr],
   
   movement:officer(Officer),
-  Rights = Rights2, % TODO!
+  rights_after(SourceSquare, Destination, Rights, Rights2),
 
 
   % HalfMove = move since the last pawn move or capture
@@ -124,8 +124,6 @@ position_after( [move, Officer, SourceSquare, MoveType, Destination]
   % Sanity check:
   fen:piece_at(Board, SourceSquare, [Officer, Turn]).
 
-
-% TODO handle castling
 
 positions_after_pgn(InitialPosition, Moves, Positions) :-
   ground(Moves), ground(InitialPosition),
@@ -170,4 +168,31 @@ next_full_move_nr(black, Nr, Nr2) :- succ(Nr, Nr2).
 next_full_move_nr(white, Nr, Nr).
 
 rights_after(Source, Destination, Rights, Rights2) :-
-  Rights = Rights2. % TODO
+  rights_after(Source, Rights, Rights1),
+  rights_after(Destination, Rights1, Rights2).
+
+rights_after(Square, Rights, Rights2) :-
+  fen:square_codes(Square, "e1"),
+  delete(Rights, [_, white], Rights2).
+
+rights_after(Square, Rights, Rights2) :-
+  fen:square_codes(Square, "a1"),
+  delete(Rights, [queen, white], Rights2).
+
+rights_after(Square, Rights, Rights2) :-
+  fen:square_codes(Square, "h1"),
+  delete(Rights, [king, white], Rights2).
+
+
+rights_after(Square, Rights, Rights2) :-
+  fen:square_codes(Square, "h8"),
+  delete(Rights, [king, black], Rights2).
+
+rights_after(Square, Rights, Rights2) :-
+  fen:square_codes(Square, "a8"),
+  delete(Rights, [queen, black], Rights2).
+
+
+rights_after(Square, Rights, Rights2) :-
+  fen:square_codes(Square, "e8"),
+  delete(Rights, [_, black], Rights2).
