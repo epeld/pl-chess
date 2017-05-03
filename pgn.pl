@@ -194,3 +194,18 @@ stalemate(Position) :-
 checkmate(Position) :-
   check(Position),
   \+ legal(Position, _Move).
+
+
+castling_possible(Side, Position) :-
+  Position = [position, Turn, _, _, _, _],
+  
+  color:initial_king_square(Turn, Start),
+  color:castled_king_square(Turn, Side, End),
+  movement:line(Start, End, Line, _),
+  append([ [Start], Middle, [End] ], Line),
+
+  
+  member(Square, Middle),
+  full_move(Position, [move, _, _, capture, Square | _], _),
+  !.
+   

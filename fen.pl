@@ -112,11 +112,11 @@ pick([], []).
 
 castling_right([Side, white], Char) :-
   nth0(Ix, "KQ", Char),
-  nth0(Ix, [king, queen], Side).
+  nth0(Ix, [kingside, queenside], Side).
 
 castling_right([Side, black], Char) :-
   nth0(Ix, "kq", Char),
-  nth0(Ix, [king, queen], Side).
+  nth0(Ix, [kingside, queenside], Side).
 
 
 turn(white) --> "w".

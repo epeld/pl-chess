@@ -25,6 +25,36 @@ board_replace([square, X, Y], NewPiece, [board, Rows], [board, NewRows]) :-
   list_replace(Y0, NewRow, Rows, NewRows).
 
 
+position_after(Castles,
+               Position,
+               Position2) :-
+
+  Castles = [castles, Side],
+
+  pgn:castling_possible(Side, Position),
+  
+  Position = [position, Board, Turn, Rights, _, HalfMoveNr, FullMoveNr],
+  Position2 = [position, Board2, Turn2, Rights2, nothing, HalfMoveNr2, FullMoveNr2],
+  
+  succ(HalfMoveNr, HalfMoveNr2),
+  succ(FullMoveNr, FullMoveNr2),
+
+  color:opposite(Turn, Turn2),
+
+  delete(Rights, [_, Turn], Rights2),
+
+  color:initial_king_square(Turn, KingSquare),
+  color:initial_rook_square(Turn, Side, RookSquare),
+  
+  color:castled_rook_square(Turn, Side, RookSquare2),
+  color:castled_king_square(Turn, Side, KingSquare2),
+
+  board_replace(RookSquare, nothing, Board, Board_1),
+  board_replace(RookSquare2, [rook, Turn], Board_1, Board_2),
+  board_replace(KingSquare, nothing, Board_2, Board_3),
+  board_replace(KingSquare2, [king, Turn], Board_3, Board2).
+
+
 position_after( [move, pawn, SourceSquare, capture, Destination, Promotion]
                 , Position
                 , [position, Board2, Turn2, Rights, nothing, 0, FullMoveNr2] ) :-
@@ -135,7 +165,9 @@ positions_after_pgn(InitialPosition, Moves, Positions) :-
   positions_after_all(InitialPosition, RealMoves, Positions_),
   maplist(fen:string, Positions_, Positions).
 
+
 positions_after_all(_, [], _).
+
 
 positions_after_all(InitialPosition, [Move | Moves], [Position1 | Positions]) :-
   pgn:unique_full_move(InitialPosition, Move, FullMove),
@@ -177,20 +209,20 @@ rights_after(Square, Rights, Rights2) :-
 
 rights_after(Square, Rights, Rights2) :-
   fen:square_codes(Square, "a1"),
-  delete(Rights, [queen, white], Rights2).
+  delete(Rights, [queenside, white], Rights2).
 
 rights_after(Square, Rights, Rights2) :-
   fen:square_codes(Square, "h1"),
-  delete(Rights, [king, white], Rights2).
+  delete(Rights, [kingside, white], Rights2).
 
 
 rights_after(Square, Rights, Rights2) :-
   fen:square_codes(Square, "h8"),
-  delete(Rights, [king, black], Rights2).
+  delete(Rights, [kingside, black], Rights2).
 
 rights_after(Square, Rights, Rights2) :-
   fen:square_codes(Square, "a8"),
-  delete(Rights, [queen, black], Rights2).
+  delete(Rights, [queenside, black], Rights2).
 
 
 rights_after(Square, Rights, Rights2) :-
