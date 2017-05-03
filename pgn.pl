@@ -48,7 +48,9 @@ possible_move(move, pawn, Src, Dst, P) :-
   
   movement:line(Src, Dst, Line, _),
   append([[Src], Middle, [Dst]], Line),
-  maplist(=(nothing), Middle).
+  
+  maplist(fen:piece_at(P), Middle, Pieces),
+  maplist(=(nothing), Pieces).
 
 
 possible_move(move, Officer, Src, Dst, P) :-
