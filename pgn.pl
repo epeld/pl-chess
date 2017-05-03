@@ -22,16 +22,16 @@ source_square([move, pawn, Hint, MoveType, Destination, _Promo], Position, Sourc
 
 source_square2(PieceType, Hint, MoveType, Destination, Position, SourceSquare) :-
   fen:turn(Position, Color),
+  compatible(Hint, SourceSquare),
   fen:piece_at(Position, SourceSquare, [PieceType, Color]),
-  movement:square(SourceSquare),
-  possible_move(MoveType, PieceType, SourceSquare, Destination, Position),
-  compatible(Hint, SourceSquare).
+  possible_move(MoveType, PieceType, SourceSquare, Destination, Position).
 
 
-compatible(Square, Square).
+compatible(Square, Square) :-
+  Square = [square | _].
 compatible([file, File], [square, File, _]).
 compatible([rank, Rank], [square, _, Rank]).
-compatible(nothing, _Square).
+compatible(nothing, [square, _X, _Y]).
 
 
 possible_move(capture, pawn, Src, Dst, P) :-
