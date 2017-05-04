@@ -203,28 +203,34 @@ rights_after(Source, Destination, Rights, Rights2) :-
   rights_after(Source, Rights, Rights1),
   rights_after(Destination, Rights1, Rights2).
 
+
 rights_after(Square, Rights, Rights2) :-
-  fen:square_codes(Square, "e1"),
+  fen:square_codes(Square, "e1"), 
   delete(Rights, [_, white], Rights2).
 
 rights_after(Square, Rights, Rights2) :-
-  fen:square_codes(Square, "a1"),
+  fen:square_codes(Square, "a1"), 
   delete(Rights, [queenside, white], Rights2).
 
 rights_after(Square, Rights, Rights2) :-
-  fen:square_codes(Square, "h1"),
+  fen:square_codes(Square, "h1"), 
   delete(Rights, [kingside, white], Rights2).
 
 
 rights_after(Square, Rights, Rights2) :-
-  fen:square_codes(Square, "h8"),
+  fen:square_codes(Square, "h8"), 
   delete(Rights, [kingside, black], Rights2).
 
 rights_after(Square, Rights, Rights2) :-
-  fen:square_codes(Square, "a8"),
+  fen:square_codes(Square, "a8"), 
   delete(Rights, [queenside, black], Rights2).
 
 
 rights_after(Square, Rights, Rights2) :-
-  fen:square_codes(Square, "e8"),
+  fen:square_codes(Square, "e8"), 
   delete(Rights, [_, black], Rights2).
+
+rights_after(Square, Rights, Rights) :-
+  maplist(fen:square_codes, SpecialSquares, ["a1", "h1", "e1", "a8", "h8", "e8"]),
+  \+ member(Square, SpecialSquares).
+  
