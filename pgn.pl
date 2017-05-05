@@ -180,21 +180,21 @@ check(Position, SourceSquare) :-
 
 
 legal(Position, FullMove) :-
-  position_after(FullMove, Position, [position, B, Color | Rest]),
+  position:position_after(FullMove, Position, [position, B, Color | Rest]),
 
   color:opposite(Color, Opponent),
   Position2 = [position, B, Opponent | Rest],
   
-  \+ check(Position2).
+  \+ check(Position2, _).
 
 
 stalemate(Position) :-
-  \+ check(Position),
+  \+ check(Position, _),
   \+ legal(Position, _Move).
 
 
 checkmate(Position) :-
-  check(Position),
+  check(Position, _),
   \+ legal(Position, _Move).
 
 

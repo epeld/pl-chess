@@ -36,6 +36,17 @@ command_name(Command, Codes) :-
 %
 % Definition of commands
 %
+
+evaluate(store, [Name], P, P) :-
+  format("In the future, this would have stored the current position as ~s\n", [Name]).
+
+evaluate(status, [], P, P) :-
+  status_string(P, S),
+  format("~s\n", [S]).
+
+evaluate(initial, [], _, P) :-
+  fen:initial_position(P).
+
 evaluate(position, [FENString], _, P) :-
   fen:position(P, FENString, []).
 
@@ -43,9 +54,12 @@ evaluate(move, [MoveString | Moves], P, P2) :-
   pgn:pgn_string(Move, MoveString),
   
   pgn:full_move(P, Move, FullMove),
+  
   pgn:pgn_string(FullMove, Str),
-  format("~s\n", [Str]), % TODO plug in different notations here
   position:position_after(FullMove, P, P1),
+  check_info(P1, Extra),
+  
+  format("~s~s\n", [Str, Extra]), % TODO plug in different notations here
   evaluate(move, Moves, P1, P2).
 
 evaluate(move, [], P, P).
@@ -69,7 +83,8 @@ repl(A, B) :-
 
 inner_repl(Position, Transcript) :-
   fen:string(Position, Str),
-  format("Position: ~s\n", [Str]),
+  status_string(Position, StatusStr),
+  format("Position: ~s\n~s\n", [Str, StatusStr]),
   format("> "),
   read_line_to_codes(user_input, Line),
 
@@ -83,3 +98,32 @@ inner_repl(Position, Transcript) :-
   format("Error! Something went wrong. \n"),
   repl(Position, Transcript).
 
+
+%
+% Status
+%
+
+check_info(Position, "#") :-
+  pgn:checkmate(Position).
+
+check_info(Position, "+") :-
+  \+ pgn:checkmate(Position),
+  pgn:check(Position, _).
+
+check_info(Position, "") :-
+  \+ pgn:check(Position, _).
+
+
+
+status_string(Position, "MATE") :-
+  pgn:checkmate(Position).
+
+status_string(Position, "STALEMATE") :-
+  pgn:stalemate(Position).
+
+status_string(Position, "CHECK") :-
+  \+ pgn:checkmate(Position),
+  pgn:check(Position, _).
+
+status_string(Position, "") :-
+  \+ pgn:check(Position, _).
