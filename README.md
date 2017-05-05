@@ -8,6 +8,9 @@ The intent is not to implement a chess engine, but rather to create utilities to
 parse FEN-strings, PGN-moves, to verify move correctness, to generate a list of legal moves
 etc.
 
+# Requirements
+
+This project works well with SWI-Prolog 6.6.4. Note that for newer versions you might need to configure your system to interpret strings as lists of character codes.
 
 # Usage
 
