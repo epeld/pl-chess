@@ -12,6 +12,7 @@ evaluate(move, [Move | Moves], P, P2) :-
 
 evaluate(move, [], P, P).
 
+command(abort, abort) --> "abort".
 
 command(position, P) -->
   position(P).
@@ -36,9 +37,9 @@ many_moves([Move | Moves]) -->
 
 repl :-
   fen:initial_position(P),
-  repl(P).
+  repl(P, []).
 
-repl(Position) :-
+repl(Position, Transcript) :-
   fen:string(Position, Str),
   format("Position: ~s\n", [Str]),
   format("> "),
@@ -46,10 +47,14 @@ repl(Position) :-
 
   command(Command, Arg, Line, []),
 
-  evaluate(Command, Arg, Position, Position2), !,
-  repl(Position2).
+  % Allow the user to terminate if he wishes:
+  ( Command = abort,
+    !
+  
+  ; evaluate(Command, Arg, Position, Position2), !,
+    repl(Position2, [[Command, Arg] | Transcript]) ).
 
-repl(Position) :-
+repl(Position, Transcript) :-
   !,
   format("Error! Something went wrong. \n"),
-  repl(Position).
+  repl(Position, Transcript).
