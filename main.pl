@@ -51,7 +51,8 @@ repl(Position, Transcript) :-
   ( Command = abort,
     !
   
-  ; evaluate(Command, Arg, Position, Position2), !,
+  ; !,
+    evaluate(Command, Arg, Position, Position2), 
     repl(Position2, [[Command, Arg] | Transcript]) ).
 
 repl(Position, Transcript) :-
