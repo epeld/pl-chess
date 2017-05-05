@@ -4,9 +4,7 @@
 :- use_module(movement).
 :- use_module(color).
 :- use_module(position).
+:- use_module(main).
 
-%
-% TODOs
-% 1. Write position update logic (for actually making moves)
-% 2. Write PGN parsing logic
-% 3. Done?!
+
+
