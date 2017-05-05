@@ -36,3 +36,39 @@ A standalone program can be built using the makefile:
     make
     
 .. which should create an executable "fen" in the project root
+
+
+# TODOs
+
+## PGN File Parsing
+
+The CLI can be extended with the ability to edit/process PGN files. If we represent the game as a tree,
+the user can be allowed to edit and prune variations as well as add comments.
+
+## CLI Options
+
+The CLI can be extended with options for how to represent moves and how much it should print.
+This can be useful if we later decide to create a GUI frontend, in which case we should simplify
+the output for easier parsing.
+
+## Checks And Other Indicators
+
+Currently, the CLI seems to disregard checks, stalemates etc completely. Even though it has
+the ability to determine them. These indicators should be added to the CLI output when applicable.
+
+## Auto-generated Test Cases
+
+The CLI should get a command for converting the current state into a test case that can later be
+fixed. This allows for quicker bug fix progress as well as being a really cool feature.
+
+## GUI
+
+A GUI could communicate with the CLI easily, using e.g the CLI's stdout and stdin to issue commands.
+Potential technologies for use here are: Java (Swing), Javascript (e.g angular/react web UI) or Prolog.
+
+## Chess Game Database Procedures
+
+A very useful feature is the ability to search through vast amounts of games stored in database,
+ looking for e.g a specific position or something similar (Scid is an example of a chess database
+ that can do this). It would be nice to extend the CLI with the ability to query Scids database
+ files for a given position.
