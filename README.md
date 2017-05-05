@@ -51,11 +51,6 @@ The CLI can be extended with options for how to represent moves and how much it 
 This can be useful if we later decide to create a GUI frontend, in which case we should simplify
 the output for easier parsing.
 
-## Checks And Other Indicators
-
-Currently, the CLI seems to disregard checks, stalemates etc completely. Even though it has
-the ability to determine them. These indicators should be added to the CLI output when applicable.
-
 ## Auto-generated Test Cases
 
 The CLI should get a command for converting the current state into a test case that can later be
