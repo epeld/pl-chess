@@ -61,7 +61,16 @@ repl :-
   fen:initial_position(P),
   repl(P, []).
 
-repl(Position, Transcript) :-
+repl(A, B) :-
+  catch(
+    inner_repl(A, B),
+    Exception,
+    (
+      format("Caught ~a.\n", [Exception]),
+      halt
+    )).
+
+inner_repl(Position, Transcript) :-
   fen:string(Position, Str),
   format("Position: ~s\n", [Str]),
   format("> "),
@@ -70,9 +79,9 @@ repl(Position, Transcript) :-
   command(Command, Arg, Line, []),
 
   evaluate(Command, Arg, Position, Position2), !,
-  repl(Position2, [[Command, Arg] | Transcript]).
+  inner_repl(Position2, [[Command, Arg] | Transcript]).
 
-repl(Position, Transcript) :-
+inner_repl(Position, Transcript) :-
   !,
   format("Error! Something went wrong. \n"),
   repl(Position, Transcript).
