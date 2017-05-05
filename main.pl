@@ -64,11 +64,8 @@ repl :-
 repl(A, B) :-
   catch(
     inner_repl(A, B),
-    Exception,
-    (
-      format("Caught ~a.\n", [Exception]),
-      halt
-    )).
+    aborted,
+    true).
 
 inner_repl(Position, Transcript) :-
   fen:string(Position, Str),
