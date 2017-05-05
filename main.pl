@@ -1,9 +1,47 @@
 
 :- module(main, []).
 
-evaluate(position, P, _, P).
+%
+% General command line parsing
+%
+command(Command, Args) -->
+  {
+    command_name(Command, Codes)
+  },
+  Codes,
+  ( " ", command_args(Args)
+  ; { Args = [] } ).
 
-evaluate(move, [Move | Moves], P, P2) :-
+
+command_arg(Arg, Before, After) :-
+  Quote = "\"",
+  append([ Quote, Arg, Quote, After ], Before).
+
+
+command_arg(Arg, Before, After) :-
+  % TODO look to make sure there are no spaces in arg
+  append(Arg, After, Before).
+
+command_args([Arg | Args]) -->
+  command_arg(Arg),
+  ( { Args = [] }
+  ; " ", command_args(Args) ).
+
+
+command_name(Command, Codes) :-
+  clause(evaluate(Command, _, _, _), _),
+  atom_codes(Command, Codes).
+
+
+%
+% Definition of commands
+%
+evaluate(position, [FENString], _, P) :-
+  fen:position(P, FENString, []).
+
+evaluate(move, [MoveString | Moves], P, P2) :-
+  pgn:pgn_string(Move, MoveString),
+  
   pgn:full_move(P, Move, FullMove),
   pgn:pgn_string(FullMove, Str),
   format("~s\n", [Str]), % TODO plug in different notations here
@@ -12,29 +50,13 @@ evaluate(move, [Move | Moves], P, P2) :-
 
 evaluate(move, [], P, P).
 
-command(abort, abort) --> "abort".
-
-command(position, P) -->
-  position(P).
-
-command(move, Moves) -->
-  move(Moves).
+evaluate(abort, [], P, P) :-
+  throw(aborted).
 
 
-position(P) -->
-  "position ", fen:position(P).
-
-move(Moves) -->
-  "move ", many_moves(Moves).
-
-
-many_moves([Move | Moves]) -->
-  pgn:move(Move),
-
-  ( " ", many_moves(Moves)
-  ; { Moves = [] } ).
-
-
+%
+% The REPL
+%
 repl :-
   fen:initial_position(P),
   repl(P, []).
@@ -47,15 +69,11 @@ repl(Position, Transcript) :-
 
   command(Command, Arg, Line, []),
 
-  % Allow the user to terminate if he wishes:
-  ( Command = abort,
-    !
-  
-  ; !,
-    evaluate(Command, Arg, Position, Position2), 
-    repl(Position2, [[Command, Arg] | Transcript]) ).
+  evaluate(Command, Arg, Position, Position2), !,
+  repl(Position2, [[Command, Arg] | Transcript]).
 
 repl(Position, Transcript) :-
   !,
   format("Error! Something went wrong. \n"),
   repl(Position, Transcript).
+
