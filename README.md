@@ -25,3 +25,11 @@ There are three basic commands:
 
 More to come. The CLI maintains a transcript of all commands issued. The idea is to
 construct a prolog unit test directly from the transcript in case of an error.
+
+
+### Building
+A standalone program can be built using the makefile:
+
+    make
+    
+.. which should create an executable "fen" in the project root
