@@ -39,9 +39,9 @@ line([ Square | Line], Direction) :-
   sequence(Square, Direction, Line).
 
 
-sequence(Square, Direction, [Square2 | Squares]) :-
-  offset(Square, Square2, Direction),
-  sequence(Square2, Direction, Squares).
+sequence([square, X, Y], Direction, [[square, X2, Y2] | Squares]) :-
+  offset(X, Y, X2, Y2, Direction),
+  sequence([square, X2, Y2], Direction, Squares).
 
 
 sequence(_, _, []).
@@ -59,44 +59,43 @@ square(X, Y) :-
 %
 % Diagonal
 %
-offset([square, X, Y], [square, X2, Y2], up_right) :-
+offset(X, Y, X2, Y2, up_right) :-
   succ(X, X2),
   succ(Y, Y2),
   square(X, Y), square(X2, Y2).
 
-
-offset([square, X, Y], [square, X2, Y2], up_left) :-
+offset(X, Y, X2, Y2, up_left) :-
   succ(X2, X),
   succ(Y, Y2),
   square(X, Y), square(X2, Y2).
 
 
-offset(Sq, Sq2, down_right) :-
-  offset(Sq2, Sq, up_left).
+offset(X, Y, X2, Y2, down_right) :-
+  offset(X2, Y2, X, Y, up_left).
 
 
-offset(Sq, Sq2, down_left) :-
-  offset(Sq2, Sq, up_right).
+offset(X, Y, X2, Y2, down_left) :-
+  offset(X2, Y2, X, Y, up_right).
 
 %
 % Straight
 %
-offset([square, X, Y], [square, X2, Y], right) :-
+offset(X, Y, X2, Y, right) :-
   succ(X, X2),
   square(X, Y), square(X2, Y).
 
 
-offset(Sq, Sq2, left) :-
-  offset(Sq2, Sq, right).
+offset(X, Y, X2, Y2, left) :-
+  offset(X2, Y2, X, Y, right).
 
 
-offset([square, X, Y], [square, X, Y2], up) :-
+offset(X, Y, X, Y2, up) :-
   succ(Y, Y2),
   square(X, Y), square(X, Y2).
 
 
-offset(Sq, Sq2, down) :-
-  offset(Sq2, Sq, up).
+offset(X, Y, X2, Y2, down) :-
+  offset(X2, Y2, X, Y, up).
 
 
 
