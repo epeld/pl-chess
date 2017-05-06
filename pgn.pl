@@ -83,13 +83,11 @@ possible_move(StraightMover, Src, Dst, P) :-
 
 
 possible_move(king, Src, Dst, _P) :-
-  movement:diagonal(Src, Dst, Diagonal, _),
-  length(Diagonal, 2).
+  movement:diagonal(Src, Dst, [Src, Dst], _).
 
 
 possible_move(king, Src, Dst, _P) :-
-  movement:line(Src, Dst, Diagonal, _),
-  length(Diagonal, 2).
+  movement:line(Src, Dst, [Src, Dst], _).
 
 
 possible_move(knight, Src, Dst, _P) :-
