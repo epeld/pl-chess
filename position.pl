@@ -204,33 +204,41 @@ rights_after(Source, Destination, Rights, Rights2) :-
   rights_after(Destination, Rights1, Rights2).
 
 
-rights_after(Square, Rights, Rights2) :-
-  fen:square_codes(Square, "e1"), 
+% e1
+rights_after([square, 4, 0], Rights, Rights2) :-
   delete(Rights, [_, white], Rights2).
 
-rights_after(Square, Rights, Rights2) :-
-  fen:square_codes(Square, "a1"), 
+% a1
+rights_after([square, 0, 0], Rights, Rights2) :-
   delete(Rights, [queenside, white], Rights2).
 
-rights_after(Square, Rights, Rights2) :-
-  fen:square_codes(Square, "h1"), 
+% h1
+rights_after([square, 7, 0], Rights, Rights2) :-
   delete(Rights, [kingside, white], Rights2).
 
 
-rights_after(Square, Rights, Rights2) :-
-  fen:square_codes(Square, "h8"), 
+% h8
+rights_after([square, 7, 7], Rights, Rights2) :-
   delete(Rights, [kingside, black], Rights2).
 
-rights_after(Square, Rights, Rights2) :-
-  fen:square_codes(Square, "a8"), 
+% a8
+rights_after([square, 0, 7], Rights, Rights2) :-
   delete(Rights, [queenside, black], Rights2).
 
 
-rights_after(Square, Rights, Rights2) :-
-  fen:square_codes(Square, "e8"), 
+% e8
+rights_after([square, 4, 7], Rights, Rights2) :-
   delete(Rights, [_, black], Rights2).
 
-rights_after(Square, Rights, Rights) :-
-  maplist(fen:square_codes, SpecialSquares, ["a1", "h1", "e1", "a8", "h8", "e8"]),
-  \+ member(Square, SpecialSquares).
+rights_after([square, X, Y], Rights, Rights) :-
+  between(1, 6, X), between(0, 7, Y).
+
+rights_after([square, X, Y], Rights, Rights) :-
+  between(0, 7, X), between(1, 6, Y).
+
+%  maplist(fen:square_codes, SpecialSquares, ["a1", "h1", "e1", "a8", "h8", "e8"]),
+%  \+ member(Square, SpecialSquares).
   
+
+
+
