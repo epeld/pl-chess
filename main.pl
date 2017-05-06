@@ -82,22 +82,44 @@ repl(A, B) :-
     true).
 
 inner_repl(Position, Transcript) :-
+
+  % Print:
   fen:string(Position, Str),
   status_string(Position, StatusStr),
   format("Position: ~s\n~s\n", [Str, StatusStr]),
-  format("> "),
-  read_line_to_codes(user_input, Line),
 
-  command(Command, Arg, Line, []),
+  % Read:
+  read_command(Command, Args),
 
-  evaluate(Command, Arg, Position, Position2), !,
-  inner_repl(Position2, [[Command, Arg] | Transcript]).
+  % Eval:
+  evaluate(Command, Args, Position, Position2),
+
+  % Loop:
+  !, inner_repl(Position2, [[Command, Args] | Transcript]).
 
 inner_repl(Position, Transcript) :-
   !,
   format("Error! Something went wrong. \n"),
   repl(Position, Transcript).
 
+
+read_command(Command, Args) :-
+  % Print a prompt:
+  format("> "),
+  
+  read_line_to_codes(user_input, Line),
+  identify_command(Command, Args, Line).
+
+identify_command(Command, Args, Line) :-
+  command(Command, Args, Line, []).
+
+identify_command(Command, Args, Line) :-
+  findall(Cmd, command(Cmd, _, Line, []), []),
+
+  format("Error. Cannot interpret: \"~s\"\n", [Line]),
+
+  % Try again:
+  read_command(Command, Args).
 
 %
 % Status
