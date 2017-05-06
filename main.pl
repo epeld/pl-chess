@@ -38,7 +38,13 @@ command_name(Command, Codes) :-
 %
 
 evaluate(store, [Name], P, P) :-
-  format("In the future, this would have stored the current position as ~s\n", [Name]).
+  
+  atom_codes(Atom, Name),
+  fen:string(P, FEN),
+  format("Storing position ~s as ~s\n", [FEN, Name]),
+
+  (retract(known_position(Atom, _)) ; true),
+  assertz(known_position(Atom, FEN)).
 
 evaluate(status, [], P, P) :-
   status_string(P, S),
@@ -49,6 +55,11 @@ evaluate(initial, [], _, P) :-
 
 evaluate(position, [FENString], _, P) :-
   fen:position(P, FENString, []).
+
+evaluate(position, [Codes], _, P) :-
+  atom_codes(Atom, Codes),
+  known_position(Atom, FEN),
+  fen:string(P, FEN).
 
 evaluate(move, [MoveString | Moves], P, P2) :-
   pgn:pgn_string(Move, MoveString),
@@ -66,6 +77,34 @@ evaluate(move, [], P, P).
 
 evaluate(abort, [], P, P) :-
   throw(aborted).
+
+
+evaluate(save, [], P, P) :-
+  save_predicates.
+
+evaluate(load, [], P, P) :-
+  load_predicates.
+
+evaluate(valid_move, [MoveString], P, P) :-
+  
+  fen:string(P, FENString),
+  format("Generating a Test Case\n"),
+  format("Encoding that in the position: \n\t~s\nthe move ~s should work.\n\n",
+         [FENString, MoveString]),
+
+  assertz(valid_move(FENString, MoveString)),
+  save_predicates.
+
+evaluate(invalid_move, [MoveString], P, P) :-
+  
+  fen:string(P, FENString),
+  format("Generating a Test Case\n"),
+  format("Encoding that in the position: \n\t~s\nthe move ~s should NOT work.\n\n",
+         [FENString, MoveString]),
+
+  assertz(invalid_move(FENString, MoveString)),
+  save_predicates.
+
 
 
 %
@@ -155,3 +194,42 @@ status_string(Position, "CHECK") :-
 
 status_string(Position, "") :-
   \+ pgn:check(Position, _).
+
+%
+% Persistence
+%
+
+settings_file(Atom) :-
+  atom_codes(Atom, "settings.pl").
+
+pretty_comment(Message) :-
+  format("\n\n%%%%\n% ~s \n%%%%\n\n", [Message]).
+
+save_predicates :-
+  settings_file(Settings),
+  tell(Settings),
+
+  pretty_comment("Known Positions"),
+  forall(clause(known_position(A, B), true),
+         (write(known_position(A, B)), format(".\n"))),
+
+  pretty_comment("Valid Moves"),
+  forall(clause(valid_move(A, B), true),
+         (write(valid_move(A, B)), format(".\n"))),
+
+  pretty_comment("Invalid Moves"),
+  forall(clause(invalid_move(A, B), true),
+         (write(invalid_move(A, B)), format(".\n"))),
+
+  told.
+
+
+load_predicates :-
+  settings_file(Settings),
+  exists_file(Settings),
+  retractall(known_position(_, _)),
+  retractall(valid_move(_, _)),
+  retractall(invalid_move(_, _)),
+  consult(Settings).
+
+
