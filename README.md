@@ -73,7 +73,10 @@ A very useful feature is the ability to search through vast amounts of games sto
 
 If you want to see the 'interpreter' in action:
 
-?- main:repl.
+
+
+    ?- main:repl.
+
     Position: rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1
 
 	> move e4
