@@ -39,25 +39,25 @@ compatible(nothing, [square, _X, _Y]).
 
 
 possible_move(capture, pawn, Src, Dst, P) :-
-  ( fen:piece_at(P, Dst, [_, Enemy]), fen:turn(P, Color), color:opposite(Color, Enemy)
-  ; fen:passant(P, Dst) ),
+  fen:piece_at(P, Src, [pawn, Color]),
+  fen:piece_at(P, Dst, Pc),
+  
+  ( Pc = [_, Enemy], color:opposite(Color, Enemy)
+  ; Pc = nothing, fen:passant(P, Dst) ),
   
   movement:pawn_capture_square(Color, Src, Dst).
 
 possible_move(move, pawn, Src, Dst, P) :-
+  fen:piece_at(P, Src, [pawn, Color]),
   fen:piece_at(P, Dst, nothing),
 
-  movement:pawn_move_square(Color, Src, Dst),
   fen:turn(P, Color),
-  
-  movement:line(Src, Dst, Line, _),
-  append([[Src], Middle, [Dst]], Line),
-  
-  maplist(fen:piece_at(P), Middle, Pieces),
-  maplist(=(nothing), Pieces).
+  movement:passant_square(Color, Src, Dst, Passant),
+  ( fen:piece_at(P, Passant, nothing) ; Passant = nothing ).
 
 
 possible_move(move, Officer, Src, Dst, P) :-
+  fen:piece_at(P, Src, [Officer, _]),
   movement:officer(Officer),
   
   fen:piece_at(P, Dst, nothing),
@@ -65,7 +65,9 @@ possible_move(move, Officer, Src, Dst, P) :-
 
 
 possible_move(capture, Officer, Src, Dst, P) :-
+  fen:piece_at(P, Src, [Officer, _]),
   movement:officer(Officer),
+  
   fen:piece_at(P, Dst, [_, Enemy]),
 
   fen:turn(P, Color),
