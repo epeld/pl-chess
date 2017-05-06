@@ -233,8 +233,11 @@ rights_after([square, 4, 7], Rights, Rights2) :-
 rights_after([square, X, Y], Rights, Rights) :-
   between(1, 6, X), between(0, 7, Y).
 
-rights_after([square, X, Y], Rights, Rights) :-
-  between(0, 7, X), between(1, 6, Y).
+rights_after([square, 0, Y], Rights, Rights) :-
+  between(1, 6, Y).
+
+rights_after([square, 7, Y], Rights, Rights) :-
+  between(1, 6, Y).
 
 %  maplist(fen:square_codes, SpecialSquares, ["a1", "h1", "e1", "a8", "h8", "e8"]),
 %  \+ member(Square, SpecialSquares).
