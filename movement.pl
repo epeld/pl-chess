@@ -60,49 +60,43 @@ square(X, Y) :-
 % Diagonal
 %
 offset([square, X, Y], [square, X2, Y2], up_right) :-
-  square(X, Y), square(X2, Y2),
   succ(X, X2),
-  succ(Y, Y2).
+  succ(Y, Y2),
+  square(X, Y), square(X2, Y2).
 
 
 offset([square, X, Y], [square, X2, Y2], up_left) :-
-  square(X, Y), square(X2, Y2),
   succ(X2, X),
-  succ(Y, Y2).
+  succ(Y, Y2),
+  square(X, Y), square(X2, Y2).
 
 
-offset([square, X, Y], [square, X2, Y2], down_right) :-
-  square(X, Y), square(X2, Y2),
-  succ(X, X2),
-  succ(Y2, Y).
+offset(Sq, Sq2, down_right) :-
+  offset(Sq2, Sq, up_left).
 
 
-offset([square, X, Y], [square, X2, Y2], down_left) :-
-  square(X, Y), square(X2, Y2),
-  succ(X2, X),
-  succ(Y2, Y).
+offset(Sq, Sq2, down_left) :-
+  offset(Sq2, Sq, up_right).
 
 %
 % Straight
 %
 offset([square, X, Y], [square, X2, Y], right) :-
-  square(X, Y), square(X2, Y),
-  succ(X, X2).
+  succ(X, X2),
+  square(X, Y), square(X2, Y).
 
 
-offset([square, X, Y], [square, X2, Y], left) :-
-  square(X, Y), square(X2, Y),
-  succ(X2, X).
+offset(Sq, Sq2, left) :-
+  offset(Sq2, Sq, right).
 
 
 offset([square, X, Y], [square, X, Y2], up) :-
-  square(X, Y), square(X, Y2),
-  succ(Y, Y2).
+  succ(Y, Y2),
+  square(X, Y), square(X, Y2).
 
 
-offset([square, X, Y], [square, X, Y2], down) :-
-  square(X, Y), square(X, Y2),
-  succ(Y2, Y).
+offset(Sq, Sq2, down) :-
+  offset(Sq2, Sq, up).
 
 
 
@@ -130,6 +124,9 @@ pawn_move_square(black, [square, X, Y], [square, X, Y2]) :-
 
 passant_square(Turn, Source, Destination, Passant) :-
   pawn_move_square(Turn, Source, Destination),
+
+  between(2,3, Length),
+  length(Line, Length),
   
   line(Source, Destination, Line, _),
   ( append([[Source], [Passant], [Destination]], Line)
