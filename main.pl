@@ -81,12 +81,11 @@ repl(A, B) :-
     aborted,
     true).
 
+% Yes, I guess it should be called PREL instead of REPL
 inner_repl(Position, Transcript) :-
 
-  % Print:
-  fen:string(Position, Str),
-  status_string(Position, StatusStr),
-  format("Position: ~s\n~s\n", [Str, StatusStr]),
+  % Print
+  print_position(Position),
 
   % Read:
   read_command(Command, Args),
@@ -99,8 +98,15 @@ inner_repl(Position, Transcript) :-
 
 inner_repl(Position, Transcript) :-
   !,
-  format("Error! Something went wrong. \n"),
+  format("Error! Something went wrong. \n---\n"),
   repl(Position, Transcript).
+
+
+print_position(Position) :-
+  fen:string(Position, Str),
+  status_string(Position, StatusStr),
+  format("~s\n~s\n", [Str, StatusStr]).
+
 
 
 read_command(Command, Args) :-
