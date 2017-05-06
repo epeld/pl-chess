@@ -201,6 +201,7 @@ stalemate(Position) :-
 
 checkmate(Position) :-
   check(Position, _),
+  !,
   \+ legal_position_after(_, Position, _).
 
 
