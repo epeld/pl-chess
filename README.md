@@ -67,3 +67,29 @@ A very useful feature is the ability to search through vast amounts of games sto
  looking for e.g a specific position or something similar (Scid is an example of a chess database
  that can do this). It would be nice to extend the CLI with the ability to query Scids database
  files for a given position.
+
+
+# Sample Session
+
+If you want to see the 'interpreter' in action:
+
+?- main:repl.
+Position: rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1
+
+	> move e4
+	e2e4
+	Position: rnbqkbnr/pppppppp/8/8/4P3/8/PPPP1PPP/RNBQKBNR b KQkq e3 0 1
+	
+	> move d5 Bb5
+	d7d5
+	Bf1b5+
+	Position: rnbqkbnr/ppp1pppp/8/1B1p4/4P3/8/PPPP1PPP/RNBQK1NR b KQkq - 1 2
+	CHECK
+	> move d6 a3
+	Error! Something went wrong. 
+	Position: rnbqkbnr/ppp1pppp/8/1B1p4/4P3/8/PPPP1PPP/RNBQK1NR b KQkq - 1 2
+	CHECK
+	> move Qd7 a3
+	Qd8d7
+	a2a3
+	Position: rnb1kbnr/pppqpppp/8/1B1p4/4P3/P7/1PPP1PPP/RNBQK1NR b KQkq - 0 3
