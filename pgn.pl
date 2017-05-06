@@ -169,33 +169,39 @@ castles([castles, kingside]) --> "O-O".
 
 check(Position, SourceSquare) :-
   Position = [position, Board, Color | Rest],
-  
-  fen:piece_at(Position, KingSquare, [king, Color]),
-  
+
+  % "If it were the opponents turn":
   color:opposite(Color, Opponent),
   Flipped = [position, Board, Opponent | Rest],
 
-  SourceSquare = [square, _X, _Y],
-  full_move(Flipped, [move, _, SourceSquare, capture, KingSquare | _], _).
+  % Is there a piece that can attack the king?
+  fen:piece_at(Flipped, KingSquare, [king, Color]),
+  attacker_of(Flipped, KingSquare, SourceSquare).
 
 
-legal(Position, FullMove) :-
-  position:position_after(FullMove, Position, [position, B, Color | Rest]),
+legal_position_after(FullMove, Position, Position2) :-
+  fen:turn(Position, Color),
 
-  color:opposite(Color, Opponent),
-  Position2 = [position, B, Opponent | Rest],
-  
-  \+ check(Position2, _).
+  % "In the position after FullMove":
+  position:position_after(FullMove, Position, Position2),
+
+  % "There are zero attackers of the king"
+  fen:piece_at(Position2, KingSquare, [king, Color]),
+  \+ attacker_of(Position2, KingSquare, [_ | _]).
+
+attacker_of(Position, AttackedSquare, SourceSquare) :-
+  SourceSquare = [square, _, _],
+  full_move(Position, [move, _, SourceSquare, capture, AttackedSquare | _], _).
 
 
 stalemate(Position) :-
   \+ check(Position, _),
-  \+ legal(Position, _Move).
+  \+ legal_position_after(_, Position, _).
 
 
 checkmate(Position) :-
   check(Position, _),
-  \+ legal(Position, _Move).
+  \+ legal_position_after(_, Position, _).
 
 
 castling_possible(Side, Position) :-
