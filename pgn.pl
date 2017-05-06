@@ -1,5 +1,9 @@
 :- module(pgn, []).
 
+make_move(Mv, P, P2) :-
+  unique_full_move(P, Mv, FullMove),
+  legal_position_after(FullMove, P, P2).
+
 pgn_string(Move, String) :-
   phrase(move(Move), String).
 
