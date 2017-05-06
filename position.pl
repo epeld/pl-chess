@@ -80,7 +80,7 @@ position_after( [move, pawn, SourceSquare, capture, Destination, Promotion]
 
 position_after( [move, pawn, SourceSquare, move, Destination, Promotion]
                 , Position
-                , [position, Board2, Turn2, Rights, nothing, 0, FullMoveNr2] ) :-
+                , [position, Board2, Turn2, Rights, Passant2, 0, FullMoveNr2] ) :-
 
   Position = [position, Board, Turn, Rights, _, _, FullMoveNr],
   pgn:possible_move(move, pawn, SourceSquare, Destination, Position),
