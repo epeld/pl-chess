@@ -51,10 +51,9 @@ The CLI can be extended with options for how to represent moves and how much it 
 This can be useful if we later decide to create a GUI frontend, in which case we should simplify
 the output for easier parsing.
 
-## Auto-generated Test Cases
+## CLI Help Command
 
-The CLI should get a command for converting the current state into a test case that can later be
-fixed. This allows for quicker bug fix progress as well as being a really cool feature.
+Each command should get some documentation
 
 ## GUI
 
