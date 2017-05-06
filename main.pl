@@ -56,7 +56,7 @@ evaluate(move, [MoveString | Moves], P, P2) :-
   pgn:full_move(P, Move, FullMove),
   
   pgn:pgn_string(FullMove, Str),
-  position:position_after(FullMove, P, P1),
+  pgn:legal_position_after(FullMove, P, P1),
   check_info(P1, Extra),
   
   format("~s~s\n", [Str, Extra]), % TODO plug in different notations here
