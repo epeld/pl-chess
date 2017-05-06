@@ -69,25 +69,17 @@ possible_move(capture, Officer, Src, Dst, P) :-
 
   possible_move(Officer, Src, Dst, P).
 
-
 possible_move(DiagonalMover, Src, Dst, P) :-
   diagonal_mover(DiagonalMover),
-  movement:diagonal(Src, Dst, Diagonal, _),
-  middle_is_nothing(P,Diagonal).
-
+  diagonal_move(Src, Dst, P, _).
 
 possible_move(StraightMover, Src, Dst, P) :-
   straight_mover(StraightMover),
-  movement:line(Src, Dst, Line, _),
-  middle_is_nothing(P,Line).
+  straight_move(Src, Dst, P, _).
 
 
 possible_move(king, Src, Dst, _P) :-
-  movement:diagonal(Src, Dst, [Src, Dst], _).
-
-
-possible_move(king, Src, Dst, _P) :-
-  movement:line(Src, Dst, [Src, Dst], _).
+  movement:offset(Src, Dst, _).
 
 
 possible_move(knight, Src, Dst, _P) :-
@@ -216,3 +208,39 @@ castling_possible(Side, Position) :-
   full_move(Position, [move, _, _, capture, Square | _], _),
   !.
    
+
+diagonal(up_right).
+diagonal(up_left).
+diagonal(down_left).
+diagonal(down_right).
+
+
+straight(up).
+straight(down).
+straight(left).
+straight(right).
+
+%
+%
+%
+
+diagonal_move(Src, Dst, _, Dir) :-
+  diagonal(Dir),
+  movement:offset(Src, Dst, Dir).
+
+
+diagonal_move(Src, Dst, P, Dir) :-
+  movement:offset(Dst0, Dst, Dir),
+  fen:piece_at(P, Dst0, nothing),
+  diagonal_move(Src, Dst0, P, Dir).
+
+
+straight_move(Src, Dst, _, Dir) :-
+  straight(Dir),
+  movement:offset(Src, Dst, Dir).
+
+
+straight_move(Src, Dst, P, Dir) :-
+  movement:offset(Dst0, Dst, Dir),
+  fen:piece_at(P, Dst0, nothing),
+  straight_move(Src, Dst0, P, Dir).
