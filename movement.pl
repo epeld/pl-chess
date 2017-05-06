@@ -59,6 +59,7 @@ square(X, Y) :-
 %
 % Diagonal
 %
+
 offset(X, Y, X2, Y2, up_right) :-
   succ(X, X2),
   succ(Y, Y2),
@@ -98,6 +99,8 @@ offset(X, Y, X2, Y2, down) :-
   offset(X2, Y2, X, Y, up).
 
 
+offset([square, X, Y], [square, X2, Y2], Dir) :-
+  offset(X, Y, X2, Y2, Dir).
 
 
 %
