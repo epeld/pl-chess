@@ -109,31 +109,29 @@ offset([square, X, Y], [square, X2, Y2], Dir) :-
 pawn_move_square(white, [square, X, Y], [square, X, Y2]) :-
   succ(Y, Y2).
 
-pawn_move_square(white, [square, X, Y], [square, X, Y2]) :-
-  % Second rank pawns can walk two steps
-  fen:rank(Y, "2", []),
-  succ(Y, Y1), succ(Y1, Y2).
+% Second rank pawns can walk two steps
+pawn_move_square(white, [square, X, 1], [square, X, 3]).
 
-pawn_move_square(black, [square, X, Y], [square, X, Y2]) :-
-  % Seventh rank pawns can walk two steps
-  fen:rank(Y, "7", []),
-  succ(Y2, Y1), succ(Y1, Y).
+% Seventh rank pawns can walk two steps
+pawn_move_square(black, [square, X, 6], [square, X, 4]).
 
 pawn_move_square(black, [square, X, Y], [square, X, Y2]) :-
   succ(Y2, Y).
 
 
+passant_square(white, [square, X, 1], [square, X, 3], [square, X, 2]).
+passant_square(black, [square, X, 6], [square, X, 4], [square, X, 5]).
 
-passant_square(Turn, Source, Destination, Passant) :-
-  pawn_move_square(Turn, Source, Destination),
+passant_square(black, [square, _, 6], [square, _, 5], nothing).
+passant_square(white, [square, _, 1], [square, _, 3], nothing).
 
-  between(2,3, Length),
-  length(Line, Length),
-  
-  line(Source, Destination, Line, _),
-  ( append([[Source], [Passant], [Destination]], Line)
-  
-  ; Passant = nothing ).
+passant_square(black, [square, _, Y], _, nothing) :-
+  member(Y, [1,2,3,4,5]).
+
+passant_square(white, [square, _, Y], _, nothing) :-
+  member(Y, [2,3,4,5,6]).
+
+
 
 
 pawn_square(capture, Color, Sq, Sq2) :- pawn_capture_square(Color, Sq, Sq2).
@@ -141,7 +139,7 @@ pawn_square(move, Color, Sq, Sq2) :- pawn_move_square(Color, Sq, Sq2).
 
 pawn_capture_square(Color, Sq, Sq2) :-
   pawn_direction(capture, Color, Direction),
-  diagonal(Sq, Sq2, [Sq, Sq2], Direction).
+  offset(Sq, Sq2, Direction).
 
 
 pawn_direction(move, white, up).
