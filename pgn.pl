@@ -187,7 +187,7 @@ legal_position_after(FullMove, Position, Position2) :-
 
   % "There are zero attackers of the king"
   fen:piece_at(Position2, KingSquare, [king, Color]),
-  \+ attacker_of(Position2, KingSquare, [_ | _]).
+  \+ attacker_of(Position2, KingSquare, _).
 
 attacker_of(Position, AttackedSquare, SourceSquare) :-
   SourceSquare = [square, _, _],
