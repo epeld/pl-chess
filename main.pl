@@ -1,6 +1,10 @@
 
 :- module(main, []).
 
+:- dynamic(known_position/2).
+:- dynamic(valid_move/2).
+:- dynamic(invalid_move/2).
+
 %
 % General command line parsing
 %
