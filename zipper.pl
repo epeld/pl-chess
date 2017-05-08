@@ -14,9 +14,6 @@ zappend(Items,
   append(Forward, Items, Forward2).
 
 
-zbackward([Value, [Item | Backward], Forward], [Item, Backward, [Value | Forward]]).
-
-
 zforward([Value, Backward, [Item | Forward]], [Item, [ Value | Backward ], Forward]).
 
 
