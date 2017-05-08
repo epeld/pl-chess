@@ -40,40 +40,41 @@ compatible(nothing, [square, _X, _Y]).
 
 possible_move(capture, pawn, Src, Dst, P) :-
   fen:piece_at(P, Src, [pawn, Color]),
-  fen:piece_at(P, Dst, Pc),
   
   ( Pc = [_, Enemy], color:opposite(Color, Enemy)
   ; Pc = nothing, fen:passant(P, Dst) ),
   
-  movement:pawn_capture_square(Color, Src, Dst).
+  movement:pawn_capture_square(Color, Src, Dst),
+  fen:piece_at(P, Dst, Pc).
 
 possible_move(move, pawn, Src, Dst, P) :-
   fen:piece_at(P, Src, [pawn, Color]),
-  fen:piece_at(P, Dst, nothing),
 
   fen:turn(P, Color),
   movement:passant_square(Color, Src, Dst, Passant),
-  ( fen:piece_at(P, Passant, nothing) ; Passant = nothing ).
+  
+  ( fen:piece_at(P, Passant, nothing) ; Passant = nothing ),
+
+  fen:piece_at(P, Dst, nothing).
 
 
 possible_move(move, Officer, Src, Dst, P) :-
   fen:piece_at(P, Src, [Officer, _]),
   movement:officer(Officer),
   
-  fen:piece_at(P, Dst, nothing),
-  possible_move(Officer, Src, Dst, P).
+  possible_move(Officer, Src, Dst, P),
+  fen:piece_at(P, Dst, nothing).
 
 
 possible_move(capture, Officer, Src, Dst, P) :-
   fen:piece_at(P, Src, [Officer, _]),
   movement:officer(Officer),
   
-  fen:piece_at(P, Dst, [_, Enemy]),
-
   fen:turn(P, Color),
   color:opposite(Color, Enemy),
 
-  possible_move(Officer, Src, Dst, P).
+  possible_move(Officer, Src, Dst, P),
+  fen:piece_at(P, Dst, [_, Enemy]).
 
 possible_move(DiagonalMover, Src, Dst, P) :-
   diagonal_mover(DiagonalMover),
@@ -230,23 +231,33 @@ straight(right).
 %
 %
 
-diagonal_move(Src, Dst, _, Dir) :-
+diagonal_move(Src, Dst, _, Dir, 1) :-
   diagonal(Dir),
   movement:offset(Src, Dst, Dir).
 
 
-diagonal_move(Src, Dst, P, Dir) :-
+diagonal_move(Src, Dst, P, Dir, N) :-
+  succ(N0, N),
+  diagonal_move(Src, Dst0, P, Dir, N0),
   movement:offset(Dst0, Dst, Dir),
-  fen:piece_at(P, Dst0, nothing),
-  diagonal_move(Src, Dst0, P, Dir).
+  fen:piece_at(P, Dst0, nothing).
+
+diagonal_move(Src, Dst, P, Dir) :-
+  between(1, 8, N),
+  diagonal_move(Src, Dst, P, Dir, N).
 
 
-straight_move(Src, Dst, _, Dir) :-
+straight_move(Src, Dst, _, Dir, 1) :-
   straight(Dir),
   movement:offset(Src, Dst, Dir).
 
 
-straight_move(Src, Dst, P, Dir) :-
+straight_move(Src, Dst, P, Dir, N) :-
+  succ(N0, N),
+  straight_move(Src, Dst0, P, Dir, N0),
   movement:offset(Dst0, Dst, Dir),
-  fen:piece_at(P, Dst0, nothing),
-  straight_move(Src, Dst0, P, Dir).
+  fen:piece_at(P, Dst0, nothing).
+
+straight_move(Src, Dst, P, Dir) :-
+  between(1, 7, N),
+  straight_move(Src, Dst, P, Dir, N).
