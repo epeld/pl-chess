@@ -23,3 +23,6 @@ zvalue([Value, _, _], Value).
 
 % zput/3 is like zappend/3 except it expects the zipper to be forwarded to the end
 zput([V, History, []], [V, History, Values], Values).
+
+
+zset([_, History, Future], [NewValue, History, Future], NewValue).
