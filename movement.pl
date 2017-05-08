@@ -154,8 +154,8 @@ pawn_direction(capture, black, down_left).
 
 
 
-officer(rook).
 officer(bishop).
-officer(queen).
-officer(king).
 officer(knight).
+officer(queen).
+officer(rook).
+officer(king).
