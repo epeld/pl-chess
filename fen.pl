@@ -1,5 +1,7 @@
 :- module(fen, []).
 
+:- set_prolog_flag(double_quotes, codes).
+
 string(Position, String) :-
   phrase(position(Position), String).
 

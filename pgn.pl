@@ -1,5 +1,7 @@
 :- module(pgn, []).
 
+:- set_prolog_flag(double_quotes, codes).
+
 make_move(Mv, P, P2) :-
   unique_full_move(P, Mv, FullMove),
   legal_position_after(FullMove, P, P2).

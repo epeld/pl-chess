@@ -1,5 +1,7 @@
 :- module(pgnfile, []).
 
+:- set_prolog_flag(double_quotes, codes).
+
 
 meta(Key, Value) -->
   "[",

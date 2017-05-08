@@ -5,6 +5,8 @@
 :- dynamic(valid_move/2).
 :- dynamic(invalid_move/2).
 
+:- set_prolog_flag(double_quotes, codes).
+
 %
 % General command line parsing
 %

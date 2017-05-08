@@ -1,5 +1,6 @@
 :- module(movement, []).
 
+:- set_prolog_flag(double_quotes, codes).
 
 knights_jump([square, X1, Y1], [square, X2, Y2]) :-
   square(X1, Y1), square(X2, Y2),
