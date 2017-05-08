@@ -7,3 +7,8 @@ verify_everything_works :-
   fen:string(P, FEN),
   !,
   \+ pgn:checkmate(P).
+
+
+% TODO this repl session behaves strangely:
+% > move e4 e5 e1
+% test and fix!
