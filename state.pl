@@ -36,12 +36,13 @@ state_last_move(State, Move) :-
   state_parts(State, _, Move, _).
 
 
-state_move(Moves, State, StateN) :-
+state_move([PartialMove | Moves], State, StateN) :-
   % Extract the current position
   State = [state, Zipper, Options],
   state_position(State, Position),
 
   % Apply the move to it..
+  pgn:full_move(Position, PartialMove, Move),
   pgn:legal_position_after(Move, Position, Position2),
 
   % Construct a new 'node' to put back into the zipper..
