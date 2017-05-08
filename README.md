@@ -2,15 +2,21 @@
 Hello World!
 ============
 
-The idea of this project is to explore and learn how prolog can be used to process chess games.
+The idea of this project is to build a complete chess analysis suite available to all!
 
-The intent is not to implement a chess engine, but rather to create utilities to e.g
-parse FEN-strings, PGN-moves, to verify move correctness, to generate a list of legal moves
-etc.
+Right now there is a CLI program that allows you to play through a game of chess and it will verify all moves are legal and notify you of checks.
+
+I am working on extending it with the ability to browse and edit PGN files this way, and then to build a GUI on top of it.
+
+Later on I want to add an analysis window as an optional add-on, which talks over UCI with a chess engine.
+
+Later on again, I'll add a chess database search dialog and then the chess suite will be complete!
 
 # Requirements
 
-This project works well with SWI-Prolog 6.6.4. Note that for newer versions you might need to configure your system to interpret strings as lists of character codes.
+This project works well with SWI-Prolog 6.6.4. 
+
+With later versions, you might need to tell prolog to treat strings as codes. But all relevant files should already have directives for that so you might be OK anyway..
 
 # Usage
 
