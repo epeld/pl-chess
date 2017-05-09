@@ -45,14 +45,16 @@ state_move([PartialMove | Moves], State, StateN) :-
   pgn:full_move(Position, PartialMove, Move),
   pgn:legal_position_after(Move, Position, Position2),
 
-  % Construct a new 'node' to put back into the zipper..
+  % Construct a new 'node' to put into the zipper..
   zipper:zput(Zipper, Zipper1, [[Position2, Move, ""]]),
 
   % and forward so that the new position is active
-  zipper:forward(Zipper1, Zipper2),
+  zipper:zforward(Zipper1, Zipper2),
 
   State2 = [state, Zipper2, Options],
   state_move(Moves, State2, StateN).
+
+state_move([], S, S).
 
 
 state_forward([state, Zipper, Options], [state, Zipper2, Options]) :-
