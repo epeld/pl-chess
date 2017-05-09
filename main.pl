@@ -40,11 +40,54 @@ command_name(Command, Codes) :-
 
 
 %
-% Definition of commands
+% State-mutating commands
 %
 
-evaluate(store, [Name], P, P) :-
-  
+evaluate(truncate, [], State, State2) :-
+  state:state_truncate(State, State2).
+
+evaluate(forward, [], State, State2) :-
+  state:state_forward(State, State2).
+
+evaluate(back, [], State, State2) :-
+  state:state_forward(State2, State).
+
+evaluate(initial, [], _, State) :-
+  state:initial_state(State).
+
+evaluate(position, [FENString], _, State) :-
+  fen:position(P, FENString, []),
+  state:custom_state(State, P).
+
+evaluate(position, [Codes], _, State) :-
+  atom_codes(Atom, Codes),
+  known_position(Atom, FEN),
+  fen:string(P, FEN),
+  state:custom_state(State, P).
+
+evaluate(move, MoveStrings, State, State2) :-
+  maplist(pgn:pgn_string, Moves, MoveStrings),
+  state:state_move(Moves, State, State2).
+
+
+%
+%  "REPL"-control
+%
+evaluate(abort, [], P, P) :-
+  throw(aborted).
+
+
+%
+%  Debugging Predicates
+%
+evaluate(save, [], P, P) :-
+  save_predicates.
+
+evaluate(load, [], P, P) :-
+  load_predicates.
+
+evaluate(store, [Name], State, State) :-
+  state:state_position(State, P),
   atom_codes(Atom, Name),
   fen:string(P, FEN),
   format("Storing position ~s as ~s\n", [FEN, Name]),
@@ -52,47 +95,8 @@ evaluate(store, [Name], P, P) :-
   (retract(known_position(Atom, _)) ; true),
   assertz(known_position(Atom, FEN)).
 
-evaluate(status, [], P, P) :-
-  status_string(P, S),
-  format("~s\n", [S]).
-
-evaluate(initial, [], _, P) :-
-  fen:initial_position(P).
-
-evaluate(position, [FENString], _, P) :-
-  fen:position(P, FENString, []).
-
-evaluate(position, [Codes], _, P) :-
-  atom_codes(Atom, Codes),
-  known_position(Atom, FEN),
-  fen:string(P, FEN).
-
-evaluate(move, [MoveString | Moves], P, P2) :-
-  pgn:pgn_string(Move, MoveString),
-  
-  pgn:full_move(P, Move, FullMove),
-  
-  pgn:pgn_string(FullMove, Str),
-  pgn:legal_position_after(FullMove, P, P1),
-  check_info(P1, Extra),
-  
-  format("~s~s\n", [Str, Extra]), % TODO plug in different notations here
-  evaluate(move, Moves, P1, P2).
-
-evaluate(move, [], P, P).
-
-evaluate(abort, [], P, P) :-
-  throw(aborted).
-
-
-evaluate(save, [], P, P) :-
-  save_predicates.
-
-evaluate(load, [], P, P) :-
-  load_predicates.
-
-evaluate(valid_move, [MoveString], P, P) :-
-  
+evaluate(valid_move, [MoveString], State, State) :-
+  state:state_position(State, P),
   fen:string(P, FENString),
   format("Generating a Test Case\n"),
   format("Encoding that in the position: \n\t~s\nthe move ~s should work.\n\n",
@@ -101,8 +105,8 @@ evaluate(valid_move, [MoveString], P, P) :-
   assertz(valid_move(FENString, MoveString)),
   save_predicates.
 
-evaluate(invalid_move, [MoveString], P, P) :-
-  
+evaluate(invalid_move, [MoveString], State, State) :-
+  state:state_position(State, P),
   fen:string(P, FENString),
   format("Generating a Test Case\n"),
   format("Encoding that in the position: \n\t~s\nthe move ~s should NOT work.\n\n",
@@ -117,40 +121,40 @@ evaluate(invalid_move, [MoveString], P, P) :-
 % The REPL
 %
 repl :-
-  fen:initial_position(P),
-  repl(P, []).
+  state:initial_state(State),
+  repl(State).
 
-repl(A, B) :-
+repl(State) :-
   catch(
-    inner_repl(A, B),
+    inner_repl(State),
     aborted,
     true).
 
 % Yes, I guess it should be called PREL instead of REPL
-inner_repl(Position, Transcript) :-
+inner_repl(State) :-
 
   % Print
+  state:state_position(State, Position),
   print_position(Position),
 
   % Read:
   read_command(Command, Args),
 
   % Eval:
-  evaluate(Command, Args, Position, Position2),
+  evaluate(Command, Args, State, State2),
 
   % Loop:
-  !, inner_repl(Position2, [[Command, Args] | Transcript]).
+  !, inner_repl(State2).
 
-inner_repl(Position, Transcript) :-
+inner_repl(State) :-
   !,
   format("Error! Something went wrong. \n---\n"),
-  repl(Position, Transcript).
+  repl(State).
 
 
 print_position(Position) :-
   fen:string(Position, Str),
-  status_string(Position, StatusStr),
-  format("~s\n~s\n", [Str, StatusStr]).
+  format("~s\n", [Str]).
 
 
 
@@ -186,20 +190,6 @@ check_info(Position, "+") :-
 check_info(Position, "") :-
   \+ pgn:check(Position, _).
 
-
-
-status_string(Position, "MATE") :-
-  pgn:checkmate(Position).
-
-status_string(Position, "STALEMATE") :-
-  pgn:stalemate(Position).
-
-status_string(Position, "CHECK") :-
-  \+ pgn:checkmate(Position),
-  pgn:check(Position, _).
-
-status_string(Position, "") :-
-  \+ pgn:check(Position, _).
 
 %
 % Persistence
