@@ -43,6 +43,15 @@ command_name(Command, Codes) :-
 % State-mutating commands
 %
 
+evaluate(comment, [], State, State) :-
+  state:state_comment(State, Comment),
+  format("\"~s\"\n", [Comment]).
+
+evaluate(comment, [Comment], State, State2) :-
+  state:state_parts(State, P, M, _),
+  state:state_parts(State2, P, M, Comment),
+  format("OK\n").
+
 evaluate(truncate, [], State, State2) :-
   state:state_truncate(State, State2).
 
