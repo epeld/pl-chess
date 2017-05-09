@@ -63,3 +63,7 @@ state_forward([state, Zipper, Options], [state, Zipper2, Options]) :-
 
 state_truncate([state, Zipper, Options], [state, Zipper2, Options]) :-
   zipper:zput(Zipper2, Zipper, _).
+
+state_replace_comment([state, Zipper, Options], [state, Zipper2, Options], Comment) :-
+  zipper:zvalue(Zipper, [Position, Move, _]),
+  zipper:zset(Zipper, Zipper2, [Position, Move, Comment]).
