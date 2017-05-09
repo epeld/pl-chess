@@ -58,7 +58,7 @@ state_move([], S, S).
 
 
 state_forward([state, Zipper, Options], [state, Zipper2, Options]) :-
-  zipper:forward(Zipper, Zipper2).
+  zipper:zforward(Zipper, Zipper2).
 
 
 state_truncate([state, Zipper, Options], [state, Zipper2, Options]) :-
