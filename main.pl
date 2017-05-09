@@ -1,7 +1,6 @@
 
 :- module(main, []).
 
-:- dynamic(known_position/2).
 :- dynamic(valid_move/2).
 :- dynamic(invalid_move/2).
 
@@ -43,13 +42,26 @@ command_name(Command, Codes) :-
 % State-mutating commands
 %
 
+% TODO write commands like:
+% - go to end
+% - count moves
+% - go to specific move number
+% - save pgn
+% - enter variation?
+
+evaluate(status, [], State, State) :-
+  state:state_position(State, P),
+  ( pgn:checkmate(P), format("MATE\n"), !
+  ; pgn:stalemate(P), format("STALEMATE\n"), !
+  ; pgn:check(P, _), format("CHECK\n"), !
+  ; format("OK\n") ).
+
 evaluate(comment, [], State, State) :-
   state:state_comment(State, Comment),
   format("\"~s\"\n", [Comment]).
 
 evaluate(comment, [Comment], State, State2) :-
-  state:state_parts(State, P, M, _),
-  state:state_parts(State2, P, M, Comment),
+  state:state_replace_comment(State, State2, Comment),
   format("OK\n").
 
 evaluate(truncate, [], State, State2) :-
@@ -66,12 +78,6 @@ evaluate(initial, [], _, State) :-
 
 evaluate(position, [FENString], _, State) :-
   fen:position(P, FENString, []),
-  state:custom_state(State, P).
-
-evaluate(position, [Codes], _, State) :-
-  atom_codes(Atom, Codes),
-  known_position(Atom, FEN),
-  fen:string(P, FEN),
   state:custom_state(State, P).
 
 evaluate(move, MoveStrings, State, State2) :-
@@ -94,15 +100,6 @@ evaluate(save, [], P, P) :-
 
 evaluate(load, [], P, P) :-
   load_predicates.
-
-evaluate(store, [Name], State, State) :-
-  state:state_position(State, P),
-  atom_codes(Atom, Name),
-  fen:string(P, FEN),
-  format("Storing position ~s as ~s\n", [FEN, Name]),
-
-  (retract(known_position(Atom, _)) ; true),
-  assertz(known_position(Atom, FEN)).
 
 evaluate(valid_move, [MoveString], State, State) :-
   state:state_position(State, P),
@@ -144,6 +141,7 @@ inner_repl(State) :-
 
   % Print
   state:state_position(State, Position),
+  ground(Position),
   print_position(Position),
 
   % Read:
@@ -214,10 +212,6 @@ save_predicates :-
   settings_file(Settings),
   tell(Settings),
 
-  pretty_comment("Known Positions"),
-  forall(clause(known_position(A, B), true),
-         (write(known_position(A, B)), format(".\n"))),
-
   pretty_comment("Valid Moves"),
   forall(clause(valid_move(A, B), true),
          (write(valid_move(A, B)), format(".\n"))),
@@ -232,7 +226,6 @@ save_predicates :-
 load_predicates :-
   settings_file(Settings),
   exists_file(Settings),
-  retractall(known_position(_, _)),
   retractall(valid_move(_, _)),
   retractall(invalid_move(_, _)),
   consult(Settings).
