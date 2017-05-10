@@ -47,3 +47,20 @@ result(white) --> "1-0".
 result(black) --> "0-1".
 result(draw) --> "1/2-1/2".
 result(unknown) --> [].
+
+
+movenr(Number, white, Before, After) :-
+  nonvar(Number),
+  !,
+  number_codes(Number, Codes),
+  fen:digits(Codes, Before, After).
+
+
+movenr(Number, white, Before, After) :-
+  var(Number),
+  fen:digits(Codes, Before, After),
+  number_codes(Number, Codes).
+  
+
+movenr(Number, black, Before, After) :-
+  phrase( (movenr(Number, white), ".."), Before, After).
