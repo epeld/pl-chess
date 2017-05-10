@@ -75,3 +75,8 @@ state_truncate([state, Zipper, Options], [state, Zipper2, Options]) :-
 state_replace_comment([state, Zipper, Options], [state, Zipper2, Options], Comment) :-
   zipper:zvalue(Zipper, [Position, Move, _]),
   zipper:zset(Zipper, Zipper2, [Position, Move, Comment]).
+
+
+state_substate([state, Zipper, Options], [state, Zipper2, Options]) :-
+  zipper:zconfiguration(Zipper, Zipper2).
+  

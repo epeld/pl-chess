@@ -44,4 +44,16 @@ zrewind([Value, History, Forward], [Initial, [], Forward2]) :-
 zrewind([Value, [], Forward], [Value, [], Forward]).
 
 
+%
+% Unify Member with some configuration of the current Zipper
+% in terms of forward/backward movements
+zconfiguration(Zipper, Configuration) :-
+  zrewind(Zipper, Z1),
+  zconfiguration_(Z1, Configuration).
 
+zconfiguration_(Z1, Z1).
+
+zconfiguration_(Z1, Configuration) :-
+  ground(Z1),
+  zforward(Z1, Z2),
+  zconfiguration_(Z2, Configuration).
