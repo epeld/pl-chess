@@ -26,3 +26,22 @@ zput([V, History, []], [V, History, Values], Values).
 
 
 zset([_, History, Future], [NewValue, History, Future], NewValue).
+
+
+zfastforward([Value, History, Forward], [Last, History2, []]) :-
+  ground(History), ground(Forward),
+  reverse(Forward, [ Last | ForwardR ]),
+  append(ForwardR, [ Value | History ], History2).
+
+zfastforward([Value, History, []], [Value, History, []]).
+
+
+zrewind([Value, History, Forward], [Initial, [], Forward2]) :-
+  ground(History), ground(Forward),
+  reverse(History, [Initial | HistoryR]),
+  append(HistoryR, [ Value | Forward ], Forward2).
+
+zrewind([Value, [], Forward], [Value, [], Forward]).
+
+
+

@@ -61,6 +61,14 @@ state_forward([state, Zipper, Options], [state, Zipper2, Options]) :-
   zipper:zforward(Zipper, Zipper2).
 
 
+state_fastforward([state, Zipper, Options], [state, Zipper2, Options]) :-
+  zipper:zfastforward(Zipper, Zipper2).
+
+
+state_rewind([state, Zipper, Options], [state, Zipper2, Options]) :-
+  zipper:zrewind(Zipper, Zipper2).
+
+
 state_truncate([state, Zipper, Options], [state, Zipper2, Options]) :-
   zipper:zput(Zipper2, Zipper, _).
 

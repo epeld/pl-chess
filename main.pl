@@ -43,11 +43,10 @@ command_name(Command, Codes) :-
 %
 
 % TODO write commands like:
-% - go to end
 % - count moves
 % - go to specific move number
 % - save pgn
-% - enter variation?
+% ( - enter variation? )
 
 evaluate(status, [], State, State) :-
   state:state_position(State, P),
@@ -66,6 +65,12 @@ evaluate(comment, [Comment], State, State2) :-
 
 evaluate(truncate, [], State, State2) :-
   state:state_truncate(State, State2).
+
+evaluate(end, [], State, State2) :-
+  state:state_fastforward(State, State2).
+
+evaluate(beginning, [], State, State2) :-
+  state:state_rewind(State, State2).
 
 evaluate(forward, [], State, State2) :-
   state:state_forward(State, State2).
