@@ -43,10 +43,17 @@ command_name(Command, Codes) :-
 %
 
 % TODO write commands like:
-% - count moves
-% - go to specific move number
 % - save pgn
 % ( - enter variation? )
+
+evaluate(goto, [Codes], State, StateN) :-
+  pgnfile:movenr(Number, Turn, Codes, []),
+  state:state_substate(State, State2),
+  state:state_position(State2, P),
+  fen:full_move(P, Number),
+  fen:turn(P, Turn),
+
+  state:state_forward(State2, StateN).
 
 evaluate(status, [], State, State) :-
   state:state_position(State, P),
@@ -66,10 +73,10 @@ evaluate(comment, [Comment], State, State2) :-
 evaluate(truncate, [], State, State2) :-
   state:state_truncate(State, State2).
 
-evaluate(end, [], State, State2) :-
+evaluate(goto, ["end"], State, State2) :-
   state:state_fastforward(State, State2).
 
-evaluate(beginning, [], State, State2) :-
+evaluate(goto, ["beginning"], State, State2) :-
   state:state_rewind(State, State2).
 
 evaluate(forward, [], State, State2) :-
