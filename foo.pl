@@ -53,8 +53,10 @@ hello2(X) :-
 
 
 
-hello3(X) :-
+board(X) :-
   new(P, picture),
+
+  send(P, set(width := 500, height := 500)),
   send(P, open),
 
   get(P, area, BB),
@@ -69,13 +71,34 @@ hello3(X) :-
   forall(between(0,7, Row),
          forall(between(0,7, Col),
                 (
-                  send(P, display, new(B, box(W, H))),
-                  X is Row * W,
-                  Y is Col * H,
-                  send(B, move, point(X, Y)),
-                  send(B, fill_pattern, colour(orange))
+                  make_square(Row, Col, W, H, Sq),
+                  send(P, display, Sq)
                 )
                )
         ),
 
   P = X.
+
+make_square(Row, Col, W, H, Square) :-
+  Ix is Row * 8 + Col,
+  atom_number(A, Ix),
+  
+  new(D, device),
+  send(D, display, new(B, box(W, H))),
+  send(D, display, new(T, text(A))),
+
+  % Prep the square appearence-wise
+  square_color(Row, Col, Color),
+  send(B, fill_pattern, colour(Color)),
+  send(B, pen, 0),
+
+  % Position the square
+  X is Row * W,
+  Y is Col * H,
+  send(D, move, point(X, Y)),
+  Square = D.
+
+square_color(Row, Col, Color) :-
+  Sum is Row + Col,
+  1 is Sum mod 2 *-> Color = gray
+  ; Color = white.
