@@ -98,7 +98,4 @@ make_square(Row, Col, W, H, Square) :-
   send(D, move, point(X, Y)),
   Square = D.
 
-square_color(Row, Col, Color) :-
-  Sum is Row + Col,
-  1 is Sum mod 2 *-> Color = gray
-  ; Color = white.
+

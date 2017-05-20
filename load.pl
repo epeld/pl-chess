@@ -11,3 +11,7 @@
 
 
 
+load_gui :-
+  use_module(square),
+  use_module(myframe),
+  myframe:hello(A).
