@@ -14,9 +14,12 @@
 load_gui :-
   use_module(square),
   use_module(myframe),
+  
+  % compile_resources,
+  
   myframe:hello(A).
 
 
 compile_resources :-
   [convert],
-  convert_images(32).
+  convert_images(64).

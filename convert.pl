@@ -37,7 +37,7 @@ exported_png_name(Size, SvgFile, PngFile) :-
 
   format(string(Name2), "~s/~s_~d", ['bitmaps', Name, Size]),
   
-  file_name_extension(Name2, 'xpm', PngFile).
+  file_name_extension(Name2, 'png', PngFile).
 
 
 image_name(Name) :-
