@@ -1,0 +1,132 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!-- Created with Inkscape (http://www.inkscape.org/) -->
+
+<svg
+   xmlns:dc="http://purl.org/dc/elements/1.1/"
+   xmlns:cc="http://creativecommons.org/ns#"
+   xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+   xmlns:svg="http://www.w3.org/2000/svg"
+   xmlns="http://www.w3.org/2000/svg"
+   xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
+   xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
+   version="1.1"
+   width="14"
+   height="14"
+   id="svg3288"
+   inkscape:version="0.48.3.1 r9886"
+   sodipodi:docname="eo_Thinking.svg">
+  <sodipodi:namedview
+     pagecolor="#ffffff"
+     bordercolor="#666666"
+     borderopacity="1"
+     objecttolerance="10"
+     gridtolerance="10"
+     guidetolerance="10"
+     inkscape:pageopacity="0"
+     inkscape:pageshadow="2"
+     inkscape:window-width="654"
+     inkscape:window-height="718"
+     id="namedview3050"
+     showgrid="false"
+     inkscape:zoom="8.2639509"
+     inkscape:cx="5.3573191"
+     inkscape:cy="5.1252271"
+     inkscape:window-x="550"
+     inkscape:window-y="59"
+     inkscape:window-maximized="0"
+     inkscape:current-layer="svg3288" />
+  <metadata
+     id="metadata3294">
+    <rdf:RDF>
+      <cc:Work
+         rdf:about="">
+        <dc:format>image/svg+xml</dc:format>
+        <dc:type
+           rdf:resource="http://purl.org/dc/dcmitype/StillImage" />
+        <dc:title />
+      </cc:Work>
+    </rdf:RDF>
+  </metadata>
+  <defs
+     id="defs3292">
+    <filter
+       x="0"
+       y="0"
+       width="1"
+       height="1"
+       color-interpolation-filters="sRGB"
+       id="filter3002">
+      <feColorMatrix
+         result="result2"
+         type="saturate"
+         in="SourceGraphic"
+         values="1"
+         id="feColorMatrix3004" />
+      <feFlood
+         result="result1"
+         flood-opacity="1"
+         flood-color="rgb(254,102,0)"
+         id="feFlood3006" />
+      <feBlend
+         in2="result2"
+         mode="multiply"
+         in="result1"
+         result="result3"
+         id="feBlend3008" />
+      <feComposite
+         in2="SourceGraphic"
+         operator="in"
+         result="fbSourceGraphic"
+         id="feComposite3010" />
+      <feColorMatrix
+         id="feColorMatrix3012"
+         values="0 0 0 -1 0 0 0 0 -1 0 0 0 0 -1 0 0 0 0 1 0"
+         in="fbSourceGraphic"
+         result="fbSourceGraphicAlpha" />
+      <feColorMatrix
+         in="fbSourceGraphic"
+         result="fbSourceGraphic"
+         values="0"
+         type="hueRotate"
+         id="feColorMatrix3014" />
+      <feColorMatrix
+         result="result91"
+         values="-1 0 0 0 1 0 -1 0 0 1 0 0 -1 0 1 0 0 0 1 0 "
+         in="fbSourceGraphic"
+         id="feColorMatrix3016" />
+      <feBlend
+         in2="result91"
+         mode="darken"
+         in="fbSourceGraphic"
+         result="result92"
+         id="feBlend3018" />
+      <feBlend
+         in2="result92"
+         mode="screen"
+         result="result93"
+         id="feBlend3020" />
+      <feComposite
+         in2="fbSourceGraphic"
+         operator="in"
+         id="feComposite3022" />
+    </filter>
+  </defs>
+  <g
+     id="g3122"
+     transform="translate(0.44221878,0.47817135)">
+    <path
+       d="m 12.712892,6.5218287 c 0,3.3993735 -2.7557372,6.1551103 -6.1551108,6.1551103 -3.3993736,0 -6.15511034,-2.7557368 -6.15511034,-6.1551103 0,-3.3993736 2.75573674,-6.15511041 6.15511034,-6.15511041 3.3993736,0 6.1551108,2.75573681 6.1551108,6.15511041 z"
+       sodipodi:ry="6.1551104"
+       sodipodi:rx="6.1551104"
+       sodipodi:cy="6.5218287"
+       sodipodi:cx="6.5577812"
+       id="path3118"
+       style="color:#000000;fill:#ffffff;fill-opacity:1;fill-rule:nonzero;stroke:#000000;stroke-width:1;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none;stroke-dashoffset:0;marker:none;visibility:visible;display:inline;overflow:visible;enable-background:accumulate"
+       sodipodi:type="arc" />
+    <path
+       inkscape:connector-curvature="0"
+       id="path3120"
+       d="m 6.5344048,1.4152205 c 0,0 0.030252,0.060504 0.060504,5.4453373 L 3.5092174,3.0790735"
+       style="color:#000000;fill:#ffffff;fill-opacity:1;fill-rule:nonzero;stroke:#000000;stroke-width:1;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none;stroke-dashoffset:0;marker:none;visibility:visible;display:inline;overflow:visible;enable-background:accumulate" />
+  </g>
+</svg>
