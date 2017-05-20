@@ -13,6 +13,8 @@ resize(Frame) :->
   get(Frame, width, W),
   get(Frame, height, H),
 
+  % default_size([W, H]),
+
   TileW is W // 8,
   TileH is H // 8,
 
@@ -23,8 +25,10 @@ resize(Frame) :->
 initialise(Self) :->
   send_super(Self, initialise, 'Hello World'),
 
-  send(Self, width, 400),
-  send(Self, height, 400),
+  default_size([Width, Height]),
+
+  send(Self, width, Width),
+  send(Self, height, Height),
   findall(Square,
         (
           between(0, 63, Ix),
@@ -44,9 +48,12 @@ make_square(Ix, Square) :-
   new(Square, square),
   send(Square, assign_index, Ix).
 
-% TODO make a square class (graphical) that
-% knows its color and position given an Index, a Width and a Height
+
+default_size([S, S]) :-
+  S is 64 * 8.
 
 hello(A) :-
   new(A, chess_board),
   send(A, open).
+
+
