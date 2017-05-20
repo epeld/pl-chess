@@ -3,10 +3,10 @@
 
 ## TODOs for GUI Development
 
-- Read up on how to define classes using XPCE
-- Define a square class that has options to enable displaying a chess piece, a "name" and highlights of different colors.
+- Pre-render bitmaps in various sizes. Force chessboard to be 8 x those sizes
 
 - Define a board class that knows all the squares and that can "load" a position
+
 - Define a game-frame that can follow a game.
 
 - Allow board to input new moves, both using keyboard AND mouse
