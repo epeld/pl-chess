@@ -53,11 +53,11 @@ square_index(Self, Index) :->
 
 char(Self, Char) :->
   get(Self, bitmap, Bmp),
-  Char = none *->
+  (Char = none *->
     send(Bmp, displayed(@off))
   ; bitmaps:piece_image(Char, 64, Image),
     send(Bmp, image, Image),
-    send(Bmp, displayed(@on)).
+    send(Bmp, displayed(@on))).
 
 
 reconfigure(Self, Width, Height) :->
