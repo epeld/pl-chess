@@ -5,7 +5,7 @@
 
 :- pce_begin_class(chess_board, picture).
 
-variable(squares, chain, get).
+variable(squares, vector, get).
 
 resize(Frame) :->
   send_super(Frame, resize),
@@ -23,23 +23,28 @@ resize(Frame) :->
 
 
 initialise(Self) :->
-  send_super(Self, initialise, 'Hello World'),
+  send_super(Self, initialise, 'Chessboard'),
 
   default_size([Width, Height]),
 
   send(Self, width, Width),
   send(Self, height, Height),
-  findall(Square,
+
+  new(V, vector),
+  send(Self, slot, squares, V),
+  
+  forall(between(0, 63, Ix),
         (
-          between(0, 63, Ix),
-          make_square(Ix, Square)
-        ),
-        Squares),
+          make_square(Ix, Square),
+          send(Self, display, Square),
+          send(V, append, Square)
+        )).
 
-  forall(member(Square, Squares),
-         send(Self, display, Square)),
 
-  send(Self, slot, squares, Squares).
+
+square(Self, Index, Square) :<-
+  get(Self, squares, V),
+  get(V, element(Index), Square).
 
 
 :- pce_end_class.
