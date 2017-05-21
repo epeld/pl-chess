@@ -25,7 +25,7 @@ load_bitmaps(Size) :-
   format("Bitmaps ~dx~d loaded.\n", [Size, Size]).
 
 
-piece_image(Char, Image) :-
+piece_image(Char, Size, Image) :-
   piece_bitmap(Char, Size, Bitmap),
   get(Bitmap, image, Image).
 
