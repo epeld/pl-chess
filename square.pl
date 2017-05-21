@@ -4,19 +4,21 @@
 :- use_module(library(clpfd)).
 :- use_module(library(pce)).
 
-% TODO this should actually be a device, not a box..
 :- pce_begin_class(square, device).
 
 variable(box, box, get, "The boxy box").
+variable(bitmap, bitmap, get, "The bitmappy bitmap").
 variable(text, text, get, "The texty text").
 variable(index, int, get, "The indexy index").
 
 initialise(Self) :->
   new(B, box(32, 32)),
   new(T, text('square')),
+  new(Bmp, bitmap),
 
   send(Self, slot, box, B),
   send(Self, slot, text, T),
+  send(Self, slot, bitmap, Bmp),
   send(Self, slot, index, 0), % initial value
 
   send_super(Self, initialise),
@@ -24,10 +26,13 @@ initialise(Self) :->
   send(B, pen, 0),
 
   send(Self, display, B),
-  send(Self, display, T).
+  send(Self, display, T),
+  send(Self, display, Bmp),
+
+  send(Bmp, displayed(@off)).
 
 
-assign_index(Self, Index) :->
+square_index(Self, Index) :->
   send(Self, slot, index, Index),
   get(Self, box, Box),
 
@@ -44,6 +49,15 @@ assign_index(Self, Index) :->
   % Colour
   square_colour(Index, Colour),
   send(Box, fill_pattern, colour(Colour)).
+
+
+char(Self, Char) :->
+  get(Self, bitmap, Bmp),
+  Char = none *->
+    send(Bmp, displayed(@off))
+  ; bitmaps:piece_image(Char, 64, Image),
+    send(Bmp, image, Image),
+    send(Bmp, displayed(@on)).
 
 
 reconfigure(Self, Width, Height) :->

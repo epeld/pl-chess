@@ -46,7 +46,7 @@ initialise(Self) :->
 
 make_square(Ix, Square) :-
   new(Square, square),
-  send(Square, assign_index, Ix).
+  send(Square, square_index, Ix).
 
 
 default_size([S, S]) :-
