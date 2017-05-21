@@ -44,7 +44,13 @@ initialise(Self) :->
 
 square(Self, Index, Square) :<-
   get(Self, squares, V),
-  get(V, element(Index), Square).
+  Index0 is Index + 1,
+  get(V, element(Index0), Square).
+
+
+char(Self, Index, Char) :->
+  get(Self, square(Index), Square),
+  send(Square, char, Char).
 
 
 :- pce_end_class.
@@ -62,3 +68,20 @@ hello(A) :-
   send(A, open).
 
 
+
+display(Board, FEN) :-
+  fen:position(P, FEN, []),
+  fen:board(P, [board, Rows]),
+  append(Rows, AllRows),
+  maplist(maybe_piece_char, AllRows, AllChars),
+  forall(nth0(Ix, AllChars, Char),
+         (
+           % format("Sending ~a to square ~d\n", [Char, Ix]),
+           send(Board, char(Ix, Char)))
+         ).
+
+
+maybe_piece_char([PieceType, Color], Char) :-
+  fen:piece_char([PieceType, Color], Char).
+
+maybe_piece_char(nothing, none).

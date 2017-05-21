@@ -29,7 +29,8 @@ initialise(Self) :->
   send(Self, display, T),
   send(Self, display, Bmp),
 
-  send(Bmp, displayed(@off)).
+  send(Bmp, displayed(@off)),
+  send(T, displayed(@off)).
 
 
 square_index(Self, Index) :->
@@ -57,7 +58,10 @@ char(Self, Char) :->
     send(Bmp, displayed(@off))
   ; bitmaps:piece_image(Char, 64, Image),
     send(Bmp, image, Image),
-    send(Bmp, displayed(@on))).
+    send(Bmp, displayed(@on)),
+    get(Self, box, B),
+    get(B, center, BC),
+    send(Bmp, center, BC)).
 
 
 reconfigure(Self, Width, Height) :->
@@ -73,6 +77,11 @@ reconfigure(Self, Width, Height) :->
   X #= Col * Width,
   Y #= Row * Height,
   send(Self, move, point(X, Y)).
+
+
+text_displayed(Self, Displayed) :->
+  get(Self, text, T),
+  send(T, displayed, Displayed).
 
 :- pce_end_class.
 
