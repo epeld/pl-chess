@@ -24,6 +24,7 @@ position([position, Board, Turn, Rights, Passant, HalfMoveNr, FullMoveNr]) -->
     nat(FullMoveNr).
 
 
+board([position, Board | _], Board).
 turn([position, _, Turn | _], Turn).
 passant([position, _, _, Passant | _], Passant).
 rights([position, _ , _, _, Rights | _], Rights).
