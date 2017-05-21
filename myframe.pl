@@ -3,7 +3,7 @@
 :- use_module(library(clpfd)).
 :- use_module(library(pce)).
 
-:- pce_begin_class(chess_board, picture).
+:- pce_begin_class(chess_board, window).
 
 variable(squares, vector, get).
 
