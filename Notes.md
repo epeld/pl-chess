@@ -3,14 +3,12 @@
 
 ## TODOs for GUI Development
 
-- Pre-render bitmaps in various sizes. Force chessboard to be 8 x those sizes
+- Figure out protocol for GUI -> Logic communication
 
-- Define a board class that knows all the squares and that can "load" a position
+- Display FEN info somewhere, e.g move nr, whose turn, CHECK, etc
 
 - Define a game-frame that can follow a game.
 
 - Allow board to input new moves, both using keyboard AND mouse
-
-- Display FEN info somewhere, e.g move nr, whose turn, CHECK, etc
 
 - Parse UCI engine output. Add a frame for that
