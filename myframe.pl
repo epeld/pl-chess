@@ -74,11 +74,12 @@ display(Board, FEN) :-
   fen:board(P, [board, Rows]),
   append(Rows, AllRows),
   maplist(maybe_piece_char, AllRows, AllChars),
+  display_chars(Board, AllChars).
+
+
+display_chars(Board, AllChars) :-
   forall(nth0(Ix, AllChars, Char),
-         (
-           % format("Sending ~a to square ~d\n", [Char, Ix]),
-           send(Board, char(Ix, Char)))
-         ).
+         send(Board, char(Ix, Char))).
 
 
 maybe_piece_char([PieceType, Color], Char) :-
