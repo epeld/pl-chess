@@ -1,22 +1,23 @@
+:- module(convert, []).
+
 %
 % This 'script' converts svg images to bitmaps of a certain size
 %
 
 convert_images(Size) :-
-  svg_images(Images),
-  convert_images(Size, Images),
+  image_names(Size, SvgFile, PngFile, XpmFile),
+  export_image(Size, SvgFile, PngFile, XpmFile),
+
+  % failure driven loop
   fail.
 
-convert_images(Size, Images) :-
-  member(Image, Images),
-  export_image(Image, Size).
 
-export_image(Image, Size) :-
-  exported_png_name(Size, Image, Exported, Exported2),
-  format("Exporting ~s as ~s\n", [Image, Exported]),
+export_image(Size, SvgFile, PngFile, XpmFile) :-
+  format("Exporting ~s -> ~s -> ~s\n", [SvgFile, PngFile, XpmFile]),
   
-  format(string(Command), "inkscape -z -e ~s ~s", [Exported, Image]),
-  format(string(Command2), "convert ~s ~s", [Exported, Exported2]),
+  format(string(Command), "inkscape -z -e ~s ~s -w ~d -h ~d",
+         [PngFile, SvgFile, Size, Size]),
+  format(string(Command2), "convert ~s ~s", [PngFile, XpmFile]),
   
   format("> ~s", [Command]),
   shell(Command, Status),
@@ -27,43 +28,32 @@ export_image(Image, Size) :-
   format(" --> ~d\n", [Status2]),
 
   % Delete the png
-  delete_file(Exported).
-
-svg_images(Files) :-
-  expand_file_name("vectors/*", Files).
+  delete_file(PngFile).
 
 
-special_file('.').
-special_file('..').
+image_names(Size, SvgFile, PngFile, XpmFile) :-
+  vector_name(Pt, C, SvgFile),
+  image_name(Pt, C, Size, 'png', PngFile),
+  image_name(Pt, C, Size, 'xpm', XpmFile).
 
 
-svg_file(File) :-
-  file_name_extension(_Name, 'svg', File).
+image_name(Pt, Color, Size, Extension, Name) :-
+  piece_name(P, Pt),
+  color_name(C, Color),
+  format(atom(Name), "~a/~a~a_~d.~s", ['bitmaps', C, P, Size, Extension]).
 
 
-exported_png_name(Size, SvgFile, PngFile, XpmFile) :-
-  file_name_extension(Name0, 'svg', SvgFile),
-  file_base_name(Name0, Name),
+vector_name(Pt, Color, Name) :-
+  piece_name(P, Pt),
+  color_name(C, Color),
+  format(atom(Name), "~a/~a~a.svg", ['vectors', C, P]).
 
-  image_name(Name),
+color_name('White', white).
+color_name('Black', black).
 
-  format(string(Name2), "~s/~s_~d", ['bitmaps', Name, Size]),
-  
-  file_name_extension(Name2, 'png', PngFile),
-  file_name_extension(Name2, 'xpm', XpmFile).
-
-
-image_name(Name) :-
-  piece_name(P),
-  color_name(C),
-  format(atom(Name), "~s~s", [C, P]).
-
-color_name('White').
-color_name('Black').
-
-piece_name('Bishop').
-piece_name('Knight').
-piece_name('Queen').
-piece_name('King').
-piece_name('Pawn').
-piece_name('Rook').
+piece_name('Bishop', bishop).
+piece_name('Knight', knight).
+piece_name('Queen', queen).
+piece_name('King', king).
+piece_name('Pawn', pawn).
+piece_name('Rook', rook).
