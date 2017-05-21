@@ -14,6 +14,10 @@
 load_gui :-
   use_module(square),
   use_module(myframe),
+  use_module(bitmaps),
+  use_module(convert),
+
+  bitmaps:load_bitmaps(64),
   
   % compile_resources,
   
