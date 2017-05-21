@@ -25,10 +25,17 @@ load_bitmaps(Size) :-
   format("Bitmaps ~dx~d loaded.\n", [Size, Size]).
 
 
+piece_image(Char, Image) :-
+  piece_bitmap(Char, Size, Bitmap),
+  get(Bitmap, image, Image).
+
 piece_bitmap(PieceType, Color, Size, Bitmap) :-
   fen:piece_char([PieceType, Color], Char),
   
   !,
+  piece_bitmap(Char, Size, Bitmap).
+
+piece_bitmap(Char, Size, Bitmap) :-
   get(@bitmaps, member(Size), H),
   get(H, member(Char), Bitmap).
 
