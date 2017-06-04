@@ -4,31 +4,73 @@
 
 :- set_prolog_flag(double_quotes, codes).
 
+foo("position startpos
+go
+info nodes 2 time 2
+bestmove a2a3 ponder (none)").
 
-setup_call_cleanup(
+create_thread(Id) :-
+  thread_create(engine_main, Id, [alias(engine)]).
+
+
+create_engine_process(In, Out) :-
   process_create(path(stockfish), [],
                  [ stdout(pipe(Out)),
                    stdin(pipe(In))
-                 ]),
-  repl(In, Out),
-  (
-    close(Out),
-    close(In)
-  )).
+                 ]).
+
+engine_main :-
+  setup_call_cleanup(
+    create_engine_process(In, Out),
+    repl(In, Out, initializing),
+    
+    (
+      close(Out),
+      close(In)
+    )).
+
 
 repl(In, Out, State) :-
   process_pending_input(In, State, State1),
   process_pending_messages(Out, State1, State2),
 
-  format("Sleeping~n"),
-  sleep(3),
+  sleep(0.1),
 
   repl(In, Out, State2).
 
 
+%
+% Handle requests from other threads
+%
+
+process_pending_messages(Out, S, S2) :-
+  get_message_non_block(Msg),
+  !,
+  process_message(Out, S, Msg, S1),
+  process_pending_messages(Out, S1, S2).
+
 process_pending_messages(_Out, S, S).
 
+process_message(_, S, ping, S) :-
+  format("pong~n").
 
+process_message(_, S, state, S) :-
+  write(S),
+  format("~n").
+
+get_message_non_block(Msg) :-
+  thread_self(Self),
+  thread_get_message(Self, Msg, [timeout(0)]),
+
+  % Some debugging:
+  format("Received Message~n"),
+  write(Msg),
+  format("~n").
+
+
+%
+% Engine output Polling
+%
 process_pending_input(In, State, NextState) :-
   read_line(In, Line),
   !,
