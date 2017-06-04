@@ -92,7 +92,6 @@ meta_key(Key) -->
   {
     meta_key(Key),
 
-    % TODO capitalize!
     atom_codes(Key, Codes),
     capitalized_string(Codes, CapCodes)
   },
