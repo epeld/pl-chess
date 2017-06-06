@@ -20,8 +20,13 @@ option(option(AName, Specific)) -->
   }.
 
 
+number(Nr) -->
+  fen:nat(Nr).
+
+number(Nr) --> "-", fen:nat(Nr0), { Nr is -Nr0 }.
+
 option_specific(spin, spin(Default, Min, Max)) -->
-  " default ", fen:nat(Default), " min ", fen:nat(Min), " max ", fen:nat(Max).
+  " default ", number(Default), " min ", number(Min), " max ", number(Max).
 
 option_specific(button, button) --> [].
 
