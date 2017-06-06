@@ -45,14 +45,6 @@ boolean(false) --> "false".
 newline --> "\r\n".
 newline --> "\n".
 
-on_off(on) --> "on".
-
-on_off(off) --> "off".
-
-isready --> "isready".
-
-readyok --> "readyok".
-
 setoption(Name, Value) -->
   "setoption ",
   Name,
@@ -66,14 +58,6 @@ position(startpos, Moves) -->
   "position startpos moves ",
   move_list(Moves).
 
-
-go --> "go".
-
-
-main(_) :-
-  format("Hello World\n").
-
-example_bestmove_string("bestmove a2a3 ponder (none)").
 
 bestmove(bestmove(Moves, Ponder)) -->
   "bestmove ",
