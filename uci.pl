@@ -28,6 +28,8 @@ number(Nr) --> "-", fen:nat(Nr0), { Nr is -Nr0 }.
 option_specific(spin, spin(Default, Min, Max)) -->
   " default ", number(Default), " min ", number(Min), " max ", number(Max).
 
+% TODO combo option
+
 option_specific(button, button) --> [].
 
 option_specific(string, string(Default)) -->
@@ -37,6 +39,7 @@ option_specific(check, check(Default)) -->
   " default ", boolean(Default).
 
 type(spin) --> "spin".
+type(combo) --> "combo".
 type(button) --> "button".
 type(string) --> "string".
 type(check) --> "check".
