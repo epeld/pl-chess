@@ -1,4 +1,7 @@
 :- module(engine_state, []).
+
+:- set_prolog_flag(double_quotes, codes).
+
 %
 % This module keeps track of UCI engine state and how to transition between those states
 %
@@ -37,7 +40,7 @@ initial_state(initializing).
 %
 % Transitions
 %
-transition(_In, initialized(EngineString, Id, Options), idle(EngineString, Id, Options, uciok)).
+transition(_In, initialized(EngineString, Id, Options), idle(EngineString, Id, Options), uciok).
 
 transition(In, initializing, initialized(EngineString, [], []), engine_string(EngineString)) :-
   send_to_engine(In, "uci~n", []).
@@ -74,20 +77,29 @@ process_line(In, EngineString, initializing, S2) :-
 
 
 % Parse identification string
-process_line(_In, IdString, initialized(EngineString, Ids, Options), initialized(EngineString, [Id | Ids], Options)) :-
+process_line(_In, IdString,
+             initialized(EngineString, Ids, Options),
+             initialized(EngineString, [Id | Ids], Options)) :-
+  
   phrase(uci:id_string(Id), IdString).
+
+% a blank line is sent after identification info
+process_line(_In, "",
+             initialized(A, B, C),
+             initialized(A, B, C)).
 
 
 % Parse options
-process_line(_In, OptionString, initialized(EngineString, Id, Options), initialized(EngineString, Id, [Option | Options])) :-
+process_line(_In, OptionString,
+             initialized(EngineString, Id, Options),
+             initialized(EngineString, Id, [Option | Options])) :-
+  
   phrase(uci:option(Option), OptionString).
 
 
 % transition to uci (after printing all options)
 process_line(In, "uciok", S, S2) :-
-  engine_state_name(S, initialized),
   transition(In, S, S2, uciok).
-
 
 % transition from running to idle
 process_line(In, BestMoveString, S, S2) :-
