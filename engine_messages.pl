@@ -34,10 +34,15 @@ process_message(_, S, state, S) :-
   write(S),
   format("~n").
 
+
+process_message(_, S, reader_failed(_Reader), S) :-
+  format("Reader died.~n"),
+  quit.
+
 process_message(_, S, line_read(_Stream, end_of_file), S) :-
   !,
   format("END OF FILE~n"),
-  fail.
+  quit.
 
 process_message(In, S, line_read(_Stream, Codes), S2) :-
   format("Engine: '~s'~n", [Codes]),
@@ -45,11 +50,26 @@ process_message(In, S, line_read(_Stream, Codes), S2) :-
     engine_state:process_line(In, Codes, S, S2),
     Err,
     (
-      format("Error: '~s' and ~k~n", Codes, S),
-      format("Error: ~k~n", Err)
+      format("Error: '~w' and ~w~n", [Codes, S]),
+      format("Error: ~k~n", Err),
+      inspect_error(Err)
     )).
 
 
 process_message(In, S, quit, S) :-
   format(In, "quit~n", []),
-  flush_output(In).
+  flush_output(In),
+  quit.
+
+
+quit :-
+  throw(quit).
+
+
+inspect_error(error(existence_error(A,B),context(C,D))) :-
+  !,
+  format("Terminating because of Existence Error ~w ~w ~w ~w", [A, B, C, D]),
+  quit.
+
+% For some errors we can try to keep on going
+inspect_error(_Err).

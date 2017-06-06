@@ -13,9 +13,11 @@ list_threads(Threads) :-
   bagof([T,S], thread_property(T, status(S)), Threads).
 
 list_my_threads(Threads) :-
-  list_threads(Threads),
-  exclude(Threads, system_thread).
+  list_threads(Threads0),
+  exclude(system_thread, Threads0, Threads).
 
+
+system_thread([T, _]) :- system_thread(T).
 
 system_thread(main).
 system_thread(pce).

@@ -15,7 +15,7 @@ engine_string(State, String) :-
   arg(1, State, engine_string(String)).
 
 engine_id(State, Id) :-
-  arg(2, State, id(Id)).
+  arg(2, State, Id).
 
 engine_options(State, Options) :-
   arg(3, State, Options).
@@ -37,9 +37,9 @@ initial_state(initializing).
 %
 % Transitions
 %
-transition(_In, initialized(EngineString, Id, Options), idle(EngineString, Id, Options, none)).
+transition(_In, initialized(EngineString, Id, Options), idle(EngineString, Id, Options, uciok)).
 
-transition(In, initializing, initialized(EngineString, unknown, []), engine_string(EngineString)) :-
+transition(In, initializing, initialized(EngineString, [], []), engine_string(EngineString)) :-
   send_to_engine(In, "uci~n", []).
 
 transition(In,
@@ -70,11 +70,11 @@ process_line(_In, "readyok", S, S).
 
 % Parse engine string, then transition (to uci init)
 process_line(In, EngineString, initializing, S2) :-
-  transition(In, initializing, S2, [EngineString]).
+  transition(In, initializing, S2, engine_string(EngineString)).
 
 
 % Parse identification string
-process_line(_In, IdString, initialized(EngineString, unknown, Options), initialized(EngineString, id(Id), Options)) :-
+process_line(_In, IdString, initialized(EngineString, Ids, Options), initialized(EngineString, [Id | Ids], Options)) :-
   phrase(uci:id_string(Id), IdString).
 
 
@@ -86,7 +86,7 @@ process_line(_In, OptionString, initialized(EngineString, Id, Options), initiali
 % transition to uci (after printing all options)
 process_line(In, "uciok", S, S2) :-
   engine_state_name(S, initialized),
-  transition(In, S, S2).
+  transition(In, S, S2, uciok).
 
 
 % transition from running to idle

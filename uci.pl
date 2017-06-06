@@ -82,3 +82,9 @@ uci_moves([]) --> [].
 uci_move(From-To) -->
   fen:square(From),
   fen:square(To).
+
+id_string(name(String)) -->
+  "id name ", string(String).
+
+id_string(author(String)) -->
+  "id author ", string(String).

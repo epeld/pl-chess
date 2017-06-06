@@ -14,7 +14,7 @@
                      
 
 create_thread(Id, Alias) :-
-  (cleanup_threads ; true),
+  (thread_tools:cleanup_threads ; true),
   thread_create(engine_main, Id, [alias(Alias)]).
 
 
@@ -23,7 +23,7 @@ create_thread(Id) :-
 
 
 create_engine_process(PID, In, Out) :-
-  create_piped_process(path(stockfish), PID, In, Out).
+  thread_tools:create_piped_process(path(stockfish), PID, In, Out).
 
 
 engine_main :-
@@ -68,11 +68,17 @@ handle_pending_message(In, S, S2) :-
 
 handle_message(In, S, Msg, S2) :-
   engine_messages:process_message(In, S, Msg, S2),
-  format("OK~n"),
   !.
 
+handle_message(_In, S, line_read(_, Msg), S2) :-
+  !,
+  format("Warning: Could not handle engine message '~s', received in state: ~n", [Msg]),
+  write(S),
+  format("~n"),
+  S = S2.
+
 handle_message(_In, S, Msg, S2) :-
-  format("Warning: Could not handle message '~k', received in state: ~n", [Msg]),
+  format("Warning: Could not handle message '~w', received in state: ~n", [Msg]),
   write(S),
   format("~n"),
   S = S2.
@@ -88,12 +94,11 @@ print_message(Msg) :-
   format("~n").
 
 
+handle_error(quit, _, _) :- !, fail.
 
 handle_error(Err, Msg, S) :-
   format("Error!~n"),
-  format("Exception occured processing ~k ~n", [Msg]),
-  format("~k~n", [Err]),
-  format("~w~n", [S]),
+  format("Exception occured processing ~w~n~w~n~w ~n", [Msg, Err, S]),
   thread_send_message(main, engine_error(Err, Msg, S)),
   fail.
         
