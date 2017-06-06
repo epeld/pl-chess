@@ -45,7 +45,7 @@ process_message(_, S, line_read(_Stream, end_of_file), S) :-
   quit.
 
 process_message(In, S, line_read(_Stream, Codes), S2) :-
-  format("Engine: '~s'~n", [Codes]),
+  format("Engine: \"~s\"~n", [Codes]),
   catch(
     engine_state:process_line(In, Codes, S, S2),
     Err,
