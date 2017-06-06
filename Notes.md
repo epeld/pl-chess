@@ -7,6 +7,7 @@
 - Decode uci_moves to pgn_moves
 - Display an ASCII chess board!
 - Fix bug in pgnfile parsing (see sample.pgn)
+- Implement Combo option type parsing
 
 ## Slightly Harder TODOs
 
