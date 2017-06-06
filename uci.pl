@@ -6,6 +6,8 @@
 
 :- set_prolog_flag(double_quotes, codes).
 
+:- use_module(fen).
+
 
 uci --> "uci".
 
@@ -71,3 +73,28 @@ go --> "go".
 main(_) :-
   format("Hello World\n").
 
+example_bestmove_string("bestmove a2a3 ponder (none)").
+
+bestmove(bestmove(Moves, Ponder)) -->
+  "bestmove ",
+  uci_moves(Moves),
+  
+  ( " " ; [] ),
+  
+  ( ponder(Ponder)
+  ; [], {Ponder = none}).
+
+ponder(none) --> "ponder (none)".
+ponder(Move) --> "ponder ", uci_move(Move).
+
+uci_moves([Move, Move2 | Moves]) -->
+  uci_move(Move),
+  " ",
+  uci_moves([Move2 | Moves]).
+
+uci_moves([Move]) --> uci_move(Move).
+uci_moves([]) --> [].
+
+uci_move(From-To) -->
+  fen:square(From),
+  fen:square(To).

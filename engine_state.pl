@@ -39,15 +39,26 @@ initial_state(initializing).
 %
 transition(_In, initialized(EngineString, Id, Options), idle(EngineString, Id, Options, none)).
 
-transition(In, initializing, initialized(EngineString, unknown, []), [EngineString]) :-
+transition(In, initializing, initialized(EngineString, unknown, []), engine_string(EngineString)) :-
   send_to_engine(In, "uci~n", []).
 
-
-
-transition(In, idle(A, B, C, D), running(A, B, C, D), Args) :-
+transition(In,
+           idle(A, B, C, _),
+           running(A, B, C, analysis(Position, [], unknown)),
+           go(Position, Args)) :-
+  
   ( Args = [_Arg], S = "go ~s~n"
-  ; Args = [], S = "go ~s~n" ),
+  ; Args = [], S = "go~n" ),
+
+  send_to_engine(In, "position ~s~n", [Position]),
   send_to_engine(In, S, Args).
+
+
+transition(_In,
+           running(A, B, C, analysis(P, Pvs, _)),
+           idle(A, B, C, analysis(P, Pvs, bestmove(Move, Ponder))),
+           bestmove(Move, Ponder)).
+
 
 %
 % Engine Output Parsing
@@ -76,3 +87,9 @@ process_line(_In, OptionString, initialized(EngineString, Id, Options), initiali
 process_line(In, "uciok", S, S2) :-
   engine_state_name(S, initialized),
   transition(In, S, S2).
+
+
+% transition from running to idle
+process_line(In, BestMoveString, S, S2) :-
+  phrase(uci:bestmove(BestMove), BestMoveString),
+  transition(In, S, S2, bestmove(BestMove)).
