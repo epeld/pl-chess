@@ -1,32 +1,42 @@
 
 # Notes for me
 
+## Simple TODOs
+
+- Parse engine info strings (don't assume the order of the params in it!)
+- Decode uci_moves to pgn_moves
+- Display an ASCII chess board!
+- Fix bug in pgnfile parsing (see sample.pgn)
+
+## Slightly Harder TODOs
+
+- Allow editing and SAVING pgnfiles 
+- Implement a 'variation stack' and a 'free analysis'-mode (i.e move pieces freely)
+
+
 ## TODOs for Engine Analysis
 
 
-### Debugging/Flexibility
-
-Amend the 'Engine State'-structure with meta-data.
-
-- A log of the N latest engine lines would be useful
 
 
+### Client
+
+Build a user friendly client for talking to the engine
+
+- Start/Stop the engine
+- Get engine status
+- Get current engine position and bestline (so far)
+- Inspect/Set individual engine options
+
+Eventually:
+
+- Display the primary variations in a GUI 
 
 ### "Go"
-
-- Add a command for telling the engine to analyse
 
 - Parse engine info-strings during analysis.
 
 
-
-### Options
-
-Add options management.
-
-- Allow echoing options back to a client (in a Prology way)
-
-- Support changing option values
 
 
 ## TODOs for GUI Development
