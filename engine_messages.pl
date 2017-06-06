@@ -5,7 +5,12 @@
 %
 % Message processing for our engine thread
 %
+info(S) :- info(S, []).
 
+info(_, _) :- !. % Comment out to get info messages
+
+info(FormatString, Args) :-
+  format(FormatString, Args).
 
 process_message(In, [idle | Rest], go(Position, Args), [running | Rest]) :-
   format("analysing ~s~n", [Position]),
@@ -36,16 +41,16 @@ process_message(_, S, state, S) :-
 
 
 process_message(_, S, reader_failed(_Reader), S) :-
-  format("Reader died.~n"),
+  info("Reader died.~n"),
   quit.
 
 process_message(_, S, line_read(_Stream, end_of_file), S) :-
   !,
-  format("END OF FILE~n"),
+  info("END OF FILE~n"),
   quit.
 
 process_message(In, S, line_read(_Stream, Codes), S2) :-
-  format("Engine: \"~s\"~n", [Codes]),
+  info("Engine: \"~s\"~n", [Codes]),
   catch(
     engine_state:process_line(In, Codes, S, S2),
     Err,
