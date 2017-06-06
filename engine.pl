@@ -27,11 +27,13 @@ create_engine_process(PID, In, Out) :-
 
 
 engine_main :-
+  engine_state:initial_state(State),
+  
   setup_call_cleanup(
     create_engine_process(PID, In, Out),
     (
       read:start_reader([Out], [alias(reader)], _RId),
-      repl(In, initializing)
+      repl(In, State)
     ),
     
     (
@@ -80,17 +82,18 @@ handle_message(_In, S, Msg, S2) :-
 print_message(_) :-
   !.
 
-print_message(_) :-
+print_message(Msg) :-
   format("Received message: ~n"),
   write(Msg),
   format("~n").
 
 
 
-handle_error(Err, Msg, _S) :-
+handle_error(Err, Msg, S) :-
   format("Error!~n"),
   format("Exception occured processing ~k ~n", [Msg]),
   format("~k~n", [Err]),
   format("~w~n", [S]),
+  thread_send_message(main, engine_error(Err, Msg, S)),
   fail.
         
