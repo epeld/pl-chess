@@ -1,10 +1,21 @@
-
 :- module(read, []).
 
+%
+% This module defines a small standalone 'process'
+% that is given a set of streams to monitor
+% and the reports any lines written to those streams as
+% messages to another thread/message queue.
+%
+
+% Start a reader, giving it a list of streams to monitor and
+% a list of thread creation options.
+%
+% The reader will report back to the thread that created it.
 start_reader(Streams, Options, Id) :-
   thread_self(Self),
   thread_create(reader_main(Streams, Self), Id, Options).
 
+% This is the reader's main procedure (which runs in a separate thread from the rest of the application)
 reader_main(Streams, Reportee) :-
   read_lines_report_to(Streams, Reportee).
 
