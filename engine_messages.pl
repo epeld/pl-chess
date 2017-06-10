@@ -29,14 +29,14 @@ process_message(_, S, line_read(_Stream, end_of_file), S) :-
 
 % Engine process output
 process_message(In, S, line_read(_Stream, Codes), S2) :-
-  compound(Codes),
+  ( compound(Codes) ; Codes = [] ),
   info("Engine: \"~s\"~n", [Codes]),
   catch(
     engine_state:process_line(In, Codes, S, S2),
     Err,
     (
       format("Error: '~w' and ~w~n", [Codes, S]),
-      format("Error: ~k~n", Err),
+      format("Error: ~k~n", [Err]),
       inspect_error(Err)
     )).
 
@@ -69,7 +69,7 @@ async(setoption(Name, Value), In, S, S2) :-
   engine_state:transition(In, S, S2, setoption(Name, Value)).
 
 
-sync(state, _In, S, S, ok).
+sync(state, _In, S, S, state(S)).
 
 sync(ping, _, _, _, ok).
 
