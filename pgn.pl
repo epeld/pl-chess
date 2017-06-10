@@ -266,3 +266,5 @@ straight_move(Src, Dst, P, Dir, N) :-
 straight_move(Src, Dst, P, Dir) :-
   between(1, 7, N),
   straight_move(Src, Dst, P, Dir, N).
+
+castling_move([castles, Side], Side).
