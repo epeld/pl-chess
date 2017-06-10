@@ -38,14 +38,34 @@ option_specific(string, string(Default)) -->
 option_specific(check, check(Default)) -->
   " default ", boolean(Default).
 
+
+option_specific(combo, combo(Default, Options)) -->
+  {
+    member(Default, Options)
+  },
+  " default ", string_no_space(Default),
+  " ",
+  vars(Options).
+
+vars([Option | Options]) -->
+  "var ", string_no_space(Option), vars1(Options).
+
+vars1([Option | Options]) -->
+  " var ", string_no_space(Option), vars1(Options).
+
+vars1([]) --> [].
+
 type(spin) --> "spin".
-type(combo) --> "combo".
+%type(combo) --> "combo".
 type(button) --> "button".
 type(string) --> "string".
 type(check) --> "check".
 
 string([]) --> [].
 string([Char | Rest]) --> [Char], { Char \= 10 }, string(Rest).
+
+string_no_space([]) --> [].
+string_no_space([Char | Rest]) --> [Char], { Char \= 10, Char \= 32 }, string_no_space(Rest).
 
 boolean(true) --> "true".
 boolean(false) --> "false".
