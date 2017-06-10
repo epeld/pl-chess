@@ -199,3 +199,32 @@ nat_info_atom(sbhits).
 
 
 % TODO write a program to parse the uci spec to retrieve the documentation for each "info" the engine can send (see Notes.md)
+
+
+uci_pgn_move(P, [Uci1 | UciMoves], [Pgn1 | PgnMoves]) :-
+  Uci1 = Source - Dest,
+
+  % TODO write a 'full_move-like' predicate that finds the shorted unambiguous pgn mv
+  pgn:full_move(P, [move, _, Source, _, Dest], Pgn1),
+
+  pgn:make_move(Pgn1, P, P2),
+  uci_pgn_move(P2, UciMoves, PgnMoves).
+
+uci_pgn_move(P, [Uci1 | UciMoves], [Pgn1 | PgnMoves]) :-
+  Uci1 = Source - Dest,
+
+  % TODO write a 'full_move-like' predicate that finds the shorted unambiguous pgn mv
+  % TODO promo
+  pgn:full_move(P, [move, pawn, Source, _, Dest, nothing], Pgn1),
+
+  % pgn:make_move(Pgn1, P, P2),
+  pgn:legal_position_after(Pgn1, P, P2),
+
+
+  uci_pgn_move(P2, UciMoves, PgnMoves).
+
+
+% TODO write a uci_pgn_move-case for castling
+
+
+uci_pgn_move(_P, [], []).
