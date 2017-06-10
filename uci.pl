@@ -97,6 +97,15 @@ uci_move(From-To) -->
   fen:square(From),
   fen:square(To).
 
+uci_move(From-To = Promotion) -->
+  uci_move(From - To),
+  promotion(Promotion).
+
+promotion(rook) --> "r".
+promotion(bishop) --> "b".
+promotion(knight) --> "n".
+promotion(queen) --> "q".
+
 %
 % Id Parsing
 %
@@ -201,30 +210,40 @@ nat_info_atom(sbhits).
 % TODO write a program to parse the uci spec to retrieve the documentation for each "info" the engine can send (see Notes.md)
 
 
-uci_pgn_move(P, [Uci1 | UciMoves], [Pgn1 | PgnMoves]) :-
-  Uci1 = Source - Dest,
-
-  % TODO write a 'full_move-like' predicate that finds the shorted unambiguous pgn mv
-  pgn:full_move(P, [move, _, Source, _, Dest], Pgn1),
-
+uci_pgn_moves(P, [Uci1 | UciMoves], [Pgn1 | PgnMoves]) :-
+  uci_pgn_move(P, Uci1, Pgn1),
   pgn:make_move(Pgn1, P, P2),
   uci_pgn_move(P2, UciMoves, PgnMoves).
 
-uci_pgn_move(P, [Uci1 | UciMoves], [Pgn1 | PgnMoves]) :-
-  Uci1 = Source - Dest,
+uci_pgn_moves(_P, [], []).
 
+uci_pgn_move(P, Source - Dest, Pgn) :-
   % TODO write a 'full_move-like' predicate that finds the shorted unambiguous pgn mv
   % TODO promo
-  pgn:full_move(P, [move, pawn, Source, _, Dest, nothing], Pgn1),
-
-  % pgn:make_move(Pgn1, P, P2),
-  pgn:legal_position_after(Pgn1, P, P2),
+  ( pgn:full_move(P, [move, pawn, Source, _, Dest, nothing], Pgn)
+  ; pgn:full_move(P, [move, _, Source, _, Dest], Pgn)).
 
 
-  uci_pgn_move(P2, UciMoves, PgnMoves).
+uci_pgn_move(P, Source - Dest = Promotion, Pgn) :-
+  % TODO write a 'full_move-like' predicate that finds the shorted unambiguous pgn mv
+  % TODO promo
+  pgn:full_move(P, [move, pawn, Source, _, Dest, Promotion], Pgn).
 
+uci_pgn_move(P, Source - Dest, Pgn) :-
+  fen:piece_at(P, Source, [king, Color]),
+  fen:turn(P, Color),
 
-% TODO write a uci_pgn_move-case for castling
+  castling_square(Color, Side, Dest),
+  pgn:castling_move(Pgn, Side).
 
+castling_square(white, queenside, Sq) :-
+  fen:square_codes("c1", Sq).
 
-uci_pgn_move(_P, [], []).
+castling_square(black, queenside, Sq) :-
+  fen:square_codes("c8", Sq).
+
+castling_square(white, kingside, Sq) :-
+  fen:square_codes("g1", Sq).
+
+castling_square(black, kingside, Sq) :-
+  fen:square_codes("g8", Sq).
