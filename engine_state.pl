@@ -49,7 +49,7 @@ initial_state(initializing).
 %
 % State Transitions
 %
-transition(_In, initialized(EngineString, Id, Options), idle(EngineString, Id, Options), uciok).
+transition(_In, initialized(EngineString, Id, Options), idle(EngineString, Id, Options, none), uciok).
 
 transition(In, initializing, initialized(EngineString, [], []), engine_string(EngineString)) :-
   send_to_engine(In, "uci~n", []).
@@ -68,6 +68,10 @@ transition(In,
 
   send_to_engine(In, "position ~s~n", [Position]),
   send_to_engine(In, S, Args).
+
+
+transition(In, S, S2, go(Position)) :-
+  transition(In, S, S2, go(Position, [])).
 
 
 transition(_In,
@@ -117,4 +121,9 @@ process_line(In, "uciok", S, S2) :-
 % transition from running to idle
 process_line(In, BestMoveString, S, S2) :-
   phrase(uci:bestmove(BestMove), BestMoveString),
-  transition(In, S, S2, bestmove(BestMove)).
+  transition(In, S, S2, BestMove)).
+
+process_line(In, InfoString, S, S2) :-
+  phrase(uci:info_line(Infos), InfoString),
+  % TODO handle pvs AND general info here
+  todo.
