@@ -39,6 +39,14 @@ engine_state_name(State, Name) :-
   functor(State, Name, _Arity).
 
 
+analysis_bestmove(Analysis, BestMove) :-
+  arg(3, Analysis, BestMove).
+
+analysis_infos(Analysis, Infos) :-
+  arg(2, Analysis, Infos).
+
+analysis_position(Analysis, Position) :-
+  arg(1, Analysis, Position).
 
 %
 % State
@@ -139,9 +147,3 @@ append_infos(Infos,
              running(EngineString, Id, Options, analysis(P, Is, BestMove)),
              running(EngineString, Id, Options, analysis(P, [Infos | Is], BestMove))) :-
   member(multipv(_), Infos).
-
-
-                            
-                            
-
-  
