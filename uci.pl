@@ -96,3 +96,66 @@ id_string(name(String)) -->
 
 id_string(author(String)) -->
   "id author ", string(String).
+
+
+%
+% Info String Parsing
+%
+
+info(score(Score)) -->
+  "score ", score(Score).
+
+info(pv(Moves)) -->
+  "pv ", uci_moves(Moves).
+
+info(currmove(Move)) -->
+  "currmove ", uci_move(Move).
+
+info(Info) -->
+  nat_info(Info).
+
+nat_info_atom(Atom, Name) :-
+  nat_info_atom(Atom),
+  atom_codes(Atom, Name).
+
+
+base_score(mate(InN)) -->
+  "mate ", fen:nat(InN).
+
+base_score(cp(CentiPawns)) -->
+  "cp ", number(CentiPawns).
+
+score(Score) -->
+  base_score(Score).
+
+score(lowerbound(Score)) -->
+  base_score(Score), " lowerbound".
+
+score(upperbound(Score)) -->
+  base_score(Score), " upperbound".
+
+
+nat_info(Functor) -->
+  nat_info_functor(Functor, N),
+  " ",
+  fen:nat(N).
+
+% Parse a nat_info
+nat_info_functor(Functor, N, Before, After) :-
+  nat_info_functor(Functor, Name, N),
+  append(Name, After, Before).
+
+nat_info_functor(Functor, Name, N) :-
+  nat_info_atom(Atom, Name),
+  functor(Functor, Atom, 1),
+  arg(1, Functor, N).
+
+
+% All the infos that have a natural number as value
+nat_info_atom(seldepth).
+nat_info_atom(depth).
+nat_info_atom(currmovenumber).
+nat_info_atom(multipv).
+nat_info_atom(nodes).
+nat_info_atom(time).
+nat_info_atom(hashfull).
