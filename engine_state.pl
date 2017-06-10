@@ -60,7 +60,7 @@ transition(In, initializing, initialized(EngineString, [], []), engine_string(En
 
 transition(In,
            idle(A, B, C, _),
-           running(A, B, C, analysis(Position, [], [], unknown)),
+           running(A, B, C, analysis(Position, [], unknown)),
            go(Position, Args)) :-
   
   ( Args = [_Arg], S = "go ~s~n"
@@ -75,8 +75,8 @@ transition(In, S, S2, go(Position)) :-
 
 
 transition(_In,
-           running(A, B, C, analysis(P, Pvs, Infos, _)),
-           idle(A, B, C, analysis(P, Pvs, Infos, bestmove(Move, Ponder))),
+           running(A, B, C, analysis(P, Infos, _)),
+           idle(A, B, C, analysis(P, Infos, bestmove(Move, Ponder))),
            bestmove(Move, Ponder)).
 
 
@@ -121,9 +121,27 @@ process_line(In, "uciok", S, S2) :-
 % transition from running to idle
 process_line(In, BestMoveString, S, S2) :-
   phrase(uci:bestmove(BestMove), BestMoveString),
-  transition(In, S, S2, BestMove)).
+  transition(In, S, S2, BestMove).
 
-process_line(In, InfoString, S, S2) :-
+
+% "info .."
+process_line(_In, InfoString, S, S2) :-
+
   phrase(uci:info_line(Infos), InfoString),
-  % TODO handle pvs AND general info here
-  todo.
+  append_infos(Infos, S, S2).
+
+
+%
+% Helpers
+%
+
+append_infos(Infos,
+             running(EngineString, Id, Options, analysis(P, Is, BestMove)),
+             running(EngineString, Id, Options, analysis(P, [Infos | Is], BestMove))) :-
+  member(multipv(_), Infos).
+
+
+                            
+                            
+
+  
