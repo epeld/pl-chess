@@ -5,7 +5,7 @@
 
 - Parse engine info strings (don't assume the order of the params in it!)
 - Decode uci_moves to pgn_moves
-- Display an ASCII chess board!
+- Display an ASCII chess board! (Like a FEN string but 's_/_\n_g' and without RLE encoding)
 - Implement Combo option type parsing
 - Refactor [square, Row, Col] -> square(Row, Col)
 - Refactor [move, Piece, Source, MoveType, Dest] -> move(PieceType, Source, ..)
