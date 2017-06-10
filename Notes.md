@@ -3,7 +3,7 @@
 
 ## Simple TODOs
 
-- Decode uci_moves to pgn_moves
+- Write a util converting PGN moves to their 'shortest unambigous form' (i.e Nce2 -> Ne2 when possible)
 - Display an ASCII chess board! (Like a FEN string but 's_/_\n_g' and without RLE encoding)
 - Implement Combo option type parsing
 
@@ -18,33 +18,16 @@ For when I am bored:
 - Implement 'setoption' state transition
 - (Paritally) Parse the uci spec textfile, extracting the descriptions for standard options and engine infos
 - Allow editing and SAVING pgnfiles 
-- Implement a 'variation stack' and a 'free analysis'-mode (i.e move pieces freely)
+- For the CLI: Implement a 'variation stack' and a 'free analysis'-mode (i.e move pieces freely)
+- Display the primary variations in a GUI 
 
 
 ## TODOs for Engine Analysis
 
-
-
-
-### Client
-
-Build a user friendly client for talking to the engine
-
-- Start/Stop the engine
-- Get engine status
-- Get current engine position and bestline (so far)
-- Inspect/Set individual engine options
-
-Eventually:
-
-- Display the primary variations in a GUI 
-
-### "Go"
-
-- Parse engine info-strings during analysis.
-
-
-
+- Integrate with CLI
+- Print a nice summary of stats / pvs / bestmove
+- Support more options e.g "go args"
+- Print engine options nicely
 
 ## TODOs for GUI Development
 
