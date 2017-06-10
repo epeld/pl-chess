@@ -53,6 +53,7 @@ position_after([castles, Side],
   board_replace(KingSquare2, [king, Turn], Board_3, Board2).
 
 
+% (Non-passant) capture
 position_after( [move, pawn, SourceSquare, capture, Destination, Promotion]
                 , Position
                 , [position, Board2, Turn2, Rights, nothing, 0, FullMoveNr2] ) :-
@@ -95,15 +96,14 @@ position_after( [move, pawn, SourceSquare, move, Destination, Promotion]
   board_replace(Destination, [pawn, Turn], Board_1, Board_2),
 
   promote(Destination, Promotion, Board_2, Board2),
-  
+
   % sanity check
   fen:piece_at(Board, Destination, nothing),
   fen:piece_at(Board, SourceSquare, [pawn, Turn]),
-
   ( fen:piece_at(Board, Passant2, nothing)
   ; Passant2 = nothing ).
 
-
+% Passant Capture
 position_after( [move, pawn, SourceSquare, capture, Destination, nothing]
                 , Position
                 , [position, Board2, Turn2, Rights, nothing, 0, FullMoveNr2] ) :-
