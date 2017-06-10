@@ -58,6 +58,9 @@ quit :-
 async(go(Position, Options), In, S, S2) :-
   engine_state:transition(In, S, S2, go(Position, Options)).
 
+async(go(Position), In, S, S2) :-
+  engine_state:transition(In, S, S2, go(Position)).
+
 async(quit, In, S, S) :-
   engine_state:quit(In),
   quit.
