@@ -124,7 +124,7 @@ passant_square(white, [square, X, 1], [square, X, 3], [square, X, 2]).
 passant_square(black, [square, X, 6], [square, X, 4], [square, X, 5]).
 
 passant_square(black, [square, _, 6], [square, _, 5], nothing).
-passant_square(white, [square, _, 1], [square, _, 3], nothing).
+passant_square(white, [square, _, 1], [square, _, 2], nothing).
 
 passant_square(black, [square, _, Y], _, nothing) :-
   member(Y, [1,2,3,4,5]).
