@@ -73,6 +73,7 @@ handle_message(In, S, Msg, S2) :-
   engine_messages:process_message(In, S, Msg, S2),
   !.
 
+% for when handle_message fails
 handle_message(_In, S, line_read(_, Msg), S2) :-
   !,
   format("Warning: Could not handle engine message '~s', received in state: ~n", [Msg]),
@@ -80,6 +81,7 @@ handle_message(_In, S, line_read(_, Msg), S2) :-
   format("~n"),
   S = S2.
 
+% for when handle_message fails
 handle_message(_In, S, Msg, S2) :-
   format("Warning: Could not handle message '~w', received in state: ~n", [Msg]),
   write(S),
