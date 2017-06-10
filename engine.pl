@@ -13,6 +13,9 @@
 :- use_module(engine_messages).
                      
 
+%
+%  Engine process/thread management
+%
 create_thread(Id, Alias) :-
   (thread_tools:cleanup_threads ; true),
   thread_create(engine_main, Id, [alias(Alias)]).
@@ -32,7 +35,7 @@ engine_main :-
   setup_call_cleanup(
     create_engine_process(PID, In, Out),
     (
-      read:start_reader([Out], [alias(reader)], _RId),
+      read:start_reader([Out], [alias(engine_reader)], _RId),
       repl(In, State)
     ),
     
