@@ -10,6 +10,7 @@ create(Id) :-
 % The complete engine protocol:
 %
 async(quit).
+async(go(_Position)).
 async(go(_Position, _Options)).
 async(stop).
 async(setoption(_Name, _Value)).
@@ -23,18 +24,51 @@ sync(ping).
 %
 engine_call(Functor) :-
   async(Functor),
+  !,
   call_async(Functor).
 
 engine_call(Functor) :-
   sync(Functor),
-  functor(Atom, Functor, 1),
+  functor(Functor, Atom, 1),
+  !,
   call_sync(Atom, Functor).
 
 engine_call(Functor) :-
   sync(Functor),
-  functor(Atom, Functor, 0),
+  functor(Functor, Atom, 0),
+  !,
   call_sync(Atom, ok).
 
+%
+% Convenience
+%
+engine_analysis(Analysis) :-
+  engine_call(state(State)),
+  engine_state:engine_analysis(State, Analysis).
+
+engine_status(Status) :-
+  engine_call(state(State)),
+  functor(State, Status, _).
+
+engine_name(Name) :-
+  engine_call(state(State)),
+  engine_state:engine_id(State, Ids),
+  member(name(Name), Ids).
+
+engine_author(Name) :-
+  engine_call(state(State)),
+  engine_state:engine_id(State, Ids),
+  member(author(Name), Ids).
+
+engine_options(Options) :-
+  engine_call(state(State)),
+  engine_state:engine_options(State, Options).
+
+engine_go(Pos) :-
+  engine_call(go(Pos)).
+
+engine_quit :-
+  engine_call(quit).
 
 %
 % Helpers
@@ -46,7 +80,7 @@ call_sync(Request, Reply) :-
   thread_self(Self),
   
   thread_send_message(Alias, reply_to(Self, Request)),
-  thread_get_message(Reply, [timeout(3)]).
+  thread_get_message(Self, Reply, [timeout(3)]).
 
 call_async(Request) :-
   engine_alias(Alias),
