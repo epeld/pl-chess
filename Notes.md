@@ -6,6 +6,10 @@
 - Decode uci_moves to pgn_moves
 - Display an ASCII chess board! (Like a FEN string but 's_/_\n_g' and without RLE encoding)
 - Implement Combo option type parsing
+
+### Refactorings
+For when I am bored:
+
 - Refactor [square, Row, Col] -> square(Row, Col)
 - Refactor [move, Piece, Source, MoveType, Dest] -> move(PieceType, Source, ..)
 
