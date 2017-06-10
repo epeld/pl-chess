@@ -3,7 +3,6 @@
 
 ## Simple TODOs
 
-- Parse engine info strings (don't assume the order of the params in it!)
 - Decode uci_moves to pgn_moves
 - Display an ASCII chess board! (Like a FEN string but 's_/_\n_g' and without RLE encoding)
 - Implement Combo option type parsing
