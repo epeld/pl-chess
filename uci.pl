@@ -101,6 +101,14 @@ id_string(author(String)) -->
 %
 % Info String Parsing
 %
+info_line([Info | Infos]) -->
+  "info ",
+  infos([Info | Infos]).
+
+infos([Info | Infos]) --> info(Info), infos1(Infos).
+
+infos1([]) --> [].
+infos1([Info | Infos]) --> " ", info(Info), infos1(Infos).
 
 info(score(Score)) -->
   "score ", score(Score).
@@ -115,11 +123,13 @@ info(string(String), Line, []) :-
   append("string ", String, Line).
 
 info(currline(N, Moves)) -->
+  "currline ",
   fen:nat(N),
   " ",
   uci_moves(Moves).
 
 info(currline(1, Moves)) -->
+  "currline ",
   uci_moves(Moves).
 
 info(currmove(Move)) -->
