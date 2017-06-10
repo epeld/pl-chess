@@ -3,6 +3,15 @@
 :- set_prolog_flag(double_quotes, codes).
 
 %
+% Commands to send to the engine
+%
+stop(EngineInput) :-
+  send_to_engine(EngineInput, "stop~n", []).
+
+quit(EngineInput) :-
+  send_to_engine(EngineInput, "quit~n", []).
+
+%
 % This module keeps track of UCI engine state and how to transition between those states
 %
 
@@ -24,7 +33,7 @@ engine_options(State, Options) :-
   arg(3, State, Options).
 
 engine_analysis(State, Analysis) :-
-  arg(4, State, analysis(Analysis)).
+  arg(4, State, Analysis).
 
 engine_state_name(State, Name) :-
   functor(State, Name, _Arity).
@@ -38,16 +47,20 @@ engine_state_name(State, Name) :-
 initial_state(initializing).
 
 %
-% Transitions
+% State Transitions
 %
 transition(_In, initialized(EngineString, Id, Options), idle(EngineString, Id, Options), uciok).
 
 transition(In, initializing, initialized(EngineString, [], []), engine_string(EngineString)) :-
   send_to_engine(In, "uci~n", []).
 
+% TODO!
+%transition(In, S, S2,
+%           setoption(Name, Value)).
+
 transition(In,
            idle(A, B, C, _),
-           running(A, B, C, analysis(Position, [], unknown)),
+           running(A, B, C, analysis(Position, [], [], unknown)),
            go(Position, Args)) :-
   
   ( Args = [_Arg], S = "go ~s~n"
@@ -58,8 +71,8 @@ transition(In,
 
 
 transition(_In,
-           running(A, B, C, analysis(P, Pvs, _)),
-           idle(A, B, C, analysis(P, Pvs, bestmove(Move, Ponder))),
+           running(A, B, C, analysis(P, Pvs, Infos, _)),
+           idle(A, B, C, analysis(P, Pvs, Infos, bestmove(Move, Ponder))),
            bestmove(Move, Ponder)).
 
 

@@ -67,6 +67,9 @@ position(startpos, Moves) -->
   move_list(Moves).
 
 
+%
+% Bestmove
+%
 bestmove(bestmove(Moves, Ponder)) -->
   "bestmove ",
   uci_moves(Moves),
@@ -79,6 +82,9 @@ bestmove(bestmove(Moves, Ponder)) -->
 ponder(none) --> "ponder (none)".
 ponder(Move) --> "ponder ", uci_move(Move).
 
+%
+% Move Parsing
+%
 uci_moves([Move, Move2 | Moves]) -->
   uci_move(Move),
   " ",
@@ -91,6 +97,9 @@ uci_move(From-To) -->
   fen:square(From),
   fen:square(To).
 
+%
+% Id Parsing
+%
 id_string(name(String)) -->
   "id name ", string(String).
 
