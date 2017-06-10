@@ -70,6 +70,11 @@ engine_go(Pos) :-
 engine_quit :-
   engine_call(quit).
 
+engine_bestmove(Position, PgnMoves) :-
+  engine_analysis(Analysis),
+  analysis_bestmove(Analysis, bestmove(Moves, _Ponder)),
+  uci_pgn_moves(Position, Moves, PgnMoves).
+
 %
 % Helpers
 %
