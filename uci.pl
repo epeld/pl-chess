@@ -108,6 +108,20 @@ info(score(Score)) -->
 info(pv(Moves)) -->
   "pv ", uci_moves(Moves).
 
+info(refutation(Moves)) -->
+  "refutation ", uci_moves(Moves).
+
+info(string(String), Line, []) :-
+  append("string ", String, Line).
+
+info(currline(N, Moves)) -->
+  fen:nat(N),
+  " ",
+  uci_moves(Moves).
+
+info(currline(1, Moves)) -->
+  uci_moves(Moves).
+
 info(currmove(Move)) -->
   "currmove ", uci_move(Move).
 
@@ -159,3 +173,10 @@ nat_info_atom(multipv).
 nat_info_atom(nodes).
 nat_info_atom(time).
 nat_info_atom(hashfull).
+nat_info_atom(cpuload).
+nat_info_atom(nps).
+nat_info_atom(tbhits).
+nat_info_atom(sbhits).
+
+
+% TODO write a program to parse the uci spec to retrieve the documentation for each "info" the engine can send (see Notes.md)

@@ -10,6 +10,7 @@
 
 ## Slightly Harder TODOs
 
+- (Paritally) Parse the uci spec textfile, extracting the descriptions for standard options and engine infos
 - Allow editing and SAVING pgnfiles 
 - Implement a 'variation stack' and a 'free analysis'-mode (i.e move pieces freely)
 
