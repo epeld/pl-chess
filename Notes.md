@@ -7,6 +7,8 @@
 - Decode uci_moves to pgn_moves
 - Display an ASCII chess board!
 - Implement Combo option type parsing
+- Refactor [square, Row, Col] -> square(Row, Col)
+- Refactor [move, Piece, Source, MoveType, Dest] -> move(PieceType, Source, ..)
 
 ## Slightly Harder TODOs
 
