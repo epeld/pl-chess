@@ -135,9 +135,9 @@ result(unknown) --> [].
 move_pair(Number, WhiteMove, BlackMove) -->
   maybe_space,
   movenr(Number, white),
-  maybe_space,
-  ( fancy_move(WhiteMove), space
-  ; {WhiteMove = none} ),
+
+  ( maybe_space, fancy_move(WhiteMove), space
+  ; {WhiteMove = none}, ". " ),
   
   ( fancy_move(BlackMove) ;
     { BlackMove = none } ),
