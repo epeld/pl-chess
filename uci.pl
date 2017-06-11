@@ -39,24 +39,29 @@ option_specific(check, check(Default)) -->
   " default ", boolean(Default).
 
 
-option_specific(combo, combo(Default, Options)) -->
-  {
-    member(Default, Options)
-  },
-  " default ", string_no_space(Default),
+option_specific(combo, combo(ADefault, AOptions)) -->
+  " default ", string1_no_space(Default),
   " ",
-  vars(Options).
+  vars(Options),
+  {
+    member(Default, Options),
+    atom_codes(ADefault, Default),
+    maplist(atom_codes, AOptions, Options)
+  }.
+
 
 vars([Option | Options]) -->
-  "var ", string_no_space(Option), vars1(Options).
+  "var ", string1_no_space(Option), vars1(Options).
 
-vars1([Option | Options]) -->
-  " var ", string_no_space(Option), vars1(Options).
 
 vars1([]) --> [].
 
+vars1([Option | Options]) -->
+  " var ", string1_no_space(Option), vars1(Options).
+
+
 type(spin) --> "spin".
-%type(combo) --> "combo".
+type(combo) --> "combo".
 type(button) --> "button".
 type(string) --> "string".
 type(check) --> "check".
@@ -64,8 +69,11 @@ type(check) --> "check".
 string([]) --> [].
 string([Char | Rest]) --> [Char], { Char \= 10 }, string(Rest).
 
-string_no_space([]) --> [].
-string_no_space([Char | Rest]) --> [Char], { Char \= 10, Char \= 32 }, string_no_space(Rest).
+string1_no_space([Char | Rest]) -->
+  [Char],
+  { Char \= 10, Char \= 32 },
+  ( { Rest = [] }
+  ; string1_no_space(Rest) ).
 
 boolean(true) --> "true".
 boolean(false) --> "false".
