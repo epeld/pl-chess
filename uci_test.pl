@@ -52,3 +52,14 @@ example_bestmove_string("bestmove a2a3 ponder (none)").
 
 example_info_string("info nodes 2 time 2").
 example_info_string("info depth 3 seldepth 2 score cp 12 nodes 253 nps 253000 time 1 multipv 2 pv b1c3 g8f6 g1f3 b8c6").
+
+
+uci_test(PgnMoves, S) :-
+  fen:second_position(P),
+  fen:turn(P, black),
+  format("1~n"),
+  uci:uci_moves(UciMoves, "g8f6 b1c3", []),
+  format("2~n"),
+  uci:uci_pgn_moves(P, UciMoves, PgnMoves),
+  format("3~n"),
+  pgnfile:pgn_move_string(P, PgnMoves, S), !.
