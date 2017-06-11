@@ -4,6 +4,33 @@
 
 :- use_module(fen).
 
+pgn_move_string(Position, Moves, String) :-
+  fen:turn(Position, Turn),
+  fen:full_move(Position, Nr),
+  move_pairs(Nr, Turn, Moves, String, []).
+
+
+move_pairs(Nr0, black, [Black]) -->
+  move_pair(Nr0, none, Black).
+
+
+move_pairs(Nr0, white, [White]) -->
+  move_pair(Nr0, White, none).
+
+move_pairs(Nr0, white, [White, Black | Moves]) -->
+  move_pair(Nr0, White, Black),
+  { succ(Nr0, Nr) },
+  ( { Moves \= [] }, " ", move_pairs(Nr, white, Moves)
+  ; { Moves = [] }).
+
+
+move_pairs(Nr0, black, [Black | Moves]) -->
+  move_pair(Nr0, none, Black),
+  { succ(Nr0, Nr) },
+  ( { Moves \= [] }, " ", move_pairs(Nr, white, Moves)
+  ; { Moves = [] }).
+
+
 metas([[Key, Value] | Rest]) -->
   meta(Key, Value),
   metas0(Rest).
@@ -109,9 +136,10 @@ move_pair(Number, WhiteMove, BlackMove) -->
   maybe_space,
   movenr(Number, white),
   maybe_space,
-  fancy_move(WhiteMove),
+  ( fancy_move(WhiteMove), space
+  ; {WhiteMove = none} ),
   
-  ( space, fancy_move(BlackMove) ;
+  ( fancy_move(BlackMove) ;
     { BlackMove = none } ),
   
   maybe_space.
