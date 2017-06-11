@@ -146,7 +146,7 @@ move_pair(Number, WhiteMove, BlackMove) -->
 
 fancy_move(Move) -->
   pgn:move(Move),
-  (check_indicator(_) ; []).
+  ([] ; check_indicator(_)).
 
 check_indicator(check) --> "+".
 check_indicator(mate) --> "#".
