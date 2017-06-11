@@ -241,7 +241,7 @@ nat_info_atom(sbhits).
 uci_pgn_moves(P, [Uci1 | UciMoves], [Pgn1 | PgnMoves]) :-
   uci_pgn_move(P, Uci1, Pgn1),
   pgn:make_move(Pgn1, P, P2),
-  uci_pgn_move(P2, UciMoves, PgnMoves).
+  uci_pgn_moves(P2, UciMoves, PgnMoves).
 
 uci_pgn_moves(_P, [], []).
 
