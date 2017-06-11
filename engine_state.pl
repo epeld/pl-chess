@@ -42,6 +42,10 @@ engine_state_name(State, Name) :-
 analysis_bestmove(Analysis, BestMove) :-
   arg(3, Analysis, BestMove).
 
+analysis_pv(Analysis, N, Infos) :-
+  analysis_infos(Analysis, Infos),
+  member(multipv(N), Infos).
+
 analysis_infos(Analysis, Infos) :-
   arg(2, Analysis, Infos).
 

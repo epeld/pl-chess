@@ -72,8 +72,20 @@ engine_quit :-
 
 engine_bestmove(Position, PgnMoves) :-
   engine_analysis(Analysis),
+  analysis_position(Analysis, Position),
   analysis_bestmove(Analysis, bestmove(Moves, _Ponder)),
   uci_pgn_moves(Position, Moves, PgnMoves).
+
+engine_pv(Position, N, PgnMoves) :-
+  engine_analysis(Analysis),
+  analysis_position(Analysis, Position),
+  analysis_pv(Analysis, N, Infos),
+  member(pv(Moves), Infos),
+  uci_pgn_moves(Position, Moves, PgnMoves).
+
+engine_pv_string(Position, N, String) :-
+  engine_pv(Position, N, Moves),
+  String = "DONT KNOW, TODO".
 
 %
 % Helpers
