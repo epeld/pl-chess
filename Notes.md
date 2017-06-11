@@ -5,7 +5,6 @@
 
 - Write a util converting PGN moves to their 'shortest unambigous form' (i.e Nce2 -> Ne2 when possible)
 - Display an ASCII chess board! (Like a FEN string but 's_/_\n_g' and without RLE encoding)
-- Implement Combo option type parsing
 
 ### Refactorings
 For when I am bored:
