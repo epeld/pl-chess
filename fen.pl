@@ -38,7 +38,7 @@ piece_at([position, B | _], Square, Piece) :-
   piece_at(B, Square, Piece).
 
 
-piece_at([board, Rows], [square, X, Y], Piece) :-
+piece_at([board, Rows], square(X, Y), Piece) :-
   movement:square(X, Y),
 
   fen_y_coord(Y, Y0),
@@ -86,7 +86,7 @@ passant_square(Square) --> square(Square).
 square_codes(Square, Codes) :-
   square(Square, Codes, []).
 
-square([square, X, Y]) -->
+square(square(X, Y)) -->
   file(X), rank(Y).
 
 

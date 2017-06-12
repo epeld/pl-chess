@@ -15,7 +15,7 @@ list_replace(0, Item, [_ | List], [Item | List]).
 
 
 % Note: This function is inspired by fen:piece_at predicate inside fen-module
-board_replace([square, X, Y], NewPiece, [board, Rows], [board, NewRows]) :-
+board_replace(square(X, Y), NewPiece, [board, Rows], [board, NewRows]) :-
   movement:square(X, Y),
 
   fen:fen_y_coord(Y, Y0),
@@ -178,17 +178,17 @@ positions_after_all(InitialPosition, [Move | Moves], [Position1 | Positions]) :-
 %
 % Promotion helper
 %
-promote([square, X, Y], nothing, Board, Board) :-
+promote(square(X, Y), nothing, Board, Board) :-
   color:last_pawn_rank(Color, LastRank),
   LastRank =\= Y,
-  fen:piece_at(Board, [square, X, Y], [pawn, Color]).
+  fen:piece_at(Board, square(X, Y), [pawn, Color]).
 
 
-promote([square, X, Y], Promotion, Board, Board2) :-
+promote(square(X, Y), Promotion, Board, Board2) :-
   movement:officer(Promotion),
   color:last_pawn_rank(Color, Y),
-  fen:piece_at(Board, [square, X, Y], [pawn, Color]),
-  board_replace([square, X, Y], [Promotion, Color], Board, Board2).
+  fen:piece_at(Board, square(X, Y), [pawn, Color]),
+  board_replace(square(X, Y), [Promotion, Color], Board, Board2).
 
 
 %
@@ -203,38 +203,38 @@ rights_after(Source, Destination, Rights, Rights2) :-
 
 
 % e1
-rights_after([square, 4, 0], Rights, Rights2) :-
+rights_after(square(4, 0), Rights, Rights2) :-
   delete(Rights, [_, white], Rights2).
 
 % a1
-rights_after([square, 0, 0], Rights, Rights2) :-
+rights_after(square(0, 0), Rights, Rights2) :-
   delete(Rights, [queenside, white], Rights2).
 
 % h1
-rights_after([square, 7, 0], Rights, Rights2) :-
+rights_after(square(7, 0), Rights, Rights2) :-
   delete(Rights, [kingside, white], Rights2).
 
 
 % h8
-rights_after([square, 7, 7], Rights, Rights2) :-
+rights_after(square(7, 7), Rights, Rights2) :-
   delete(Rights, [kingside, black], Rights2).
 
 % a8
-rights_after([square, 0, 7], Rights, Rights2) :-
+rights_after(square(0, 7), Rights, Rights2) :-
   delete(Rights, [queenside, black], Rights2).
 
 
 % e8
-rights_after([square, 4, 7], Rights, Rights2) :-
+rights_after(square(4, 7), Rights, Rights2) :-
   delete(Rights, [_, black], Rights2).
 
-rights_after([square, X, Y], Rights, Rights) :-
+rights_after(square(X, Y), Rights, Rights) :-
   between(1, 6, X), between(0, 7, Y).
 
-rights_after([square, 0, Y], Rights, Rights) :-
+rights_after(square(0, Y), Rights, Rights) :-
   between(1, 6, Y).
 
-rights_after([square, 7, Y], Rights, Rights) :-
+rights_after(square(7, Y), Rights, Rights) :-
   between(1, 6, Y).
 
 %  maplist(fen:square_codes, SpecialSquares, ["a1", "h1", "e1", "a8", "h8", "e8"]),

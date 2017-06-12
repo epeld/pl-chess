@@ -49,13 +49,12 @@ source_square2(PieceType, Hint, MoveType, Destination, Position, SourceSquare) :
 
 pawn_hint(move, nothing).
 pawn_hint(capture, [file | _]).
-pawn_hint(_Mt, [square | _]).
+pawn_hint(_Mt, square(_F, _R)).
 
-compatible(Square, Square) :-
-  Square = [square | _].
-compatible([file, File], [square, File, _]).
-compatible([rank, Rank], [square, _, Rank]).
-compatible(nothing, [square, _X, _Y]).
+compatible(square(X, Y), square(X, Y)).
+compatible([file, File], square(File, _)).
+compatible([rank, Rank], square(_, Rank)).
+compatible(nothing, square(_X, _Y)).
 
 
 possible_move(capture, pawn, Src, Dst, P) :-
@@ -209,7 +208,7 @@ legal_position_after(FullMove, Position, Position2) :-
   \+ attacker_of(Position2, KingSquare, _).
 
 attacker_of(Position, AttackedSquare, SourceSquare) :-
-  SourceSquare = [square, _, _],
+  SourceSquare = square(_, _),
   full_move(Position, [move, _, SourceSquare, capture, AttackedSquare | _], _).
 
 

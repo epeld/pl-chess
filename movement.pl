@@ -2,7 +2,7 @@
 
 :- set_prolog_flag(double_quotes, codes).
 
-knights_jump([square, X1, Y1], [square, X2, Y2]) :-
+knights_jump(square(X1, Y1), square(X2, Y2)) :-
   square(X1, Y1), square(X2, Y2),
 
   plus(XDif, X1, X2),
@@ -40,14 +40,14 @@ line([ Square | Line], Direction) :-
   sequence(Square, Direction, Line).
 
 
-sequence([square, X, Y], Direction, [[square, X2, Y2] | Squares]) :-
+sequence(square(X, Y), Direction, [square(X2, Y2) | Squares]) :-
   offset(X, Y, X2, Y2, Direction),
-  sequence([square, X2, Y2], Direction, Squares).
+  sequence(square(X2, Y2), Direction, Squares).
 
 
 sequence(_, _, []).
 
-square([square, X, Y]) :-
+square(square(X, Y)) :-
   between(0, 7, X),
   between(0, 7, Y).
 
@@ -100,36 +100,36 @@ offset(X, Y, X2, Y2, down) :-
   offset(X2, Y2, X, Y, up).
 
 
-offset([square, X, Y], [square, X2, Y2], Dir) :-
+offset(square(X, Y), square(X2, Y2), Dir) :-
   offset(X, Y, X2, Y2, Dir).
 
 
 %
 %  Pawn Logic
 %
-pawn_move_square(white, [square, X, Y], [square, X, Y2]) :-
+pawn_move_square(white, square(X, Y), square(X, Y2)) :-
   succ(Y, Y2).
 
 % Second rank pawns can walk two steps
-pawn_move_square(white, [square, X, 1], [square, X, 3]).
+pawn_move_square(white, square(X, 1), square(X, 3)).
 
 % Seventh rank pawns can walk two steps
-pawn_move_square(black, [square, X, 6], [square, X, 4]).
+pawn_move_square(black, square(X, 6), square(X, 4)).
 
-pawn_move_square(black, [square, X, Y], [square, X, Y2]) :-
+pawn_move_square(black, square(X, Y), square(X, Y2)) :-
   succ(Y2, Y).
 
 
-passant_square(white, [square, X, 1], [square, X, 3], [square, X, 2]).
-passant_square(black, [square, X, 6], [square, X, 4], [square, X, 5]).
+passant_square(white, square(X, 1), square(X, 3), square(X, 2)).
+passant_square(black, square(X, 6), square(X, 4), square(X, 5)).
 
-passant_square(black, [square, _, 6], [square, _, 5], nothing).
-passant_square(white, [square, _, 1], [square, _, 2], nothing).
+passant_square(black, square(_, 6), square(_, 5), nothing).
+passant_square(white, square(_, 1), square(_, 2), nothing).
 
-passant_square(black, [square, _, Y], _, nothing) :-
+passant_square(black, square(_, Y), _, nothing) :-
   member(Y, [1,2,3,4,5]).
 
-passant_square(white, [square, _, Y], _, nothing) :-
+passant_square(white, square(_, Y), _, nothing) :-
   member(Y, [2,3,4,5,6]).
 
 
