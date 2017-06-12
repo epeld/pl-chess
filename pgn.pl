@@ -48,11 +48,11 @@ source_square2(PieceType, Hint, MoveType, Destination, Position, SourceSquare) :
 
 
 pawn_hint(move, nothing).
-pawn_hint(capture, [file | _]).
+pawn_hint(capture, file(_F)).
 pawn_hint(_Mt, square(_F, _R)).
 
 compatible(square(X, Y), square(X, Y)).
-compatible([file, File], square(File, _)).
+compatible(file(File), square(File, _)).
 compatible([rank, Rank], square(_, Rank)).
 compatible(nothing, square(_X, _Y)).
 
@@ -150,7 +150,7 @@ move([move, pawn, SourceHint, MoveType, Destination, Promotion]) -->
 move_type(move) --> [].
 move_type(capture) --> "x".
 
-source_hint([file, File]) -->
+source_hint(file(File)) -->
   {
     nth0(File, "abcdefgh", Char)
   },
