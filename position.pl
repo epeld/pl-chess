@@ -25,7 +25,7 @@ board_replace(square(X, Y), NewPiece, [board, Rows], [board, NewRows]) :-
   list_replace(Y0, NewRow, Rows, NewRows).
 
 
-position_after([castles, Side],
+position_after(castles(Side),
                Position,
                Position2) :-
 

@@ -181,8 +181,8 @@ officer(OfficerType) -->
   },
   [Char].
 
-castles([castles, queenside]) --> "O-O-O".
-castles([castles, kingside]) --> "O-O".
+castles(castles(queenside)) --> "O-O-O".
+castles(castles(kingside)) --> "O-O".
 
 
 check(Position, SourceSquare) :-
@@ -283,4 +283,4 @@ straight_move(Src, Dst, P, Dir) :-
   between(1, 7, N),
   straight_move(Src, Dst, P, Dir, N).
 
-castling_move([castles, Side], Side).
+castling_move(castles(Side), Side).
