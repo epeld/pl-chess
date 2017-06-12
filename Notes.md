@@ -4,7 +4,6 @@
 ## Simple TODOs
 
 - Work on pgnfile parsing/encoding, not creating so many choice points (encode checks!)
-- Write a util converting PGN moves to their 'shortest unambigous form' (i.e Nce2 -> Ne2 when possible)
 - Display an ASCII chess board! (Like a FEN string but 's_/_\n_g' and without RLE encoding)
 - Implement 'setoption' state transition (find option in list, replace it)
 
