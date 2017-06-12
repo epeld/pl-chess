@@ -60,7 +60,7 @@ compatible(nothing, square(_X, _Y)).
 possible_move(capture, pawn, Src, Dst, P) :-
   fen:piece_at(P, Src, piece(pawn, Color)),
   
-  ( Pc = [_, Enemy], color:opposite(Color, Enemy)
+  ( Pc = piece(_, Enemy), color:opposite(Color, Enemy)
   ; Pc = nothing, fen:passant(P, Dst) ),
   
   movement:pawn_capture_square(Color, Src, Dst),
@@ -177,7 +177,7 @@ promotion(OfficerType) -->
 officer(OfficerType) -->
   {
     movement:officer(OfficerType),
-    fen:piece_char([OfficerType, white], Char)
+    fen:piece_char(piece(OfficerType, white), Char)
   },
   [Char].
 

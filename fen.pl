@@ -151,12 +151,11 @@ group([piece(Pt,C) | Rest], [[piece(Pt, C)] | Rest2]) :-
 
 
 group([nothing | Rest], [Nothings | Rest2]) :-
-  append(Nothings, [Something | Other], [nothing | Rest]),
+  append(Nothings, [piece(Pt, C) | Other], [nothing | Rest]),
   
   maplist(=(nothing), Nothings),
-  Something = [_, _],
   
-  group([Something | Other], Rest2).
+  group([piece(Pt, C) | Other], Rest2).
 
 
 group(Nothings, [Nothings]) :-

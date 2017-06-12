@@ -258,7 +258,7 @@ uci_pgn_move(P, Source - Dest = Promotion, Pgn) :-
   pgn:simplified_move(P, Pgn, [move, pawn, Source, _, Dest, Promotion], Pgn).
 
 uci_pgn_move(P, Source - Dest, Pgn) :-
-  fen:piece_at(P, Source, [king, Color]),
+  fen:piece_at(P, Source, piece(king, Color)),
   fen:turn(P, Color),
 
   castling_square(Color, Side, Dest),

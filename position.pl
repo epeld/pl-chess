@@ -150,7 +150,7 @@ position_after( [move, Officer, SourceSquare, MoveType, Destination]
   rights_after(SourceSquare, Destination, Rights, Rights2),
   
   % Sanity check:
-  fen:piece_at(Board, SourceSquare, [Officer, Turn]).
+  fen:piece_at(Board, SourceSquare, piece(Officer, Turn)).
 
 
 positions_after_pgn(InitialPosition, Moves, Positions) :-
