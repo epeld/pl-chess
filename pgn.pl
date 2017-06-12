@@ -53,7 +53,7 @@ pawn_hint(_Mt, square(_F, _R)).
 
 compatible(square(X, Y), square(X, Y)).
 compatible(file(File), square(File, _)).
-compatible([rank, Rank], square(_, Rank)).
+compatible(rank(Rank), square(_, Rank)).
 compatible(nothing, square(_X, _Y)).
 
 
@@ -141,7 +141,7 @@ move([move, OfficerType, SourceHint, MoveType, Destination]) -->
 
 
 move([move, pawn, SourceHint, MoveType, Destination, Promotion]) -->
-  source_hint(SourceHint), { \+ SourceHint == [rank, _ ] } , 
+  source_hint(SourceHint), { \+ SourceHint == rank(_) } , 
   move_type(MoveType), 
   fen:square(Destination),
   promotion(Promotion).
@@ -156,7 +156,7 @@ source_hint(file(File)) -->
   },
   [Char].
 
-source_hint([rank, Rank]) -->
+source_hint(rank(Rank)) -->
   {
     nth0(Rank, "12345678", Char)
   },
