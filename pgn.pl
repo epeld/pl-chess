@@ -43,7 +43,7 @@ source_square([move, pawn, Hint, MoveType, Destination, _Promo], Position, Sourc
 source_square2(PieceType, Hint, MoveType, Destination, Position, SourceSquare) :-
   fen:turn(Position, Color),
   compatible(Hint, SourceSquare),
-  fen:piece_at(Position, SourceSquare, [PieceType, Color]),
+  fen:piece_at(Position, SourceSquare, piece(PieceType, Color)),
   possible_move(MoveType, PieceType, SourceSquare, Destination, Position).
 
 
@@ -58,7 +58,7 @@ compatible(nothing, square(_X, _Y)).
 
 
 possible_move(capture, pawn, Src, Dst, P) :-
-  fen:piece_at(P, Src, [pawn, Color]),
+  fen:piece_at(P, Src, piece(pawn, Color)),
   
   ( Pc = [_, Enemy], color:opposite(Color, Enemy)
   ; Pc = nothing, fen:passant(P, Dst) ),
@@ -67,7 +67,7 @@ possible_move(capture, pawn, Src, Dst, P) :-
   fen:piece_at(P, Dst, Pc).
 
 possible_move(move, pawn, Src, Dst, P) :-
-  fen:piece_at(P, Src, [pawn, Color]),
+  fen:piece_at(P, Src, piece(pawn, Color)),
 
   fen:turn(P, Color),
   
@@ -80,7 +80,7 @@ possible_move(move, pawn, Src, Dst, P) :-
 
 
 possible_move(move, Officer, Src, Dst, P) :-
-  fen:piece_at(P, Src, [Officer, _]),
+  fen:piece_at(P, Src, piece(Officer, _)),
   movement:officer(Officer),
   
   possible_move(Officer, Src, Dst, P),
@@ -88,14 +88,14 @@ possible_move(move, Officer, Src, Dst, P) :-
 
 
 possible_move(capture, Officer, Src, Dst, P) :-
-  fen:piece_at(P, Src, [Officer, _]),
+  fen:piece_at(P, Src, piece(Officer, _)),
   movement:officer(Officer),
   
   fen:turn(P, Color),
   color:opposite(Color, Enemy),
 
   possible_move(Officer, Src, Dst, P),
-  fen:piece_at(P, Dst, [_, Enemy]).
+  fen:piece_at(P, Dst, piece(_, Enemy)).
 
 possible_move(DiagonalMover, Src, Dst, P) :-
   diagonal_mover(DiagonalMover),
@@ -193,7 +193,7 @@ check(Position, SourceSquare) :-
   Flipped = [position, Board, Opponent | Rest],
 
   % Is there a piece that can attack the king?
-  fen:piece_at(Flipped, KingSquare, [king, Color]),
+  fen:piece_at(Flipped, KingSquare, piece(king, Color)),
   attacker_of(Flipped, KingSquare, SourceSquare).
 
 
@@ -204,7 +204,7 @@ legal_position_after(FullMove, Position, Position2) :-
   position:position_after(FullMove, Position, Position2),
 
   % "There are zero attackers of the king"
-  fen:piece_at(Position2, KingSquare, [king, Color]),
+  fen:piece_at(Position2, KingSquare, piece(king, Color)),
   \+ attacker_of(Position2, KingSquare, _).
 
 attacker_of(Position, AttackedSquare, SourceSquare) :-

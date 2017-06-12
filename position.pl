@@ -48,9 +48,9 @@ position_after(castles(Side),
   color:castled_king_square(Turn, Side, KingSquare2),
 
   board_replace(RookSquare, nothing, Board, Board_1),
-  board_replace(RookSquare2, [rook, Turn], Board_1, Board_2),
+  board_replace(RookSquare2, piece(rook, Turn), Board_1, Board_2),
   board_replace(KingSquare, nothing, Board_2, Board_3),
-  board_replace(KingSquare2, [king, Turn], Board_3, Board2).
+  board_replace(KingSquare2, piece(king, Turn), Board_3, Board2).
 
 
 % (Non-passant) capture
@@ -68,13 +68,13 @@ position_after( [move, pawn, SourceSquare, capture, Destination, Promotion]
 
   % Remove piece from source square
   board_replace(SourceSquare, nothing, Board, Board_1),
-  board_replace(Destination, [pawn, Turn], Board_1, Board_2),
+  board_replace(Destination, piece(pawn, Turn), Board_1, Board_2),
 
 
   promote(Destination, Promotion, Board_2, Board2),
   % sanity check
-  fen:piece_at(Board, Destination, [pawn, Turn2]),
-  fen:piece_at(SourceSquare, Board, [pawn, Turn]).
+  fen:piece_at(Board, Destination, piece(pawn, Turn2)),
+  fen:piece_at(SourceSquare, Board, piece(pawn, Turn)).
 
 
 position_after( [move, pawn, SourceSquare, move, Destination, Promotion]
@@ -93,13 +93,13 @@ position_after( [move, pawn, SourceSquare, move, Destination, Promotion]
 
   % Remove piece from source square
   board_replace(SourceSquare, nothing, Board, Board_1),
-  board_replace(Destination, [pawn, Turn], Board_1, Board_2),
+  board_replace(Destination, piece(pawn, Turn), Board_1, Board_2),
 
   promote(Destination, Promotion, Board_2, Board2),
 
   % sanity check
   fen:piece_at(Board, Destination, nothing),
-  fen:piece_at(Board, SourceSquare, [pawn, Turn]),
+  fen:piece_at(Board, SourceSquare, piece(pawn, Turn)),
   ( fen:piece_at(Board, Passant2, nothing)
   ; Passant2 = nothing ).
 
@@ -118,12 +118,12 @@ position_after( [move, pawn, SourceSquare, capture, Destination, nothing]
 
   % Remove piece from source square
   board_replace(SourceSquare, nothing, Board, Board_1),
-  board_replace(Destination, [pawn, Turn], Board_1, Board_2),
+  board_replace(Destination, piece(pawn, Turn), Board_1, Board_2),
   board_replace(BehindPassant, nothing, Board_2, Board2),
 
   % Sanity checks:
   fen:piece_at(Board, Destination, nothing),
-  fen:piece_at(Board, BehindPassant, [pawn, Turn2]).
+  fen:piece_at(Board, BehindPassant, piece(pawn, Turn2)).
 
 
 position_after( [move, Officer, SourceSquare, MoveType, Destination]
@@ -145,7 +145,7 @@ position_after( [move, Officer, SourceSquare, MoveType, Destination]
 
   % Remove piece from source square
   board_replace(SourceSquare, nothing, Board, Board_1),
-  board_replace(Destination, [Officer, Turn], Board_1, Board2),
+  board_replace(Destination, piece(Officer, Turn), Board_1, Board2),
 
   rights_after(SourceSquare, Destination, Rights, Rights2),
   
@@ -181,14 +181,14 @@ positions_after_all(InitialPosition, [Move | Moves], [Position1 | Positions]) :-
 promote(square(X, Y), nothing, Board, Board) :-
   color:last_pawn_rank(Color, LastRank),
   LastRank =\= Y,
-  fen:piece_at(Board, square(X, Y), [pawn, Color]).
+  fen:piece_at(Board, square(X, Y), piece(pawn, Color)).
 
 
 promote(square(X, Y), Promotion, Board, Board2) :-
   movement:officer(Promotion),
   color:last_pawn_rank(Color, Y),
-  fen:piece_at(Board, square(X, Y), [pawn, Color]),
-  board_replace(square(X, Y), [Promotion, Color], Board, Board2).
+  fen:piece_at(Board, square(X, Y), piece(pawn, Color)),
+  board_replace(square(X, Y), piece(Promotion, Color), Board, Board2).
 
 
 %

@@ -146,8 +146,7 @@ rows_n([Row]) -->
   row(Row).
 
 
-group([Piece | Rest], [[Piece] | Rest2]) :-
-  Piece = [_, _],
+group([piece(Pt,C) | Rest], [[piece(Pt, C)] | Rest2]) :-
   group(Rest, Rest2).
 
 
@@ -208,11 +207,11 @@ piece(Piece) -->
   [Char].
 
 
-piece_char([PieceType, white], Char) :-
+piece_char(piece(PieceType, white), Char) :-
   nth0(Ix, "PBNRQK", Char),
   nth0(Ix, [pawn, bishop, knight, rook, queen, king], PieceType).
 
-piece_char([PieceType, black], Char) :-
+piece_char(piece(PieceType, black), Char) :-
   nth0(Ix, "pbnrqk", Char),
   nth0(Ix, [pawn, bishop, knight, rook, queen, king], PieceType).
 
