@@ -5,6 +5,15 @@
 :- use_module(pgn).
 :- use_module(movement).
 
+simplified_move(P, Mv, Simplified) :-
+  full_move(P, Mv, FMv),
+  setof(Mv0,
+        (
+          full_move(P, Mv0, FMv),
+          unique_full_move(P, Mv0, FMv)
+        ),
+        [Simplified | _]).
+
 make_move(Mv, P, P2) :-
   unique_full_move(P, Mv, FullMove),
   legal_position_after(FullMove, P, P2).
@@ -17,8 +26,9 @@ unique_full_move(Position, Move, FullMove) :-
   FullMoves = [FullMove].
 
 full_move(Position, Move, FullMove) :-
-  source_square(Move, Position, SourceSquare),
-  position:list_replace(2, SourceSquare, Move, FullMove).
+  Move = [move, Pt, _, Mt, Dest | Rest],
+  FullMove = [move, Pt, SourceSquare, Mt, Dest | Rest],
+  source_square(Move, Position, SourceSquare).
 
 
 source_square([move, PieceType, Hint, MoveType, Destination], Position, SourceSquare) :-
@@ -26,7 +36,8 @@ source_square([move, PieceType, Hint, MoveType, Destination], Position, SourceSq
   source_square2(PieceType, Hint, MoveType, Destination, Position, SourceSquare).
 
 source_square([move, pawn, Hint, MoveType, Destination, _Promo], Position, SourceSquare) :-
-  source_square2(pawn, Hint, MoveType, Destination, Position, SourceSquare).
+  source_square2(pawn, Hint, MoveType, Destination, Position, SourceSquare),
+  pawn_hint(MoveType, Hint).
 
 
 source_square2(PieceType, Hint, MoveType, Destination, Position, SourceSquare) :-
@@ -35,6 +46,10 @@ source_square2(PieceType, Hint, MoveType, Destination, Position, SourceSquare) :
   fen:piece_at(Position, SourceSquare, [PieceType, Color]),
   possible_move(MoveType, PieceType, SourceSquare, Destination, Position).
 
+
+pawn_hint(move, nothing).
+pawn_hint(capture, [file | _]).
+pawn_hint(_Mt, [square | _]).
 
 compatible(Square, Square) :-
   Square = [square | _].
@@ -56,6 +71,8 @@ possible_move(move, pawn, Src, Dst, P) :-
   fen:piece_at(P, Src, [pawn, Color]),
 
   fen:turn(P, Color),
+  
+  movement:pawn_move_square(Color, Src, Dst),
   movement:passant_square(Color, Src, Dst, Passant),
   
   ( fen:piece_at(P, Passant, nothing) ; Passant = nothing ),
