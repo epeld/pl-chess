@@ -98,31 +98,24 @@ file(X, [Char | Rest], Rest) :-
   
   
 
+castling_rights([]) --> "-".
 
-castling_rights(Rights) -->
-  {
-    pick("KQkq", Chars),
-    maplist(castling_right, Rights, Chars)
-  },
-  Chars.
+castling_rights(Rs) -->
+  castling_rights1(Rs).
 
-pick([X | Xs], [X | Ys]) :-
-  pick(Xs, Ys).
+castling_rights1([R | Rights]) -->
+  { castling_right(R, C) },
+  [C],
+  castling_rights1(Rights).
 
-pick([_ | Xs], Ys) :-
-  pick(Xs, Ys).
-
-pick([], []).
+castling_rights1([]) --> [].
 
 
 
-castling_right([Side, white], Char) :-
-  nth0(Ix, "KQ", Char),
-  nth0(Ix, [kingside, queenside], Side).
-
-castling_right([Side, black], Char) :-
-  nth0(Ix, "kq", Char),
-  nth0(Ix, [kingside, queenside], Side).
+castling_right(castling_right(kingside, white), 75 /* K */).
+castling_right(castling_right(kingside, black), 107 /* k */).
+castling_right(castling_right(queenside, white), 81 /* Q */).
+castling_right(castling_right(queenside, black), 113 /* q */).
 
 
 turn(white) --> "w".
