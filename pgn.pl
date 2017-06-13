@@ -33,10 +33,10 @@ full_move(Position, Move, FullMove) :-
 
   move_piece_type(Move, Pt),
   move_piece_type(FullMove, Pt),
-  
+
   move_type(Move, Type),
   move_type(FullMove, Type),
-  
+
   move_source(FullMove, SourceSquare),
   
   move_destination(Move, Dest),
@@ -44,7 +44,7 @@ full_move(Position, Move, FullMove) :-
 
   move_promotion(Move, Promo),
   move_promotion(FullMove, Promo),
-  
+
   source_square(Move, Position, SourceSquare).
 
 
@@ -60,6 +60,7 @@ source_square(pawn_move(Hint, MoveType, Destination, _Promo), Position, SourceSq
 source_square2(PieceType, Hint, MoveType, Destination, Position, SourceSquare) :-
   fen:turn(Position, Color),
   compatible(Hint, SourceSquare),
+    
   fen:piece_at(Position, SourceSquare, piece(PieceType, Color)),
   possible_move(MoveType, PieceType, SourceSquare, Destination, Position).
 
@@ -76,7 +77,7 @@ compatible(nothing, square(_X, _Y)).
 
 possible_move(capture, pawn, Src, Dst, P) :-
   fen:piece_at(P, Src, piece(pawn, Color)),
-  
+
   ( Pc = piece(_, Enemy), color:opposite(Color, Enemy)
   ; Pc = nothing, fen:passant(P, Dst) ),
   
@@ -87,7 +88,6 @@ possible_move(move, pawn, Src, Dst, P) :-
   fen:piece_at(P, Src, piece(pawn, Color)),
 
   fen:turn(P, Color),
-  
   movement:pawn_move_square(Color, Src, Dst),
   movement:passant_square(Color, Src, Dst, Passant),
   
@@ -171,13 +171,13 @@ pawn_hint(MoveType, Hint) --> source_hint(Hint), { pawn_hint(MoveType, Hint) }.
 
 source_hint(file(File)) -->
   {
-    nth0(File, "abcdefgh", Char)
+    nth1(File, "abcdefgh", Char)
   },
   [Char].
 
 source_hint(rank(Rank)) -->
   {
-    nth0(Rank, "12345678", Char)
+    nth1(Rank, "12345678", Char)
   },
   [Char].
 

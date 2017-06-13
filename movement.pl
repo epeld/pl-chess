@@ -48,13 +48,13 @@ sequence(square(X, Y), Direction, [square(X2, Y2) | Squares]) :-
 sequence(_, _, []).
 
 square(square(X, Y)) :-
-  between(0, 7, X),
-  between(0, 7, Y).
+  between(1, 8, X),
+  between(1, 8, Y).
 
 
 square(X, Y) :-
-  between(0, 7, X),
-  between(0, 7, Y).
+  between(1, 8, X),
+  between(1, 8, Y).
 
 
 %
@@ -111,26 +111,26 @@ pawn_move_square(white, square(X, Y), square(X, Y2)) :-
   succ(Y, Y2).
 
 % Second rank pawns can walk two steps
-pawn_move_square(white, square(X, 1), square(X, 3)).
+pawn_move_square(white, square(X, 2), square(X, 4)).
 
 % Seventh rank pawns can walk two steps
-pawn_move_square(black, square(X, 6), square(X, 4)).
+pawn_move_square(black, square(X, 7), square(X, 5)).
 
 pawn_move_square(black, square(X, Y), square(X, Y2)) :-
   succ(Y2, Y).
 
 
-passant_square(white, square(X, 1), square(X, 3), square(X, 2)).
-passant_square(black, square(X, 6), square(X, 4), square(X, 5)).
+passant_square(white, square(X, 2), square(X, 4), square(X, 3)).
+passant_square(black, square(X, 7), square(X, 5), square(X, 6)).
 
-passant_square(black, square(_, 6), square(_, 5), nothing).
-passant_square(white, square(_, 1), square(_, 2), nothing).
+passant_square(black, square(_, 7), square(_, 6), nothing).
+passant_square(white, square(_, 2), square(_, 3), nothing).
 
 passant_square(black, square(_, Y), _, nothing) :-
-  member(Y, [1,2,3,4,5]).
+  member(Y, [2,3,4,5,6]).
 
 passant_square(white, square(_, Y), _, nothing) :-
-  member(Y, [2,3,4,5,6]).
+  member(Y, [3,4,5,6,7]).
 
 
 

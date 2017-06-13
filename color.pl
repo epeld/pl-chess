@@ -6,11 +6,11 @@ color(black).
 opposite(white, black).
 opposite(black, white).
 
-last_pawn_rank(white, 7).
-last_pawn_rank(black, 0).
+last_pawn_rank(white, 8).
+last_pawn_rank(black, 1).
 
 first_pawn_rank(white, 2).
-first_pawn_rank(black, 6).
+first_pawn_rank(black, 7).
 
 initial_rook_square(white, queenside, Square) :-
   fen:square_codes(Square, "a1").

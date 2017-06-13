@@ -35,21 +35,17 @@ half_move([position, _ , _, _, _, HalfMoveNr | _], HalfMoveNr).
 full_move([position, _ , _, _, _, _, FullMoveNr | _], FullMoveNr).
 
 piece_at([position, B | _], Square, Piece) :-
-  piece_at(B, Square, Piece).
+  piece_at_rows(B, Square, Piece).
 
+rows_row(Rows, Y, Row) :-
+  arg(Y, Rows, Row).
 
-piece_at([board, Rows], square(X, Y), Piece) :-
-  movement:square(X, Y),
+row_piece(Row, X, Piece) :-
+  arg(X, Row, Piece).
 
-  fen_y_coord(Y, Y0),
-  
-  nth0(Y0, Rows, Row),
-  nth0(X, Row, Piece).
-
-
-% Flip the y-coord becaues FEN stores 'black' rows first
-fen_y_coord(FenCoord, CartesianCoord) :-
-  plus(FenCoord, CartesianCoord, 7).
+piece_at_rows(Rows, square(X, Y), Piece) :-
+  rows_row(Rows, Y, Row),
+  row_piece(Row, X, Piece).
 
 space --> " ".
     
@@ -91,10 +87,10 @@ square(square(X, Y)) -->
 
 
 rank(Y, [Char | Rest], Rest) :-
-  nth0(Y, "12345678", Char).
+  nth1(Y, "12345678", Char).
 
 file(X, [Char | Rest], Rest) :-
-  nth0(X, "abcdefgh", Char).
+  nth1(X, "abcdefgh", Char).
   
   
 
@@ -122,22 +118,26 @@ turn(white) --> "w".
 turn(black) --> "b".
 
 
-board([board, Rows]) --> rows(Rows).
+board(Rows) --> rows(Rows).
 
 
-rows(Rows) -->
-  {
-    length(Rows, 8)
-  },
-  rows_n(Rows).
-
-rows_n([Row | Rows]) -->
-  row(Row), "/",
-  rows_n(Rows).
-
-rows_n([Row]) -->
-  row(Row).
-
+rows(rows(R1, R2, R3, R4, R5, R6, R7, R8)) -->
+  row(R8),
+  "/",
+  row(R7),
+  "/",
+  row(R6),
+  "/",
+  row(R5),
+  "/",
+  row(R4),
+  "/",
+  row(R3),
+  "/",
+  row(R2),
+  "/",
+  row(R1).
+  
 
 group([piece(Pt,C) | Rest], [[piece(Pt, C)] | Rest2]) :-
   group(Rest, Rest2).
@@ -159,10 +159,13 @@ group(Nothings, [Nothings]) :-
 group([], []).
 
 
-row(Row, Before, After) :-
-  (var(Row), rle_pieces(Grouped, 8, Before, After) ; nonvar(Row)),
+row(row(P1,P2,P3,P4,P5,P6,P7,P8)) -->
+  row_pieces([P8,P7,P6,P5,P4,P3,P2,P1]).
+
+row_pieces(Row, Before, After) :-
+  ( ground(Row), !
+  ; rle_pieces(Grouped, 8, Before, After) ),
   
-  length(Row, 8),
   group(Row, Grouped),
   rle_pieces(Grouped, 8, Before, After).
 
