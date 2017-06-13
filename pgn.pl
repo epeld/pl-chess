@@ -231,6 +231,7 @@ castling_possible(Side, Position) :-
   movement:line(Start, End, Line, _),
   append([ [Start], Middle, [End] ], Line),
 
+  % TODO this logic seems kind of broken. Investigate.
   
   member(Square, Middle),
   full_move(Position, [move, _, _, capture, Square | _], _),
