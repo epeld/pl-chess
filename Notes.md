@@ -10,7 +10,6 @@
 ### Refactorings
 For when I am bored:
 
-- Refactor [Color, Side] -> castling_right(Color, Side)
 - Refactor [move, Piece, Source, MoveType, Dest] -> move(PieceType, Source, ..)
 
 ## Slightly Harder TODOs
