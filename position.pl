@@ -39,7 +39,7 @@ position_after(castles(Side),
 
   color:opposite(Turn, Turn2),
 
-  delete(Rights, [_, Turn], Rights2),
+  exclude(castling_right(_, Turn), Rights, Rights2),
 
   color:initial_king_square(Turn, KingSquare),
   color:initial_rook_square(Turn, Side, RookSquare),
