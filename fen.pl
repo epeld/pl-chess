@@ -160,7 +160,7 @@ group([], []).
 
 
 row(row(P1,P2,P3,P4,P5,P6,P7,P8)) -->
-  row_pieces([P8,P7,P6,P5,P4,P3,P2,P1]).
+  row_pieces([P1,P2,P3,P4,P5,P6,P7,P8]).
 
 row_pieces(Row, Before, After) :-
   ( ground(Row), !
