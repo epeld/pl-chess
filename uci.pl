@@ -246,16 +246,12 @@ uci_pgn_moves(P, [Uci1 | UciMoves], [Pgn1 | PgnMoves]) :-
 uci_pgn_moves(_P, [], []).
 
 uci_pgn_move(P, Source - Dest, Pgn) :-
-  % TODO write a 'full_move-like' predicate that finds the shorted unambiguous pgn mv
-  % TODO promo
-  ( pgn:simplified_move(P, [move, pawn, Source, _, Dest, nothing], Pgn)
-  ; pgn:simplified_move(P, [move, _, Source, _, Dest], Pgn)).
+  ( pgn:simplified_move(P, pawn_move(Source, _, Dest, nothing), Pgn)
+  ; pgn:simplified_move(P, officer_move(_, Source, _, Dest), Pgn)).
 
 
 uci_pgn_move(P, Source - Dest = Promotion, Pgn) :-
-  % TODO write a 'full_move-like' predicate that finds the shorted unambiguous pgn mv
-  % TODO promo
-  pgn:simplified_move(P, Pgn, [move, pawn, Source, _, Dest, Promotion], Pgn).
+  pgn:simplified_move(P, Pgn, pawn_move(Source, _, Dest, Promotion), Pgn).
 
 uci_pgn_move(P, Source - Dest, Pgn) :-
   fen:piece_at(P, Source, piece(king, Color)),

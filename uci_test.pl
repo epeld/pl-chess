@@ -69,8 +69,8 @@ string_helper(P, PgnMoves, S) :-
 
 uci_test2(PgnMove) :-
   fen:string(P, "rnbqkb1r/pp1ppppp/5n2/2p5/4P3/5N2/PPPP1PPP/RNBQKB1R w KQkq - 2 3"),
-  PgnMove = [move,pawn,nothing,move,[square,3,2],nothing],
-  pgn:full_move(P, PgnMove, [move,pawn,[square,1,1],move,[square,3,2],nothing]).
+  PgnMove = pawn_move(nothing,move,square(3,2),nothing),
+  pgn:full_move(P, PgnMove, pawn_move(square(1,1),move,square(3,2),nothing)).
 
 
 profile_test :-

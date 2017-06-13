@@ -25,17 +25,34 @@ unique_full_move(Position, Move, FullMove) :-
   findall(FullMove0, full_move(Position, Move, FullMove0), FullMoves),
   FullMoves = [FullMove].
 
+full_move(_, castles(S), castles(S)).
+
 full_move(Position, Move, FullMove) :-
-  Move = [move, Pt, _, Mt, Dest | Rest],
-  FullMove = [move, Pt, SourceSquare, Mt, Dest | Rest],
+  move(Move),
+  move(FullMove),
+
+  move_piece_type(Move, Pt),
+  move_piece_type(FullMove, Pt),
+  
+  move_type(Move, Type),
+  move_type(FullMove, Type),
+  
+  move_source(FullMove, SourceSquare),
+  
+  move_destination(Move, Dest),
+  move_destination(FullMove, Dest),
+
+  move_promotion(Move, Promo),
+  move_promotion(FullMove, Promo),
+  
   source_square(Move, Position, SourceSquare).
 
 
-source_square([move, PieceType, Hint, MoveType, Destination], Position, SourceSquare) :-
+source_square(officer_move(PieceType, Hint, MoveType, Destination), Position, SourceSquare) :-
   movement:officer(PieceType),
   source_square2(PieceType, Hint, MoveType, Destination, Position, SourceSquare).
 
-source_square([move, pawn, Hint, MoveType, Destination, _Promo], Position, SourceSquare) :-
+source_square(pawn_move(Hint, MoveType, Destination, _Promo), Position, SourceSquare) :-
   source_square2(pawn, Hint, MoveType, Destination, Position, SourceSquare),
   pawn_hint(MoveType, Hint).
 
@@ -133,15 +150,15 @@ straight_mover(rook).
 
 move(Castles) --> castles(Castles).
 
-move([move, OfficerType, SourceHint, MoveType, Destination]) -->
+move(officer_move(OfficerType, SourceHint, MoveType, Destination)) -->
   officer(OfficerType),
   source_hint(SourceHint),
   move_type(MoveType),
   fen:square(Destination).
 
 
-move([move, pawn, SourceHint, MoveType, Destination, Promotion]) -->
-  source_hint(SourceHint), { \+ SourceHint == rank(_) } , 
+move(pawn_move(SourceHint, MoveType, Destination, Promotion)) -->
+  pawn_hint(MoveType, SourceHint),
   move_type(MoveType), 
   fen:square(Destination),
   promotion(Promotion).
@@ -149,6 +166,8 @@ move([move, pawn, SourceHint, MoveType, Destination, Promotion]) -->
 
 move_type(move) --> [].
 move_type(capture) --> "x".
+
+pawn_hint(MoveType, Hint) --> source_hint(Hint), { pawn_hint(MoveType, Hint) }.
 
 source_hint(file(File)) -->
   {
@@ -209,7 +228,10 @@ legal_position_after(FullMove, Position, Position2) :-
 
 attacker_of(Position, AttackedSquare, SourceSquare) :-
   SourceSquare = square(_, _),
-  full_move(Position, [move, _, SourceSquare, capture, AttackedSquare | _], _).
+  move_type(Move, capture),
+  move_destination(Move, AttackedSquare),
+  move_source(Move, SourceSquare),
+  full_move(Position, Move, _).
 
 
 stalemate(Position) :-
@@ -232,11 +254,34 @@ castling_possible(Side, Position) :-
   append([ [Start], Middle, [End] ], Line),
 
   % TODO this logic seems kind of broken. Investigate.
-  
+
+  % Look for any capture of the squares between king and destination
+  move_type(Move, capture),
+  move_destination(Move, Square),
   member(Square, Middle),
-  full_move(Position, [move, _, _, capture, Square | _], _),
+  full_move(Position, Move, _),
   !.
-   
+
+move_piece_type(pawn_move(_, _, _, _), pawn).
+move_piece_type(officer_move(Officer, _, _, _), Officer) :-
+  movement:officer(Officer).
+
+move_type(pawn_move(_, Type, _, _), Type).
+move_type(officer_move(_, _, Type, _), Type).
+
+move_promotion(pawn_move(_, _, _, Promo), Promo).
+move_promotion(officer_move(_, _, _, _), nothing).
+move_promotion(castles(_), nothing).
+
+move_source(pawn_move(Source, _, _, _), Source).
+move_source(officer_move(_, Source, _, _), Source).
+
+move_destination(pawn_move(_, _, Dest, _), Dest).
+move_destination(officer_move(_, _, _, Dest), Dest).
+
+move(pawn_move(_, _, _, _)).
+move(officer_move(_, _, _, _)).
+move(castles(_)).
 
 diagonal(up_right).
 diagonal(up_left).

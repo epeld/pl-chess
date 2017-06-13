@@ -54,7 +54,7 @@ position_after(castles(Side),
 
 
 % (Non-passant) capture
-position_after( [move, pawn, SourceSquare, capture, Destination, Promotion]
+position_after( pawn_move(SourceSquare, capture, Destination, Promotion)
                 , Position
                 , [position, Board2, Turn2, Rights, nothing, 0, FullMoveNr2] ) :-
 
@@ -77,7 +77,7 @@ position_after( [move, pawn, SourceSquare, capture, Destination, Promotion]
   fen:piece_at(SourceSquare, Board, piece(pawn, Turn)).
 
 
-position_after( [move, pawn, SourceSquare, move, Destination, Promotion]
+position_after( pawn_move(SourceSquare, move, Destination, Promotion)
                 , Position
                 , [position, Board2, Turn2, Rights, Passant2, 0, FullMoveNr2] ) :-
 
@@ -104,7 +104,7 @@ position_after( [move, pawn, SourceSquare, move, Destination, Promotion]
   ; Passant2 = nothing ).
 
 % Passant Capture
-position_after( [move, pawn, SourceSquare, capture, Destination, nothing]
+position_after( pawn_move(SourceSquare, capture, Destination, nothing)
                 , Position
                 , [position, Board2, Turn2, Rights, nothing, 0, FullMoveNr2] ) :-
 
@@ -126,7 +126,7 @@ position_after( [move, pawn, SourceSquare, capture, Destination, nothing]
   fen:piece_at(Board, BehindPassant, piece(pawn, Turn2)).
 
 
-position_after( [move, Officer, SourceSquare, MoveType, Destination]
+position_after( officer_move(Officer, SourceSquare, MoveType, Destination)
                 , Position
                 , [position, Board2, Turn2, Rights2, nothing, HalfMoveNr2, FullMoveNr2] ) :-
   Position = [position, Board, Turn, Rights, _, HalfMoveNr, FullMoveNr],
@@ -140,7 +140,6 @@ position_after( [move, Officer, SourceSquare, MoveType, Destination]
 
   next_full_move_nr(Turn, FullMoveNr, FullMoveNr2),
   color:opposite(Turn, Turn2),
-
 
 
   % Remove piece from source square
