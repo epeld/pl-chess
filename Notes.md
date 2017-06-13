@@ -10,7 +10,7 @@
 ### Refactorings
 For when I am bored:
 
-- Refactor [move, Piece, Source, MoveType, Dest] -> move(PieceType, Source, ..)
+- Refactor [position | _] -> position(..)
 
 ## Slightly Harder TODOs
 
