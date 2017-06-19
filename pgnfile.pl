@@ -4,6 +4,8 @@
 
 :- use_module(fen).
 
+% TODO introduce annotated_pgnmove here
+
 pgn_move_string(Position, Moves, String) :-
   fen:turn(Position, Turn),
   fen:full_move(Position, Nr),

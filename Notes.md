@@ -3,7 +3,7 @@
 
 ## Simple TODOs
 
-- Implement translation pgnmove -> annotated_pgnmove which includes check/mate and comments!
+- Implement translation pgnmove -> annotated_pgnmove which includes check/mate and comments! (pgnfile!)
 - Work on pgnfile parsing/encoding, not creating so many choice points (encode checks!)
 - Display an ASCII chess board! (Like a FEN string but 's_/_\n_g' and without RLE encoding)
 - Implement 'setoption' state transition (find option in list, replace it)
