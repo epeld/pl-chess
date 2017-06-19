@@ -16,8 +16,12 @@ initial_position(todo).
 
 
 repl(State) :-
+  % TODO make the input method pluggable so we can use a stream or thread messages as we please
   thread_get_message(Msg),
+  
   process_message(Msg, State, State2),
+  % TODO make the output format pluggable so we can print human friendly or computer friendly.
+  
   repl(State2).
 
 
@@ -44,6 +48,14 @@ zipper_message(last, Z, Z2) :- zipper2:zfastforward(Z, Z2).
 
 zipper_message(first, Z, Z2) :- zipper2:zrewind(Z, Z2).
 
+zipper_message(move(Move), Z, Z2) :-
+  % TODO don't fastforward. just truncate here
+  zipper2:zfastforward(Z, Z0),
+  % TODO append a move here
+  Z0 = Z2.
+
+% TODO
+zipper_message(comment(Comment), Z, Z).
 
 %
 %  Options
