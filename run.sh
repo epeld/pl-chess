@@ -1,3 +1,3 @@
 #!/bin/bash
 
-swipl --quiet -f main.pl -t main foo bar baz
+swipl --quiet -f main.pl -t main bar baz
