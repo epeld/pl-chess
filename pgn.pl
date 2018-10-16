@@ -1,3 +1,8 @@
+%
+% This module contains a bunch of legacy code.
+% But its *main purpose* right now is to handle parsing of PGN moves,
+% which it performs through the pgn_string/2 predicate
+%
 :- module(pgn, [pgn_string/2]).
 
 :- set_prolog_flag(double_quotes, codes).

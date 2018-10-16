@@ -1,3 +1,6 @@
+%
+% This is a helper module that is referenced by the pgn-module
+%
 :- module(movement, []).
 
 :- set_prolog_flag(double_quotes, codes).
