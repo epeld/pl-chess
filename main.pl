@@ -1,3 +1,8 @@
+:- module(main, [main/0, main_with_args/1]).
+
+:- set_prolog_flag(double_quotes, codes).
+
+:- use_module(fen, [string/2]).
 
 main :-
   current_prolog_flag(argv, Argv),
@@ -28,5 +33,8 @@ print_usage :-
 main_with_position(_Position, _Move) :-
   format("OK~n").
 
-parse_fen(_Fen, dummy_fen).
+parse_fen(Fen, Position) :-
+  atom_codes(Fen, CFen),
+  fen:string(Position, CFen).
+
 parse_pgn(_Pgn, dummy_pgn).
