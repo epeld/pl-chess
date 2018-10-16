@@ -21,9 +21,9 @@ main_with_args([Fen, Pgn]) :-
           parse_pgn(Pgn, Move)
         ) *->
         main_with_position(Position, Move)
-      ; format(user_error, "Unable to parse pgn ~w~n", [Pgn])
+      ; format(user_error, "Unable to parse pgn \"~w\"~n", [Pgn])
       )
-  ; format(user_error, "Unable to parse fen ~w~n", [Fen]).
+  ; format(user_error, "Unable to parse fen \"~w\"~n", [Fen]).
 
 
 print_usage :-
