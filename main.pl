@@ -3,6 +3,7 @@
 :- set_prolog_flag(double_quotes, codes).
 
 :- use_module(fen, [string/2]).
+:- use_module(pgn, [pgn_string/2]).
 
 main :-
   current_prolog_flag(argv, Argv),
@@ -30,11 +31,13 @@ print_usage :-
   format(user_error, "Usage: chess <fen> <pgn>~nWhere \"chess\" is the name of the executable~n", []).
 
 
-main_with_position(_Position, _Move) :-
-  format("OK~n").
+main_with_position(_Position, Move) :-
+  format("OK~nMove is ~w~n", [Move]).
 
 parse_fen(Fen, Position) :-
   atom_codes(Fen, CFen),
   fen:string(Position, CFen).
 
-parse_pgn(_Pgn, dummy_pgn).
+parse_pgn(Pgn, Move) :-
+  atom_codes(Pgn, CPgn),
+  pgn:pgn_string(Move, CPgn).
