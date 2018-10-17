@@ -35,9 +35,12 @@ main_with_position(_Position, Move) :-
   format("OK~nMove is ~w~n", [Move]).
 
 parse_fen(Fen, Position) :-
-  atom_codes(Fen, CFen),
+  as_codes(Fen, CFen),
   fen:string(Position, CFen).
 
 parse_pgn(Pgn, Move) :-
-  atom_codes(Pgn, CPgn),
+  as_codes(Pgn, CPgn),
   pgn:pgn_string(Move, CPgn).
+
+as_codes(Any, Codes) :-
+  format(codes(Codes), "~s", [Any]).
