@@ -1,7 +1,8 @@
 %
 % This module currently has these responsibilities:
 % - Allows accessing various information contained in a position
-% - Updating a position (i.e, performing a chess move)
+% - Performing a (full) move. Note that you probably want pgn:make_move/3 instead
+%   because it can deal with ambiguity
 :- module(position, [position_after/3]).
 
 :- use_module(fen, []).

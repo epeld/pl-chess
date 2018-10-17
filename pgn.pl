@@ -1,9 +1,12 @@
 %
-% This module contains a bunch of legacy code.
-% But its *main purpose* right now is to handle parsing of PGN moves,
-% which it performs through the pgn_string/2 predicate
+% This module contains logic related to:
+% - pgn move parsing
+% - pgn move logic
 %
-:- module(pgn, [pgn_string/2]).
+% The pgn_string/2 predicate can convert moves to/from string
+% whereas make_move/3 can perform moves in a given position
+%
+:- module(pgn, [pgn_string/2, make_move/3]).
 
 :- set_prolog_flag(double_quotes, codes).
 

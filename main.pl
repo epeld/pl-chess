@@ -3,8 +3,7 @@
 :- set_prolog_flag(double_quotes, codes).
 
 :- use_module(fen, [string/2]).
-:- use_module(pgn, [pgn_string/2]).
-:- use_module(position, [position_after/3]).
+:- use_module(pgn, [pgn_string/2, make_move/3]).
 
 main :-
   current_prolog_flag(argv, Argv),
@@ -34,7 +33,7 @@ print_usage :-
 
 main_with_position(Position, Move) :-
   format("OK~nMove is ~w~n", [Move]),
-  position:position_after(Position, Move, NextPosition) *->
+  once(pgn:make_move(Move, Position, NextPosition)) *->
     (
       encode_fen(NextPosition, NextFEN),
       format("~s~n", [NextFEN])
