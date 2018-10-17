@@ -13,8 +13,6 @@ main :-
 
 
 main_with_args([Fen, Pgn]) :-
-  format("Fen: ~w~n", [Fen]),
-  format("Pgn: ~w~n", [Pgn]),
   once(
     parse_fen(Fen, Position)
   ) *-> (
@@ -32,7 +30,6 @@ print_usage :-
 
 
 main_with_position(Position, Move) :-
-  format("OK~nMove is ~w~n", [Move]),
   once(pgn:make_move(Move, Position, NextPosition)) *->
     (
       encode_fen(NextPosition, NextFEN),
