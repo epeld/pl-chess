@@ -36,8 +36,8 @@ make_move(Request) :-
   fen_service:parse_string(Fen, Position),
   pgn_service:parse_pgn_string(Pgn, Move),
 
-  %pgn_service:make_pgn_move(Position, Move, Position2),
-  fen_service:encode_position(Position, Fen2),
+  pgn_service:make_pgn_move(Position, Move, Position2),
+  fen_service:encode_position(Position2, Fen2),
 
   format('~s', [Fen2]).
 
