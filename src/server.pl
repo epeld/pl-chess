@@ -5,6 +5,7 @@
 :- use_module(library(http/http_parameters)).
 
 :- use_module(services/fen_service, [initial_fen_string/1, parse_string/2]).
+:- use_module(services/pgn_service, [parse_pgn_string/2]).
 
 
 :- http_handler(/, say_hi, []).
@@ -23,10 +24,16 @@ say_hi(_Request) :-
 make_move(Request) :-
   http_parameters(Request,
                   [
-                    fen(Fen, []),
-                    move(Move, [])
+                    fen(FenA, []),
+                    move(PgnA, [])
                   ]),
   format('Content-type: text/plain~n~n'),
 
-  format('~s ~s', [Fen, Move]).
+  atom_codes(FenA, Fen),
+  atom_codes(PgnA, Pgn),
+
+  trace(fen_service:parse_string/2, -all),
+  fen_service:parse_string(Fen, _Position),
+  pgn_service:parse_pgn_string(Pgn, _Move),
+  format('~s ~s', [Fen, Pgn]).
 
