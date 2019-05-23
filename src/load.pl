@@ -5,3 +5,4 @@
 :- [color].
 :- [movement].
 :- [pgn].
+:- [server].
