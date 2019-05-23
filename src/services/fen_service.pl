@@ -6,5 +6,5 @@
 
 
 parse_string(FenString, Position) :-
-  bound(FenString),
+  ground(Position),
   fen:string(FenString, Position).
