@@ -32,7 +32,6 @@ make_move(Request) :-
   atom_codes(FenA, Fen),
   atom_codes(PgnA, Pgn),
 
-  trace(fen_service:parse_string/2, -all),
   fen_service:parse_string(Fen, Position),
   pgn_service:parse_pgn_string(Pgn, Move),
 
