@@ -1,8 +1,7 @@
 
 :- [main].
 :- [services/fen_service].
-:- [position].
+:- [services/pgn_service].
 :- [color].
-:- [movement].
-:- [pgn].
 :- [server].
+:- [services/logic/position].

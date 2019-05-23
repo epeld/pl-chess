@@ -3,7 +3,7 @@
 :- set_prolog_flag(double_quotes, codes).
 
 :- use_module(services/fen_service, [parse_string/2]).
-:- use_module(pgn, [pgn_string/2, make_move/3]).
+:- use_module(services/logic/pgn, [pgn_string/2, make_move/3]).
 
 main :-
   current_prolog_flag(argv, Argv),
@@ -39,7 +39,7 @@ main_with_position(Position, Move) :-
 
 parse_fen(Fen, Position) :-
   as_codes(Fen, CFen),
-  fen_service:parse_string(Position, CFen).
+  fen_service:parse_string(CFen, Position).
 
 encode_fen(Position, Fen) :-
   fen:string(Position, Fen).

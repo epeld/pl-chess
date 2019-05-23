@@ -5,7 +5,7 @@
 %   because it can deal with ambiguity
 :- module(position, [position_after/3]).
 
-:- use_module(services/logic/fen, []).
+:- use_module(fen, []).
 :- use_module(movement, []).
 
 %

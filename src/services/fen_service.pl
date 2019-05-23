@@ -14,5 +14,5 @@
 % Parses a fen string and unifies the resulting position with Position
 %
 parse_string(FenString, Position) :-
-  ground(Position),
-  fen:string(FenString, Position).
+  ground(FenString),
+  fen:string(Position, FenString).
