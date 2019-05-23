@@ -32,11 +32,20 @@ make_move(Request) :-
   atom_codes(FenA, Fen),
   atom_codes(PgnA, Pgn),
 
-  fen_service:parse_string(Fen, Position),
-  pgn_service:parse_pgn_string(Pgn, Move),
+  or_fail(fen_service:parse_string(Fen, Position), invalid_fen(FenA)),
+  or_fail(pgn_service:parse_pgn_string(Pgn, Move), invalid_pgn(PgnA)),
+  or_fail(pgn_service:make_pgn_move(Position, Move, Position2), invalid_move(PgnA)),
 
-  pgn_service:make_pgn_move(Position, Move, Position2),
   fen_service:encode_position(Position2, Fen2),
-
   format('~s', [Fen2]).
 
+:- meta_predicate
+    or_fail(0),
+    or_fail(0, +).
+
+or_fail(Goal) :-
+  or_fail(Goal, goal_didnt_succeed(Goal)).
+
+or_fail(Goal, Throw) :-
+  call(Goal) *-> true
+  ; throw(Throw).
