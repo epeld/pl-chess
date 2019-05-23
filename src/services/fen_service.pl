@@ -16,3 +16,12 @@
 parse_string(FenString, Position) :-
   ground(FenString),
   fen:string(Position, FenString).
+
+
+%
+% Deterministic.
+% Encodes a position as a Fen string
+%
+encode_position(Position, FenString) :-
+  ground(Position),
+  fen:string(Position, FenString).

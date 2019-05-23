@@ -1,7 +1,7 @@
 :- module(pgn_service,
           [
             parse_pgn_string/2,
-            make_move/3
+            make_pgn_move/3
           ]).
 :- use_module(logic/pgn,
               [
@@ -15,4 +15,6 @@ parse_pgn_string(PgnString, ParsedMove) :-
   pgn:pgn_string(ParsedMove, PgnString),
   !.
 
-% make_move(_Arg1, _Arg2, _Arg3) :- true.
+make_pgn_move(Position, Move, Position2) :-
+  make_move(Move, Position, Position2),
+  !.
