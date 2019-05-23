@@ -5,7 +5,7 @@
 %   because it can deal with ambiguity
 :- module(position, [position_after/3]).
 
-:- use_module(fen, []).
+:- use_module(services/logic/fen, []).
 :- use_module(movement, []).
 
 %
@@ -253,7 +253,3 @@ rights_after(square(7, Y), Rights, Rights) :-
 
 %  maplist(fen:square_codes, SpecialSquares, ["a1", "h1", "e1", "a8", "h8", "e8"]),
 %  \+ member(Square, SpecialSquares).
-  
-
-
-

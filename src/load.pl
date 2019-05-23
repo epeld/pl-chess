@@ -1,6 +1,6 @@
 
 :- [main].
-:- [fen].
+:- [services/fen_service].
 :- [position].
 :- [color].
 :- [movement].
