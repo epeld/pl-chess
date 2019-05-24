@@ -10,6 +10,7 @@
 
 :- http_handler(/, say_hi, []).
 :- http_handler('/pgn/move', make_move, []).
+:- http_handler('/pgn/squares', possible_squares, []).
 
 server(Port) :-
   http_server(http_dispatch, [port(Port)]).
@@ -38,6 +39,33 @@ make_move(Request) :-
 
   fen_service:encode_position(Position2, Fen2),
   format('~s', [Fen2]).
+
+
+possible_squares(Request) :-
+  http_parameters(Request,
+                  [
+                    fen(FenA, []),
+                    source(SquareA, [])
+                  ]),
+  format('Content-type: text/plain~n~n'),
+
+  atom_codes(SquareA, SquareS),
+  atom_codes(FenA, FenS),
+
+  or_fail(fen_service:parse_string(FenS, Position), invalid_fen(FenA)),
+  or_fail(fen_service:parse_square(SquareS, Square), invalid_square(SquareA)),
+
+  pgn_service:find_possible_destinations(Position, Square, Destinations),
+
+  maplist(fen_service:encode_square, Destinations, DestinationStrings),
+  foreach(
+    member(S, DestinationStrings),
+    format('~s~n', [S])
+  ).
+
+%
+% Error Handling
+%
 
 :- meta_predicate
     or_fail(0),
