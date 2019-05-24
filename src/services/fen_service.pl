@@ -1,12 +1,16 @@
 :- module(fen_service,
           [
             parse_string/2,
-            initial_fen_string/1
+            parse_square/2,
+            initial_fen_string/1,
+            encode_position/2,
+            encode_square/2
           ]).
 :- use_module(logic/fen,
               [
                 string/2,
-                initial_fen_string/1
+                initial_fen_string/1,
+                square_codes/2
               ]).
 
 %
@@ -25,3 +29,13 @@ parse_string(FenString, Position) :-
 encode_position(Position, FenString) :-
   ground(Position),
   fen:string(Position, FenString).
+
+
+parse_square(SquareString, Square) :-
+  ground(SquareString),
+  square_codes(Square, SquareString).
+
+
+encode_square(Square, SquareString) :-
+  ground(Square),
+  square_codes(Square, SquareString).
