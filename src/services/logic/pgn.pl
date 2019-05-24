@@ -6,7 +6,7 @@
 % The pgn_string/2 predicate can convert moves to/from string
 % whereas make_move/3 can perform moves in a given position
 %
-:- module(pgn, [pgn_string/2, make_move/3]).
+:- module(pgn, [pgn_string/2, make_move/3, source_destination/3]).
 
 :- set_prolog_flag(double_quotes, codes).
 
@@ -54,6 +54,10 @@ full_move(Position, Move, FullMove) :-
 
   source_square(Move, Position, SourceSquare).
 
+source_destination(Position, SourceSquare, Destination) :-
+  move_destination(Move, Destination),
+  move_source(Move, SourceSquare),
+  source_square(Move, Position, SourceSquare).
 
 source_square(officer_move(PieceType, Hint, MoveType, Destination), Position, SourceSquare) :-
   movement:officer(PieceType),
