@@ -9,6 +9,10 @@
 
 :- set_prolog_flag(double_quotes, codes).
 
+%
+% Public API
+%
+
 :- dynamic session/2.
 
 session(SessionId) :-
@@ -26,6 +30,10 @@ delete_session(SessionId) :-
     session,
     retract(session(SessionId, _))
   ).
+
+%
+% Private API
+%
 
 store_session(SessionId) :-
   \+ session(SessionId),
