@@ -1,7 +1,8 @@
 :- module(session_service,
           [
+            find_all_sessions/1,
             new_session/1,
-            delete_session/1
+            delete_session/1,
             session/1,
             session/2
           ]).
@@ -12,6 +13,13 @@
 %
 % Public API
 %
+
+find_all_sessions(SessionIds) :-
+  findall(
+    SessionId,
+    session(SessionId),
+    SessionIds
+  ).
 
 :- dynamic session/2.
 
