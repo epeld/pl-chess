@@ -6,11 +6,15 @@
 
 :- use_module(services/fen_service, [initial_fen_string/1, parse_string/2]).
 :- use_module(services/pgn_service, [parse_pgn_string/2, make_pgn_move/3]).
+:- use_module(services/session_service, [new_session/1]).
 
 
 :- http_handler(/, say_hi, []).
 :- http_handler('/pgn/move', make_move, []).
 :- http_handler('/pgn/squares', possible_squares, []).
+
+:- http_handler('/sessions', handle_sessions_request(Method), [method(Method)]).
+:- http_handler(root(sessions / SessionId), handle_sessions_request(delete, SessionId), [method(delete)]).
 
 server(Port) :-
   http_server(http_dispatch, [port(Port)]).
@@ -62,6 +66,22 @@ possible_squares(Request) :-
     member(S, DestinationStrings),
     format('~s~n', [S])
   ).
+
+handle_sessions_request(post, _Request) :-
+  session_service:new_session(SessionId),
+  format('Content-type: text/plain~n~n'),
+  format('~s', [SessionId]).
+
+handle_sessions_request(get, _Request) :-
+  session_service:find_all_sessions(SessionIds),
+  format('Content-type: text/plain~n~n'),
+  foreach(
+    member(SessionId, SessionIds),
+    format('~s~n', [SessionId])
+  ).
+
+handle_sessions_request(delete, SessionId, _Request) :-
+  session_service:delete_session(SessionId).
 
 %
 % Error Handling
