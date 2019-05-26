@@ -3,6 +3,7 @@
 :- use_module(library(http/thread_httpd)).
 :- use_module(library(http/http_dispatch)).
 :- use_module(library(http/http_parameters)).
+:- use_module(library(http/html_write))
 
 :- use_module(services/fen_service, [initial_fen_string/1, parse_string/2]).
 :- use_module(services/pgn_service, [parse_pgn_string/2, make_pgn_move/3]).
@@ -10,6 +11,9 @@
 
 
 :- http_handler(/, say_hi, []).
+
+:- http_handler('/gui', make_gui, []).
+
 :- http_handler('/pgn/move', make_move, []).
 :- http_handler('/pgn/squares', possible_squares, []).
 
@@ -82,6 +86,13 @@ handle_sessions_request(get, _Request) :-
 
 handle_sessions_request(delete, SessionId, _Request) :-
   session_service:delete_session(SessionId).
+
+
+make_gui(_Request) :-
+  html_write:reply_html_page(
+    title('The Chess GUI'),
+    p('Hello World')
+  ).
 
 %
 % Error Handling
