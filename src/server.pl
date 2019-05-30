@@ -96,10 +96,11 @@ make_gui(_Request) :-
     title('The Chess GUI'),
     [
       p('Hello World'),
-      style('.board { background: purple; height: 300px; width:300px }'),
+      style('.board { background: purple; height: 500px; width: 500px }'),
       style('.board { display: flex; align-items: stretch; flex-direction: row; justify-content: space-between; flex-wrap: wrap }'),
-      style('.white { background: gray; width: 12.5%; height: 12.5%; }'),
-      style('.black { background: black; width: 12.5%; height: 12.5%; }'),
+      style('.square { width: 12.5%; height: 12.5%; }'),
+      style('.white { background: gray; }'),
+      style('.black { background: black; }'),
       div(class(board), Squares)
     ]
   ).
@@ -113,7 +114,7 @@ square_row(Row, black) :-
   length(Row, 8),
   maplist(make_square, Row, [black, white, black, white, black, white, black, white]).
 
-make_square(div([class(Color)],''), Color).
+make_square(div([class([Color, square])],''), Color).
 
 %
 % Error Handling
