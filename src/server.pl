@@ -87,36 +87,33 @@ handle_sessions_request(get, _Request) :-
 handle_sessions_request(delete, SessionId, _Request) :-
   session_service:delete_session(SessionId).
 
-%% .board {
-%%     background: purple;
-%%     height: 300px;
-%%     width: 300px;
-%%     display: flex;
-%%     align-items: stretch;
-%%     flex-direction: row;
-%%     justify-content: space-between;
-%%     flex-wrap: wrap;
-%% }
-
-%% .square {
-%%     background: red;
-%%     width: 12.5%;
-%%     height: 12.5%;
-%% }
 
 make_gui(_Request) :-
-  length(Squares, 64),
-  maplist(make_square, Squares),
+  length(Rows, 8),
+  maplist(square_row, Rows, [white, black, white, black, white, black, white, black]),
+  append(Rows, Squares),
   html_write:reply_html_page(
     title('The Chess GUI'),
     [
       p('Hello World'),
       style('.board { background: purple; height: 300px; width:300px }'),
+      style('.board { display: flex; align-items: stretch; flex-direction: row; justify-content: space-between; flex-wrap: wrap }'),
+      style('.white { background: gray; width: 12.5%; height: 12.5%; }'),
+      style('.black { background: black; width: 12.5%; height: 12.5%; }'),
       div(class(board), Squares)
     ]
   ).
 
-make_square(div(class(square),'')).
+square_row(Row, white) :-
+  length(Row, 8),
+  maplist(make_square, Row, [white, black, white, black, white, black, white, black]).
+
+
+square_row(Row, black) :-
+  length(Row, 8),
+  maplist(make_square, Row, [black, white, black, white, black, white, black, white]).
+
+make_square(div([class(Color)],''), Color).
 
 %
 % Error Handling
