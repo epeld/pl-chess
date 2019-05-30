@@ -3,7 +3,7 @@
 :- use_module(library(http/thread_httpd)).
 :- use_module(library(http/http_dispatch)).
 :- use_module(library(http/http_parameters)).
-:- use_module(library(http/html_write))
+:- use_module(library(http/html_write)).
 
 :- use_module(services/fen_service, [initial_fen_string/1, parse_string/2]).
 :- use_module(services/pgn_service, [parse_pgn_string/2, make_pgn_move/3]).
@@ -87,12 +87,36 @@ handle_sessions_request(get, _Request) :-
 handle_sessions_request(delete, SessionId, _Request) :-
   session_service:delete_session(SessionId).
 
+%% .board {
+%%     background: purple;
+%%     height: 300px;
+%%     width: 300px;
+%%     display: flex;
+%%     align-items: stretch;
+%%     flex-direction: row;
+%%     justify-content: space-between;
+%%     flex-wrap: wrap;
+%% }
+
+%% .square {
+%%     background: red;
+%%     width: 12.5%;
+%%     height: 12.5%;
+%% }
 
 make_gui(_Request) :-
+  length(Squares, 64),
+  maplist(make_square, Squares),
   html_write:reply_html_page(
     title('The Chess GUI'),
-    p('Hello World')
+    [
+      p('Hello World'),
+      style('.board { background: purple; height: 300px; width:300px }'),
+      div(class(board), Squares)
+    ]
   ).
+
+make_square(div(class(square),'')).
 
 %
 % Error Handling
