@@ -90,7 +90,8 @@ handle_sessions_request(delete, SessionId, _Request) :-
 
 make_gui(_Request) :-
   length(Rows, 8),
-  maplist(square_row, Rows, [white, black, white, black, white, black, white, black]),
+  checker_pattern(Pattern),
+  maplist(square_row, Rows, Pattern),
   append(Rows, Squares),
   html_write:reply_html_page(
     title('The Chess GUI'),
@@ -105,14 +106,16 @@ make_gui(_Request) :-
     ]
   ).
 
-square_row(Row, white) :-
-  length(Row, 8),
-  maplist(make_square, Row, [white, black, white, black, white, black, white, black]).
+checker_pattern(Pattern) :- checker_pattern(white, Pattern).
+checker_pattern(white, [white, black, white, black, white, black, white, black]).
+checker_pattern(black, [black, white, black, white, black, white, black, white]).
 
 
-square_row(Row, black) :-
+square_row(Row, Color) :-
   length(Row, 8),
-  maplist(make_square, Row, [black, white, black, white, black, white, black, white]).
+  checker_pattern(Color, Pattern),
+  maplist(make_square, Row, Pattern).
+
 
 make_square(div([class([Color, square])],''), Color).
 
