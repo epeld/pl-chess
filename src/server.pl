@@ -88,7 +88,20 @@ handle_sessions_request(delete, SessionId, _Request) :-
   session_service:delete_session(SessionId).
 
 
-make_gui(_Request) :-
+make_gui(Request) :-
+  %
+  % Get FEN
+  fen_service:initial_fen_string(InitialC),
+  atom_codes(Initial, InitialC),
+  http_parameters(Request,
+                  [
+                    fen(FenA, [default(Initial)])
+                  ]),
+  atom_codes(FenA, Fen),
+  or_fail(fen_service:parse_string(Fen, Position), invalid_fen(FenA)),
+
+  %
+  % Render HTML
   length(Rows, 8),
   checker_pattern(Pattern),
   maplist(square_row, Rows, Pattern),
@@ -96,7 +109,8 @@ make_gui(_Request) :-
   html_write:reply_html_page(
     title('The Chess GUI'),
     [
-      p('Hello World'),
+      p('Check it out'),
+      span([], FenA),
       style('.board { background: purple; height: 500px; width: 500px }'),
       style('.board { display: flex; align-items: stretch; flex-direction: row; justify-content: space-between; flex-wrap: wrap }'),
       style('.square { width: 12.5%; height: 12.5%; }'),
