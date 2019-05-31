@@ -1,7 +1,7 @@
 %
 % This module supports both writing and reading FEN strings
 % The top level interface is string/2.
-:- module(fen, [string/2, square_codes/2]).
+:- module(fen, [string/2, square_codes/2, piece_char/2]).
 
 :- set_prolog_flag(double_quotes, codes).
 

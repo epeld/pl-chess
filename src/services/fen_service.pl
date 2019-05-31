@@ -4,13 +4,15 @@
             parse_square/2,
             initial_fen_string/1,
             encode_position/2,
-            encode_square/2
+            encode_square/2,
+            encode_piece/2
           ]).
 :- use_module(logic/fen,
               [
                 string/2,
                 initial_fen_string/1,
-                square_codes/2
+                square_codes/2,
+                piece_char/2
               ]).
 
 %
@@ -39,3 +41,7 @@ parse_square(SquareString, Square) :-
 encode_square(Square, SquareString) :-
   ground(Square),
   square_codes(Square, SquareString).
+
+encode_piece(Piece, [Char]) :-
+  ground(Piece),
+  piece_char(Piece, Char).

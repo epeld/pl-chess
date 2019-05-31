@@ -5,7 +5,7 @@
 :- use_module(library(http/http_parameters)).
 :- use_module(library(http/html_write)).
 
-:- use_module(services/fen_service, [initial_fen_string/1, parse_string/2]).
+:- use_module(services/fen_service, [initial_fen_string/1, parse_string/2, encode_piece/2]).
 :- use_module(services/pgn_service, [parse_pgn_string/2, make_pgn_move/3]).
 :- use_module(services/session_service, [new_session/1]).
 
@@ -93,18 +93,23 @@ make_gui(Request) :-
   % Get FEN
   fen_service:initial_fen_string(InitialC),
   atom_codes(Initial, InitialC),
-  http_parameters(Request,
-                  [
-                    fen(FenA, [default(Initial)])
-                  ]),
+  http_parameters(
+    Request,
+    [
+      fen(FenA, [default(Initial)])
+    ]
+  ),
   atom_codes(FenA, Fen),
   or_fail(fen_service:parse_string(Fen, Position), invalid_fen(FenA)),
 
   %
   % Render HTML
+  trace(position_piece_rows, +all),
+  trace(unrow, +all),
+  position_piece_rows(Position, GroupedPieces),
   length(Rows, 8),
   checker_pattern(Pattern),
-  maplist(square_row, Rows, Pattern),
+  maplist(square_row, Rows, Pattern, GroupedPieces),
   append(Rows, Squares),
   html_write:reply_html_page(
     title('The Chess GUI'),
@@ -113,25 +118,35 @@ make_gui(Request) :-
       span([], FenA),
       style('.board { background: purple; height: 500px; width: 500px }'),
       style('.board { display: flex; align-items: stretch; flex-direction: row; justify-content: space-between; flex-wrap: wrap }'),
-      style('.square { width: 12.5%; height: 12.5%; }'),
+      style('.square { width: 12.5%; height: 12.5%; color: orange; }'),
+      style('.square { display: flex; align-items: center; justify-content: center }'),
       style('.white { background: gray; }'),
       style('.black { background: black; }'),
       div(class(board), Squares)
     ]
   ).
 
+position_piece_rows([position, rows(R1, R2, R3, R4, R5, R6, R7, R8) | _], Pieces) :-
+  maplist(unrow, [R1, R2, R3, R4, R5, R6, R7, R8], Pieces).
+
+unrow(row(P1, P2, P3, P4, P5, P6, P7, P8), [P1, P2, P3, P4, P5, P6, P7, P8]).
+
+  
+
 checker_pattern(Pattern) :- checker_pattern(white, Pattern).
 checker_pattern(white, [white, black, white, black, white, black, white, black]).
 checker_pattern(black, [black, white, black, white, black, white, black, white]).
 
 
-square_row(Row, Color) :-
+square_row(Row, Color, Pieces) :-
   length(Row, 8),
   checker_pattern(Color, Pattern),
-  maplist(make_square, Row, Pattern).
+  maplist(make_square, Row, Pattern, Pieces).
 
 
-make_square(div([class([Color, square])],''), Color).
+make_square(div([class([Color, square])], ''), Color, nothing).
+make_square(div([class([Color, square])], '~s'-[String]), Color, piece(A, B)) :-
+  encode_piece(piece(A, B), String).
 
 %
 % Error Handling
