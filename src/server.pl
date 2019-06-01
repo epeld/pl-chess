@@ -105,8 +105,6 @@ make_gui(Request) :-
 
   %
   % Render HTML
-  trace(position_piece_rows, +all),
-  trace(unrow, +all),
   position_piece_rows(Position, GroupedPieces),
   length(Rows, 8),
   checker_pattern(Pattern),
