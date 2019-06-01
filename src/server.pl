@@ -124,8 +124,9 @@ make_gui(Request) :-
       style('.board { display: flex; align-items: stretch; flex-direction: row; justify-content: space-between; flex-wrap: wrap }'),
       style('.square { width: 12.5%; height: 12.5%; color: orange; }'),
       style('.square { display: flex; align-items: center; justify-content: center }'),
-      style('.white { background: gray; }'),
-      style('.black { background: black; }'),
+      style('.square { background-position: center !important; background-repeat: no-repeat !important; background-size: cover !important; }'),
+      style('.light { background: gray; }'),
+      style('.dark { background: darkslategray; }'),
       div(class(board), Squares)
     ]
   ).
@@ -137,9 +138,9 @@ unrow(row(P1, P2, P3, P4, P5, P6, P7, P8), [P1, P2, P3, P4, P5, P6, P7, P8]).
 
   
 
-checker_pattern(Pattern) :- checker_pattern(white, Pattern).
-checker_pattern(white, [white, black, white, black, white, black, white, black]).
-checker_pattern(black, [black, white, black, white, black, white, black, white]).
+checker_pattern(Pattern) :- checker_pattern(light, Pattern).
+checker_pattern(light, [light, dark, light, dark, light, dark, light, dark]).
+checker_pattern(dark, [dark, light, dark, light, dark, light, dark, light]).
 
 
 square_row(Row, Color, Pieces) :-
@@ -149,8 +150,7 @@ square_row(Row, Color, Pieces) :-
 
 
 make_square(div([class([Color, square])], ''), Color, nothing).
-make_square(div([class([Color, square])], '~s'-[String]), Color, piece(A, B)) :-
-  encode_piece(piece(A, B), String).
+make_square(div([class([Color, square, A, B])], ''), Color, piece(A, B)).
 
 %
 % Error Handling
