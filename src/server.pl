@@ -11,6 +11,7 @@
 
 
 :- http_handler(/, say_hi, []).
+:- http_handler('/css/cburnett.css', http_reply_file('static/cburnett.css', [unsafe(true)]), []).
 
 :- http_handler('/gui', make_gui, []).
 
@@ -112,7 +113,10 @@ make_gui(Request) :-
   maplist(square_row, Rows, Pattern, GroupedPieces),
   append(Rows, Squares),
   html_write:reply_html_page(
-    title('The Chess GUI'),
+    [
+      title('The Chess GUI'),
+      link([rel(stylesheet), href='/css/cburnett.css'])
+    ],
     [
       p('Check it out'),
       span([], FenA),
