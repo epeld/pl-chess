@@ -124,7 +124,7 @@ make_gui(Request) :-
       style('.square { display: flex; align-items: center; justify-content: center }'),
       style('.square { background-position: center !important; background-repeat: no-repeat !important; background-size: cover !important; }'),
       style('.light { background: lightblue; }'),
-      style('.dark { background: darkslategray; }'),
+      style('.dark { background: slategray; }'),
       div(class(board), Squares)
     ]
   ).
