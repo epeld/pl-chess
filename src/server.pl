@@ -125,7 +125,7 @@ make_gui(Request) :-
       style('.square { width: 12.5%; height: 12.5%; color: orange; }'),
       style('.square { display: flex; align-items: center; justify-content: center }'),
       style('.square { background-position: center !important; background-repeat: no-repeat !important; background-size: cover !important; }'),
-      style('.light { background: gray; }'),
+      style('.light { background: lightblue; }'),
       style('.dark { background: darkslategray; }'),
       div(class(board), Squares)
     ]
