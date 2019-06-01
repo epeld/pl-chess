@@ -130,11 +130,10 @@ make_gui(Request) :-
   ).
 
 position_piece_rows([position, rows(R1, R2, R3, R4, R5, R6, R7, R8) | _], Pieces) :-
-  maplist(unrow, [R1, R2, R3, R4, R5, R6, R7, R8], Pieces).
+  maplist(unrow, [R8, R7, R6, R5, R4, R3, R2, R1], Pieces).
 
 unrow(row(P1, P2, P3, P4, P5, P6, P7, P8), [P1, P2, P3, P4, P5, P6, P7, P8]).
 
-  
 
 checker_pattern(Pattern) :- checker_pattern(light, Pattern).
 checker_pattern(light, [light, dark, light, dark, light, dark, light, dark]).
